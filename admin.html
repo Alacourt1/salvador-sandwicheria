@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Panel Administrador</title>
+
+  <link rel="stylesheet" href="./css/styles.css">
+</head>
+
+<body>
+
+  <h1>⚙️ Panel Administrador</h1>
+<hr>
+
+<h2>📊 Dashboard</h2>
+
+<p>
+  Total pedidos:
+  <span id="total-pedidos">0</span>
+</p>
+
+<p>
+  Ventas totales:
+  $<span id="ventas-totales">0</span>
+</p>
+
+<p>
+  Pedidos pendientes:
+  <span id="pedidos-pendientes">0</span>
+</p>
+
+<p>
+  Pedidos entregados:
+  <span id="pedidos-entregados">0</span>
+</p>
+<p>
+  Ventas hoy:
+  $<span id="ventas-hoy">0</span>
+</p>
+
+<p>
+  Ventas este mes:
+  $<span id="ventas-mes">0</span>
+</p>
+
+<p>
+  Pedidos hoy:
+  <span id="pedidos-hoy">0</span>
+</p>
+
+<p>
+  Ticket promedio:
+  $<span id="ticket-promedio">0</span>
+</p>
+<hr>
+
+<h2>🏆 Productos más vendidos</h2>
+
+<div id="productos-mas-vendidos"></div>
+
+<hr>
+  <input type="text" id="nombre" placeholder="Nombre">
+
+  <input type="text" id="descripcion" placeholder="Descripción">
+
+  <input type="number" id="precio" placeholder="Precio">
+
+  <input type="text" id="categoria" placeholder="Categoría">
+
+  <input type="number" id="descuento" placeholder="Descuento %">
+
+  <label>
+    Oferta
+    <input type="checkbox" id="oferta">
+  </label>
+
+  <br><br>
+
+  <button onclick="agregarProducto()">
+    Agregar producto
+  </button>
+  <hr>
+
+<h2>📦 Productos cargados</h2>
+
+<div id="lista-productos"></div>
+<hr>
+
+<h2>📦 Pedidos</h2>
+
+<div id="lista-pedidos"></div>
+<hr>
+
+<h2>👥 Clientes</h2>
+
+<input
+  type="text"
+  id="cliente-nombre"
+  placeholder="Nombre cliente"
+>
+
+<input
+  type="text"
+  id="cliente-telefono"
+  placeholder="Teléfono"
+>
+
+<button onclick="agregarCliente()">
+  Agregar cliente
+</button>
+
+<br><br>
+
+<input
+  type="text"
+  id="buscar-cliente"
+  placeholder="Buscar cliente..."
+>
+
+<div id="lista-clientes"></div>
+  <script type="module">
+
+  import {
+    auth,
+    onAuthStateChanged
+  } from './js/firebase.js';
+
+  import './js/admin.js';
+
+  onAuthStateChanged(auth, (user) => {
+
+    if (!user) {
+
+      alert("Debes iniciar sesión");
+
+      window.location.href = "login.html";
+    }
+  });
+
+</script>
+
+</body>
+</html>

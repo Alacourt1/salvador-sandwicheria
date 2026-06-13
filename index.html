@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+
+  <title>Salvador Sandwicheria</title>
+<input
+  type="text"
+  id="busqueda"
+  placeholder="Buscar producto..."
+>
+  <link rel="stylesheet" href="./css/styles.css">
+</head>
+
+<body>
+
+  <h1>🍔 Salvador Sandwicheria</h1>
+
+  <h2>🛒 Carrito</h2>
+<input
+  type="text"
+  id="clienteNombre"
+  placeholder="Tu nombre"
+>
+
+<br><br>
+
+<input
+  type="text"
+  id="clienteTelefono"
+  placeholder="Tu teléfono"
+>
+
+<br><br>
+
+<input
+  type="text"
+  id="clienteDireccion"
+  placeholder="Dirección"
+>
+
+<br><br>
+
+<textarea
+  id="clienteObservaciones"
+  placeholder="Observaciones"
+></textarea>
+
+<br><br>
+  <div id="carrito"></div>
+
+  <hr>
+  <h2>📂 Categorías</h2>
+
+<div id="categorias"></div>
+
+<hr>
+
+  <div id="menu-container"></div>
+
+  <script type="module" src="./js/menu.js"></script>
+
+  <script type="module" src="./js/carrito.js"></script>
+
+</body>
+
+</html>

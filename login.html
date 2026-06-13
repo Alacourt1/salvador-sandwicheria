@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+  <meta charset="UTF-8">
+
+  <title>Login Admin</title>
+
+</head>
+
+<body>
+
+  <h1>🔐 Login Administrador</h1>
+
+  <input
+    type="email"
+    id="email"
+    placeholder="Email"
+  >
+
+  <br><br>
+
+  <input
+    type="password"
+    id="password"
+    placeholder="Contraseña"
+  >
+
+  <br><br>
+
+  <button onclick="login()">
+    Ingresar
+  </button>
+
+  <script type="module">
+
+    import {
+      auth,
+      signInWithEmailAndPassword
+    } from './js/firebase.js';
+
+    window.login = async () => {
+
+      const email =
+        document.getElementById('email').value;
+
+      const password =
+        document.getElementById('password').value;
+
+      try {
+
+        await signInWithEmailAndPassword(
+          auth,
+          email,
+          password
+        );
+
+        alert("Login correcto 🚀");
+
+        window.location.href = "admin.html";
+
+      } catch (error) {
+
+        console.error(error);
+
+        alert("Credenciales incorrectas");
+      }
+    };
+
+  </script>
+
+</body>
+
+</html>
