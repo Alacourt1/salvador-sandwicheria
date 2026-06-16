@@ -1,75 +1,48 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
-
   <meta charset="UTF-8">
-
-  <title>Login Admin</title>
-
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ingresar — Salvador Admin</title>
+  <link rel="stylesheet" href="./css/styles.css">
 </head>
-
 <body>
-
-  <h1>🔐 Login Administrador</h1>
-
-  <input
-    type="email"
-    id="email"
-    placeholder="Email"
-  >
-
-  <br><br>
-
-  <input
-    type="password"
-    id="password"
-    placeholder="Contraseña"
-  >
-
-  <br><br>
-
-  <button onclick="login()">
-    Ingresar
-  </button>
-
-  <script type="module">
-
-    import {
-      auth,
-      signInWithEmailAndPassword
-    } from './js/firebase.js';
-
-    window.login = async () => {
-
-      const email =
-        document.getElementById('email').value;
-
-      const password =
-        document.getElementById('password').value;
-
-      try {
-
-        await signInWithEmailAndPassword(
-          auth,
-          email,
-          password
-        );
-
-        alert("Login correcto 🚀");
-
-        window.location.href = "admin.html";
-
-      } catch (error) {
-
-        console.error(error);
-
-        alert("Credenciales incorrectas");
-      }
-    };
-
-  </script>
-
+<div class="login-page">
+  <div class="login-card">
+    <div class="login-logo">Salvador</div>
+    <div class="login-sub">Panel de administración</div>
+    <div class="login-error" id="loginError">Email o contraseña incorrectos</div>
+    <div class="login-campo">
+      <label for="email">Email</label>
+      <input type="email" id="email" placeholder="admin@salvador.com" autocomplete="email">
+    </div>
+    <div class="login-campo">
+      <label for="password">Contraseña</label>
+      <input type="password" id="password" placeholder="••••••••" autocomplete="current-password"
+             onkeydown="if(event.key==='Enter') login()">
+    </div>
+    <button class="btn-login" onclick="login()">Ingresar al panel</button>
+  </div>
+</div>
+<script type="module">
+  import { auth, signInWithEmailAndPassword } from './js/firebase.js';
+  window.login = async () => {
+    const email = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value;
+    const errEl = document.getElementById('loginError');
+    errEl.style.display = 'none';
+    if (!email || !password) {
+      errEl.textContent = 'Completá email y contraseña';
+      errEl.style.display = 'block';
+      return;
+    }
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+      window.location.href = 'admin.html';
+    } catch (error) {
+      errEl.style.display = 'block';
+    }
+  };
+</script>
 </body>
-
 </html>

@@ -1,68 +1,266 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
   <meta charset="UTF-8">
-
-  <title>Salvador Sandwicheria</title>
-<input
-  type="text"
-  id="busqueda"
-  placeholder="Buscar producto..."
->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Salvador Sanguchería</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="./css/styles.css">
 </head>
-
 <body>
 
-  <h1>🍔 Salvador Sandwicheria</h1>
+<!-- ═══ ADMIN BAR ═══ -->
+<div class="admin-bar" id="adminBar">
+  <div class="admin-bar-inner">
+    <div class="admin-bar-left">
+      <span class="admin-bar-dot"></span>
+      <span class="admin-bar-label">Panel Admin</span>
+      <span class="admin-bar-email" id="adminBarEmail"></span>
+    </div>
+    <div class="admin-bar-right">
+      <a href="admin.html" class="admin-bar-btn">⚙️ Ir al panel</a>
+      <button class="admin-bar-btn" onclick="cerrarSesionAdmin()">Salir</button>
+    </div>
+  </div>
+</div>
 
-  <h2>🛒 Carrito</h2>
-<input
-  type="text"
-  id="clienteNombre"
-  placeholder="Tu nombre"
->
+<!-- ═══ HEADER ═══ -->
+<header class="pub-header" id="pubHeader">
+  <div class="pub-header-inner">
+    <a href="index.html" class="pub-logo">
+      Salvador
+      <small>Sanguchería</small>
+    </a>
+    <div class="header-right">
+      <a href="https://wa.me/5492215376246" target="_blank" rel="noopener" class="btn-social wa" title="WhatsApp">
+        <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+      </a>
+      <a href="https://instagram.com/salvadorsangucheria" target="_blank" rel="noopener" class="btn-social ig" title="Instagram">
+        <svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+      </a>
+      <div class="header-sep"></div>
+      <button class="btn-carrito-header" id="btnAbrirCarrito">
+        <svg viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+        Mi pedido
+        <span class="carrito-badge" id="badge-cantidad">0</span>
+      </button>
+    </div>
+  </div>
+</header>
 
-<br><br>
+<!-- ═══ HERO ═══ -->
+<section class="hero">
+  <div class="hero-inner">
+    <div class="hero-text">
+      <div class="hero-chip">🥖 Pedidos online · Retiro y delivery</div>
+      <h1>Sánguches de<br><em>verdad,</em> hechos<br>con amor</h1>
+      <p class="hero-sub">Elegí lo que querés, armá tu pedido y lo coordinamos por WhatsApp.</p>
+      <div class="hero-pills">
+        <span class="hero-pill">🛵 Delivery disponible</span>
+        <span class="hero-pill">🏪 Retiro en local</span>
+        <span class="hero-pill">💬 Pedido por WhatsApp</span>
+      </div>
+      <div class="hero-stats" id="heroDeco"></div>
+      <div class="search-wrap">
+        <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" id="busqueda" placeholder="Buscar en el menú...">
+      </div>
+    </div>
+  </div>
+</section>
 
-<input
-  type="text"
-  id="clienteTelefono"
-  placeholder="Tu teléfono"
->
+<!-- ═══ BANNER OFERTA ═══ -->
+<div class="oferta-banner" id="ofertaBanner">
+  🔥 Hay productos en oferta hoy — ¡aprovechalos antes de que se acaben!
+</div>
 
-<br><br>
+<!-- ═══ PROMOCIONES ═══ -->
+<section class="promociones-section" id="promociones">
+  <div class="promociones-inner">
+    <h2 class="promociones-title">🔥 Ofertas del día</h2>
+    <div class="promociones-grid" id="promociones-container"></div>
+  </div>
+</section>
 
-<input
-  type="text"
-  id="clienteDireccion"
-  placeholder="Dirección"
->
+<!-- ═══ CATEGORÍAS ═══ -->
+<div class="cats-section" id="catsSection">
+  <div class="cats-inner">
+    <div id="categorias"></div>
+  </div>
+</div>
 
-<br><br>
+<!-- ═══ MENÚ ═══ -->
+<div class="menu-section">
+  <div class="menu-section-header">
+    <span class="menu-section-title" id="menuTitulo">Todos los productos</span>
+    <span class="menu-count" id="menuCount"></span>
+  </div>
+  <div id="menu-container">
+    <div class="estado-menu">
+      <div class="estado-icono">⏳</div>
+      <p>Cargando el menú...</p>
+    </div>
+  </div>
+</div>
 
-<textarea
-  id="clienteObservaciones"
-  placeholder="Observaciones"
-></textarea>
+<!-- ═══ FOOTER ═══ -->
+<footer class="site-footer">
+  <div class="site-footer-inner">
+    <div class="footer-brand">
+      <div class="footer-logo">Salvador Sanguchería</div>
+      <p class="footer-desc">Sánguches hechos con ganas, siempre pensando en ustedes.</p>
+      <div class="footer-social">
+        <a href="https://wa.me/5492215376246" target="_blank" class="footer-social-btn wa">
+          <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+        </a>
+        <a href="https://instagram.com/salvadorsangucheria" target="_blank" class="footer-social-btn ig">
+          <svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+        </a>
+      </div>
+    </div>
+    <div class="footer-col">
+      <h4>Horarios</h4>
+      <p>Lunes a Viernes</p>
+      <p>11:00 — 15:00 hs</p>
+      <p>18:00 — 23:00 hs</p>
+      <p style="margin-top:8px;">Sábados</p>
+      <p>11:00 — 23:00 hs</p>
+    </div>
+    <div class="footer-col">
+      <h4>Contacto</h4>
+      <a href="https://wa.me/5492215376246">📱 WhatsApp</a>
+      <a href="https://instagram.com/salvadorsangucheria">📸 Instagram</a>
+      <a href="admin.html" style="margin-top:12px; opacity:.4; font-size:.72rem;">Acceso admin</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2025 Salvador Sanguchería — Todos los derechos reservados</span>
+  </div>
+</footer>
 
-<br><br>
-  <div id="carrito"></div>
+<!-- ═══ CARRITO OVERLAY + DRAWER ═══ -->
+<div class="carrito-overlay" id="carritoOverlay"></div>
+<aside class="carrito-drawer" id="carritoDrawer" aria-label="Carrito de compras">
+  <div class="drawer-head">
+    <div class="drawer-head-left">
+      <h2>Tu pedido</h2>
+      <span class="drawer-items-count" id="drawer-count">0 items</span>
+    </div>
+    <button class="btn-cerrar-drawer" id="btnCerrarCarrito">✕</button>
+  </div>
+  <div class="drawer-cliente">
+    <div class="drawer-cliente-titulo">Tus datos</div>
+    <input type="text" id="clienteNombre" placeholder="Tu nombre *">
+    <input type="tel" id="clienteTelefono" placeholder="Tu teléfono">
+    <input type="text" id="clienteDireccion" placeholder="Dirección (solo si pedís delivery)">
+    <textarea id="clienteObservaciones" placeholder="Observaciones o aclaraciones..."></textarea>
+  </div>
+  <div class="drawer-items" id="carrito">
+    <div class="drawer-vacio">
+      <div class="drawer-vacio-icono">🛒</div>
+      <p>Tu carrito está vacío</p>
+      <small>Agregá productos del menú</small>
+    </div>
+  </div>
+  <div class="drawer-footer">
+    <div class="drawer-resumen">
+      <div class="resumen-row"><span>Subtotal</span><span id="resumen-subtotal">$0</span></div>
+      <div class="resumen-row"><span>Envío</span><span style="color:var(--gris);">A coordinar</span></div>
+      <div class="resumen-row total"><span>Total</span><span id="total-display">$0</span></div>
+    </div>
+    <button class="btn-pedir-wa" onclick="pedirPorWhatsApp()">
+      <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+      Confirmar pedido por WhatsApp
+    </button>
+    <button class="btn-vaciar-carrito" onclick="vaciarCarrito()">Vaciar carrito</button>
+  </div>
+</aside>
 
-  <hr>
-  <h2>📂 Categorías</h2>
+<!-- ═══ TOAST ═══ -->
+<div class="toast" id="toast"></div>
 
-<div id="categorias"></div>
+<!-- ═══ SCRIPTS INLINE ═══ -->
+<script>
+  (function() {
+    const overlay = document.getElementById('carritoOverlay');
+    const drawer  = document.getElementById('carritoDrawer');
 
-<hr>
+    function abrirCarrito() {
+      overlay.classList.add('abierto');
+      drawer.classList.add('abierto');
+      document.body.style.overflow = 'hidden';
+    }
+    function cerrarCarrito() {
+      overlay.classList.remove('abierto');
+      drawer.classList.remove('abierto');
+      document.body.style.overflow = '';
+    }
 
-  <div id="menu-container"></div>
+    document.getElementById('btnAbrirCarrito').addEventListener('click', abrirCarrito);
+    document.getElementById('btnCerrarCarrito').addEventListener('click', cerrarCarrito);
+    overlay.addEventListener('click', cerrarCarrito);
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') cerrarCarrito(); });
 
-  <script type="module" src="./js/menu.js"></script>
+    window.vaciarCarrito = function() {
+      if (!confirm('¿Vaciar el carrito?')) return;
+      localStorage.setItem('carrito', '[]');
+      if (typeof window._renderCarritoExterno === 'function') window._renderCarritoExterno();
+    };
 
-  <script type="module" src="./js/carrito.js"></script>
+    window.mostrarToast = function(msg, tipo) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.className = 'toast visible' + (tipo === 'error' ? ' toast-error' : '');
+      clearTimeout(t._tt);
+      t._tt = setTimeout(() => { t.className = 'toast'; }, 2500);
+    };
+
+    window.sincBadge = function() {
+      const carrito  = JSON.parse(localStorage.getItem('carrito') || '[]');
+      const cantidad = carrito.reduce((s, i) => s + (Number(i.cantidad) || 0), 0);
+      const subtotal = carrito.reduce((s, i) => s + (Number(i.precio) || 0) * (Number(i.cantidad) || 0), 0);
+      const fmt      = v => '$' + v.toLocaleString('es-AR');
+
+      document.getElementById('badge-cantidad').textContent  = cantidad;
+      document.getElementById('drawer-count').textContent    = cantidad + (cantidad === 1 ? ' item' : ' items');
+      document.getElementById('total-display').textContent   = fmt(subtotal);
+      document.getElementById('resumen-subtotal').textContent = fmt(subtotal);
+    };
+
+    window.sincBadge();
+  })();
+</script>
+
+<!-- ═══ FIREBASE AUTH ═══ -->
+<script type="module">
+  import { auth, onAuthStateChanged, signOut } from './js/firebase.js';
+
+  onAuthStateChanged(auth, user => {
+    const bar    = document.getElementById('adminBar');
+    const header = document.getElementById('pubHeader');
+    const cats   = document.getElementById('catsSection');
+
+    if (user) {
+      bar.classList.add('visible');
+      document.getElementById('adminBarEmail').textContent = user.email || '';
+      header.classList.add('con-admin');
+      cats.classList.add('con-admin');
+    } else {
+      bar.classList.remove('visible');
+      header.classList.remove('con-admin');
+      cats.classList.remove('con-admin');
+    }
+  });
+
+  window.cerrarSesionAdmin = async () => {
+    await signOut(auth);
+  };
+</script>
+
+<!-- ═══ MÓDULOS ═══ -->
+<script type="module" src="./js/menu.js"></script>
+<script type="module" src="./js/carrito.js"></script>
 
 </body>
-
 </html>
