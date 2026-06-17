@@ -17,6 +17,10 @@
       <span class="nav-section-label">General</span>
       <a class="activo" onclick="irA('dashboard', this)"><span class="nav-icon">📊</span> Dashboard</a>
       <a onclick="irA('pedidos', this)"><span class="nav-icon">📦</span> Pedidos</a>
+     <span class="nav-section-label">Sitio</span>
+<a onclick="irA('config', this)">
+  <span class="nav-icon">⚙️</span> Configuración
+</a>
       <span class="nav-section-label">Catálogo</span>
       <a onclick="irA('productos', this)"><span class="nav-icon">🥖</span> Productos</a>
       <span class="nav-section-label">Clientes</span>
@@ -115,6 +119,60 @@
           <div id="lista-clientes"><p style="color:var(--gris); font-size:.85rem; text-align:center; padding:40px 0;">Sin clientes aún</p></div>
         </div>
       </div>
+      <!-- ─── CONFIGURACIÓN ─── -->
+<div id="sec-config" class="admin-seccion">
+  <div class="admin-card">
+    <div class="admin-card-header">
+      <span class="admin-card-title">Configuración del sitio</span>
+    </div>
+    <div class="form-productos">
+      <div class="form-campo form-full">
+        <label>Título del hero</label>
+        <input type="text" id="cfg-heroTitle" placeholder="Sánguches de verdad...">
+      </div>
+      <div class="form-campo form-full">
+        <label>Subtítulo del hero</label>
+        <input type="text" id="cfg-heroSubtitle" placeholder="Elegí lo que querés...">
+      </div>
+      <div class="form-campo form-full">
+        <label>Texto del chip</label>
+        <input type="text" id="cfg-heroChipText" placeholder="🥖 Pedidos online...">
+      </div>
+      <div class="form-campo form-full">
+        <label>Imagen de fondo del hero (URL)</label>
+        <input type="url" id="cfg-heroImageURL" placeholder="https://...">
+      </div>
+      <div class="form-campo form-full">
+        <label>Texto del banner de ofertas</label>
+        <input type="text" id="cfg-promoBannerText" placeholder="🔥 Hay productos en oferta...">
+      </div>
+      <div class="form-campo form-full">
+        <label>Descripción del footer</label>
+        <textarea id="cfg-footerDesc" rows="2"></textarea>
+      </div>
+      <div class="form-campo">
+        <label>WhatsApp</label>
+        <input type="text" id="cfg-contactPhone" placeholder="5492215376246">
+      </div>
+      <div class="form-campo">
+        <label>Instagram (usuario)</label>
+        <input type="text" id="cfg-contactInstagram" placeholder="salvadorsangucheria">
+      </div>
+      <div class="form-campo">
+        <label>Horarios L-V</label>
+        <input type="text" id="cfg-horariosLunesViernes" placeholder="11:00 — 15:00 hs...">
+      </div>
+      <div class="form-campo">
+        <label>Horarios Sábados</label>
+        <input type="text" id="cfg-horariosSabados" placeholder="11:00 — 23:00 hs">
+      </div>
+    </div>
+    <div style="margin-top:16px;">
+      <button class="btn btn-primary" onclick="guardarConfiguracion()">💾 Guardar cambios</button>
+      <span id="cfg-status" style="margin-left:12px; font-size:.82rem; color:var(--mostaza);"></span>
+    </div>
+  </div>
+</div>
     </div>
   </div>
 </div>

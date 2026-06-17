@@ -53,9 +53,9 @@
 <section class="hero">
   <div class="hero-inner">
     <div class="hero-text">
-      <div class="hero-chip">🥖 Pedidos online · Retiro y delivery</div>
-      <h1>Sánguches de<br><em>verdad,</em> hechos<br>con amor</h1>
-      <p class="hero-sub">Elegí lo que querés, armá tu pedido y lo coordinamos por WhatsApp.</p>
+      <div class="hero-chip" data-config="heroChipText">🥖 Pedidos online · Retiro y delivery</div>
+<h1 data-config="heroTitle">Sánguches de<br><em>verdad,</em> hechos<br>con amor</h1>
+<p class="hero-sub" data-config="heroSubtitle">Elegí lo que querés, armá tu pedido y lo coordinamos por WhatsApp.</p>
       <div class="hero-pills">
         <span class="hero-pill">🛵 Delivery disponible</span>
         <span class="hero-pill">🏪 Retiro en local</span>
@@ -70,8 +70,7 @@
   </div>
 </section>
 
-<!-- ═══ BANNER OFERTA ═══ -->
-<div class="oferta-banner" id="ofertaBanner">
+<div class="oferta-banner" id="ofertaBanner" data-config="promoBannerText">
   🔥 Hay productos en oferta hoy — ¡aprovechalos antes de que se acaben!
 </div>
 
@@ -109,7 +108,7 @@
   <div class="site-footer-inner">
     <div class="footer-brand">
       <div class="footer-logo">Salvador Sanguchería</div>
-      <p class="footer-desc">Sánguches hechos con ganas, siempre pensando en ustedes.</p>
+      <p class="footer-desc" data-config="footerDesc">Sánguches hechos con ganas, siempre pensando en ustedes.</p>
       <div class="footer-social">
         <a href="https://wa.me/5492215376246" target="_blank" class="footer-social-btn wa">
           <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
@@ -121,11 +120,9 @@
     </div>
     <div class="footer-col">
       <h4>Horarios</h4>
-      <p>Lunes a Viernes</p>
-      <p>11:00 — 15:00 hs</p>
-      <p>18:00 — 23:00 hs</p>
-      <p style="margin-top:8px;">Sábados</p>
-      <p>11:00 — 23:00 hs</p>
+      <p data-config="horariosLunesViernes">11:00 — 15:00 hs / 18:00 — 23:00 hs</p>
+<p style="margin-top:8px;">Sábados</p>
+<p data-config="horariosSabados">11:00 — 23:00 hs</p>
     </div>
     <div class="footer-col">
       <h4>Contacto</h4>
@@ -261,6 +258,70 @@
 <!-- ═══ MÓDULOS ═══ -->
 <script type="module" src="./js/menu.js"></script>
 <script type="module" src="./js/carrito.js"></script>
+<!-- Animaciones de entrada con Intersection Observer -->
+<script>
+  (function() {
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+        }
+      });
+    }, { threshold: 0.1 });
 
+    document.querySelectorAll('.producto, .promo-card, .hero-stat').forEach(el => {
+      observer.observe(el);
+    });
+  })();
+  <!-- ═══ CMS: carga de configuración desde Firestore ═══ -->
+<script type="module">
+  import { db, collection, getDocs } from './js/firebase.js';
+
+  async function aplicarConfiguracion() {
+    try {
+      const snap = await getDocs(collection(db, 'config'));
+      let config = {};
+      snap.forEach(doc => {
+        if (doc.id === 'siteConfig') config = doc.data();
+      });
+
+      // Aplicar textos usando data-config
+      document.querySelectorAll('[data-config]').forEach(el => {
+        const key = el.dataset.config;
+        if (config[key]) {
+          if (key === 'heroTitle') {
+            el.innerHTML = config[key];
+          } else {
+            el.textContent = config[key];
+          }
+        }
+      });
+
+      // Actualizar imagen de fondo del hero
+      if (config.heroImageURL) {
+        document.querySelector('.hero').style.setProperty('--hero-bg', `url('${config.heroImageURL}')`);
+      }
+
+      // Actualizar enlaces de contacto
+      if (config.contactPhone) {
+        const waLinks = document.querySelectorAll('a[href*="wa.me"]');
+        waLinks.forEach(link => {
+          link.href = `https://wa.me/${config.contactPhone}`;
+        });
+      }
+      if (config.contactInstagram) {
+        const igLinks = document.querySelectorAll('a[href*="instagram.com"]');
+        igLinks.forEach(link => {
+          link.href = `https://instagram.com/${config.contactInstagram}`;
+        });
+      }
+    } catch (err) {
+      console.error('Error cargando configuración del sitio:', err);
+    }
+  }
+
+  aplicarConfiguracion();
+</script>
+</script>
 </body>
 </html>

@@ -1,4 +1,4 @@
-import { db, storage, ref, uploadBytes, getDownloadURL, collection, addDoc, getDocs, deleteDoc, updateDoc, doc } from './firebase.js';
+import { db, storage, ref, uploadBytes, getDownloadURL, collection, addDoc, getDocs, deleteDoc, updateDoc, setDoc, doc } from './firebase.js';
 import { formatPrice }  from './utils/format.js';
 import { escapeHTML }   from './utils/escapeHTML.js';
 import { $id }         from './utils/dom.js';
@@ -370,6 +370,65 @@ function enviarPromo(telefono) {
 }
 
 $id('buscar-cliente')?.addEventListener('input', e => cargarClientes(e.target.value));
+// ══════════════════════════════════════
+//  CONFIGURACIÓN DEL SITIO (CMS)
+// ══════════════════════════════════════
+const CONFIG_DOC_ID = 'siteConfig';
+
+// Cargar configuración actual en los campos
+async function cargarConfiguracion() {
+  try {
+    const docSnap = await getDocs(collection(db, 'config'));
+    let data = {};
+    docSnap.forEach(doc => {
+      if (doc.id === CONFIG_DOC_ID) data = doc.data();
+    });
+
+    // Rellenar campos
+    document.getElementById('cfg-heroTitle').value       = data.heroTitle || '';
+    document.getElementById('cfg-heroSubtitle').value    = data.heroSubtitle || '';
+    document.getElementById('cfg-heroChipText').value    = data.heroChipText || '';
+    document.getElementById('cfg-heroImageURL').value    = data.heroImageURL || '';
+    document.getElementById('cfg-promoBannerText').value = data.promoBannerText || '';
+    document.getElementById('cfg-footerDesc').value      = data.footerDesc || '';
+    document.getElementById('cfg-contactPhone').value    = data.contactPhone || '';
+    document.getElementById('cfg-contactInstagram').value= data.contactInstagram || '';
+    document.getElementById('cfg-horariosLunesViernes').value = data.horariosLunesViernes || '';
+    document.getElementById('cfg-horariosSabados').value = data.horariosSabados || '';
+  } catch (err) {
+    console.error('Error cargando configuración:', err);
+  }
+}
+
+// Guardar configuración
+window.guardarConfiguracion = async () => {
+  const data = {
+    heroTitle:       document.getElementById('cfg-heroTitle').value.trim(),
+    heroSubtitle:    document.getElementById('cfg-heroSubtitle').value.trim(),
+    heroChipText:    document.getElementById('cfg-heroChipText').value.trim(),
+    heroImageURL:    document.getElementById('cfg-heroImageURL').value.trim(),
+    promoBannerText: document.getElementById('cfg-promoBannerText').value.trim(),
+    footerDesc:      document.getElementById('cfg-footerDesc').value.trim(),
+    contactPhone:    document.getElementById('cfg-contactPhone').value.trim(),
+    contactInstagram:document.getElementById('cfg-contactInstagram').value.trim(),
+    horariosLunesViernes: document.getElementById('cfg-horariosLunesViernes').value.trim(),
+    horariosSabados: document.getElementById('cfg-horariosSabados').value.trim(),
+  };
+
+  try {
+    // Usamos setDoc con merge:true para crear o actualizar sin error
+    const docRef = doc(db, 'config', 'siteConfig');
+    await setDoc(docRef, data, { merge: true });
+    document.getElementById('cfg-status').textContent = '✓ Configuración guardada';
+    setTimeout(() => document.getElementById('cfg-status').textContent = '', 2500);
+  } catch (err) {
+    console.error('Error guardando configuración:', err);
+    toast('Error al guardar configuración', 'error');
+  }
+};
+
+// Cargar configuración al iniciar el panel (agregar al init)
+cargarConfiguracion();
 
 // ═══ INIT ═══
 cargarProductos();
