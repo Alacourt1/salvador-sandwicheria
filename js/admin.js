@@ -69,10 +69,12 @@ window.agregarProducto = async () => {
   const precio      = numVal('precio');
   const descuento   = numVal('descuento');
   const oferta      = checked('oferta');
+  const precioDocena = numVal('precioDocena');
   
   const fileInput = document.getElementById('imagenFile');
   const archivo = fileInput?.files[0] || null;
   let imagenURL = val('imagenURL');
+
 
   if (archivo) {
     try {
@@ -95,8 +97,9 @@ window.agregarProducto = async () => {
       precio, descuento, oferta,
       disponible: true,
       imagenURL: imagenURL || '',
+      precioDocena: precioDocena > 0 ? precioDocena : null
     });
-    limpiarForm('nombre','categoria','descripcion','precio','descuento','oferta','imagenURL');
+    limpiarForm('nombre','categoria','descripcion','precio','precioDocena','descuento','oferta','imagenURL');
     if (fileInput) fileInput.value = '';
     const preview = document.getElementById('previewImagen');
     if (preview) preview.style.display = 'none';
@@ -159,6 +162,10 @@ function editarProducto(id, datos) {
         <div class="form-campo"><label>Precio ($)</label><input id="_e_precio" type="number" value="${datos.precio||0}" min="0"></div>
         <div class="form-campo"><label>Descuento (%)</label><input id="_e_descuento" type="number" value="${datos.descuento||0}" min="0" max="99"></div>
       </div>
+      <div class="form-campo">
+  <label>Precio por docena ($)</label>
+  <input id="_e_precioDocena" type="number" value="${datos.precioDocena||0}" min="0">
+</div>
       <div class="form-campo"><label>URL de imagen</label><input id="_e_imagen" type="url" value="${escapeHTML(datos.imagenURL||'')}" placeholder="https://..."></div>
       <div style="display:flex;flex-direction:column;gap:8px;padding:6px 0;">
         <label style="display:flex;align-items:center;gap:8px;font-size:.84rem;color:var(--gris-l);cursor:pointer;"><input type="checkbox" id="_e_oferta" ${datos.oferta ? 'checked' : ''}> En oferta</label>
@@ -172,8 +179,9 @@ function editarProducto(id, datos) {
     const imagenURL = $id('_e_imagen')?.value.trim() || '';
     const oferta = $id('_e_oferta')?.checked ?? false;
     const disponible = $id('_e_disponible')?.checked ?? true;
+    const precioDocena = Number($id('_e_precioDocena')?.value) || 0;
     if (!nombre || !categoria || !precio) { toast('Completá nombre, categoría y precio', 'error'); return false; }
-    updateDoc(doc(db, 'productos', id), { nombre, categoria, descripcion, precio, descuento, oferta, disponible, imagenURL })
+    updateDoc(doc(db, 'productos', id), { nombre, categoria, descripcion, precio, descuento, oferta, disponible, imagenURL, precioDocena: precioDocena > 0 ? precioDocena : null })
       .then(() => { toast('✓ Producto actualizado'); cargarProductos(); })
       .catch(err => { console.error(err); toast('Error al guardar', 'error'); });
     return true;
@@ -253,7 +261,8 @@ async function cargarPedidos() {
           <div class="pedido-total">$${formatPrice(pedido.total||0)}</div>
           <select class="select-estado" data-id="${id}">
             ${['pendiente','preparando','enviado','entregado','cancelado'].map(e => `<option value="${e}" ${pedido.estado===e?'selected':''}>${ {pendiente:'Pendiente',preparando:'Preparando',enviado:'Enviado',entregado:'Entregado',cancelado:'Cancelado'}[e] }</option>`).join('')}
-          </select>
+         </select>
+<button class="btn btn-danger btn-sm" style="margin-left:8px;" onclick="window.eliminarPedido('${id}')">🗑️</button>
         </div>`;
 
       card.querySelector('.select-estado').addEventListener('change', async (e) => {
@@ -429,7 +438,17 @@ window.guardarConfiguracion = async () => {
 
 // Cargar configuración al iniciar el panel (agregar al init)
 cargarConfiguracion();
-
+window.eliminarPedido = async (id) => {
+  if (!confirm('¿Eliminar este pedido permanentemente?')) return;
+  try {
+    await deleteDoc(doc(db, 'pedidos', id));
+    toast('✓ Pedido eliminado');
+    cargarPedidos();
+  } catch (err) {
+    console.error(err);
+    toast('Error al eliminar pedido', 'error');
+  }
+};
 // ═══ INIT ═══
 cargarProductos();
 cargarPedidos();

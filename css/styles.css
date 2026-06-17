@@ -904,3 +904,193 @@ body {
   .form-productos { grid-template-columns: 1fr; }
   .stats-grid { grid-template-columns: 1fr 1fr; }
 }
+/* ══════════════════════════════════════
+   MEJORAS VISUALES
+══════════════════════════════════════ */
+
+/* ── CURSOR PERSONALIZADO ── */
+.custom-cursor {
+  position: fixed;
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--mostaza);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9999;
+  transition: width 0.2s, height 0.2s, background 0.2s;
+  transform: translate(-10px, -10px);
+}
+.custom-cursor.hover {
+  width: 30px;
+  height: 30px;
+  background: rgba(232,168,32,0.15);
+  border-color: transparent;
+}
+
+/* ── PARALLAX MULTICAPA (hero) ── */
+.hero-parallax-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+.hero-parallax-bg {
+  background: radial-gradient(circle at 80% 20%, rgba(232,168,32,0.1) 0%, transparent 50%);
+}
+.hero-parallax-mid {
+  background: repeating-linear-gradient(45deg, transparent, transparent 5px, rgba(255,255,255,0.02) 5px, rgba(255,255,255,0.02) 10px);
+}
+.hero-parallax-front {
+  background: radial-gradient(circle at 30% 70%, rgba(255,255,255,0.03) 0%, transparent 40%);
+}
+
+/* ── SLIDER DE PRODUCTOS DESTACADOS ── */
+.featured-slider {
+  position: relative;
+  width: 280px;
+  max-width: 100%;
+  overflow: hidden;
+  border-radius: var(--radio-lg);
+  background: rgba(0,0,0,0.4);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255,255,255,0.08);
+  align-self: center;
+}
+.featured-track {
+  display: flex;
+  transition: transform 0.4s ease;
+}
+.featured-card {
+  min-width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 16px;
+  box-sizing: border-box;
+}
+.featured-card img {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  border-radius: var(--radio);
+  margin-bottom: 10px;
+}
+.featured-info h3 {
+  font-size: 0.95rem;
+  color: var(--crema);
+  margin: 0 0 4px;
+  text-align: center;
+}
+.featured-info span {
+  font-family: 'Playfair Display', serif;
+  color: var(--mostaza);
+  font-size: 1.2rem;
+  font-weight: 700;
+}
+.featured-controls button {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(0,0,0,0.6);
+  color: var(--crema);
+  border: none;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.2s;
+  line-height: 1;
+}
+.featured-controls button:hover {
+  background: rgba(232,168,32,0.8);
+}
+.featured-prev { left: 6px; }
+.featured-next { right: 6px; }
+
+/* ── MICROINTERACCIONES (brillo en cards, botón) ── */
+.producto {
+  position: relative;
+  overflow: hidden;
+}
+.producto::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(45deg, transparent 40%, rgba(232,168,32,0.08) 50%, transparent 60%);
+  transform: rotate(45deg) translateX(-100%);
+  transition: transform 0.6s;
+  pointer-events: none;
+}
+.producto:hover::after {
+  transform: rotate(45deg) translateX(100%);
+}
+.btn-agregar:active {
+  transform: scale(0.95);
+  transition: transform 0.1s;
+}
+
+/* ── FLYING PRODUCT ── */
+.flying-product {
+  position: fixed;
+  pointer-events: none;
+  z-index: 10000;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+/* ── MENÚ MOBILE ── */
+.mobile-menu-btn {
+  display: none;
+  position: fixed;
+  top: 10px;
+  left: 10px;
+  z-index: 250;
+  background: var(--mostaza);
+  color: var(--negro);
+  border: none;
+  padding: 10px 14px;
+  border-radius: var(--radio-sm);
+  font-weight: 700;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+.sidebar-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  z-index: 230;
+}
+@media (max-width: 768px) {
+  .mobile-menu-btn {
+    display: block;
+  }
+  .admin-sidebar {
+    position: fixed;
+    left: -240px;
+    top: 0;
+    bottom: 0;
+    width: 240px;
+    z-index: 240;
+    transition: left 0.3s ease;
+    display: flex !important;
+  }
+  .admin-sidebar.open {
+    left: 0;
+  }
+  .sidebar-overlay.show {
+    display: block;
+  }
+}
+
+/* ── PRECIO POR DOCENA ── */
+.prod-precio-docena {
+  font-size: 0.72rem;
+  color: var(--gris-l);
+  margin-top: 2px;
+}

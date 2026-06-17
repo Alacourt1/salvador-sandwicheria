@@ -23,6 +23,7 @@ async function cargarProductos() {
           descripcion: data.descripcion || '',
           categoria:   data.categoria   || '',
           precio:      Number(data.precio)    || 0,
+           precioDocena: Number(data.precioDocena) || 0,  // ← nueva línea
           descuento:   Number(data.descuento) || 0,
           oferta:      Boolean(data.oferta),
           disponible:  data.disponible !== false,
@@ -109,6 +110,7 @@ function renderProductos(lista) {
           <div class="prod-precio-wrap">
             ${tieneOferta ? `<div class="prod-precio-original">$${formatPrice(producto.precio)}</div>` : ''}
             <div class="prod-precio-final">$${formatPrice(precioSeguro)}</div>
+            ${producto.precioDocena && producto.precioDocena > 0 ? `<div class="prod-precio-docena">🛒 x12 un. $${formatPrice(producto.precioDocena)}</div>` : ''}
           </div>
           <button class="btn-agregar">+ Agregar</button>
         </div>

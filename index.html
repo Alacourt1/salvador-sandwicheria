@@ -50,12 +50,17 @@
 </header>
 
 <!-- ═══ HERO ═══ -->
-<section class="hero">
+<section class="hero" id="hero">
+  <!-- Capas parallax -->
+  <div class="hero-parallax-layer hero-parallax-bg"></div>
+  <div class="hero-parallax-layer hero-parallax-mid"></div>
+  <div class="hero-parallax-layer hero-parallax-front"></div>
+
   <div class="hero-inner">
     <div class="hero-text">
       <div class="hero-chip" data-config="heroChipText">🥖 Pedidos online · Retiro y delivery</div>
-<h1 data-config="heroTitle">Sánguches de<br><em>verdad,</em> hechos<br>con amor</h1>
-<p class="hero-sub" data-config="heroSubtitle">Elegí lo que querés, armá tu pedido y lo coordinamos por WhatsApp.</p>
+      <h1 data-config="heroTitle">Sánguches de<br><em>verdad,</em> hechos<br>con amor</h1>
+      <p class="hero-sub" data-config="heroSubtitle">Elegí lo que querés, armá tu pedido y lo coordinamos por WhatsApp.</p>
       <div class="hero-pills">
         <span class="hero-pill">🛵 Delivery disponible</span>
         <span class="hero-pill">🏪 Retiro en local</span>
@@ -67,9 +72,19 @@
         <input type="text" id="busqueda" placeholder="Buscar en el menú...">
       </div>
     </div>
+
+    <!-- Slider de productos destacados -->
+    <div class="featured-slider" id="featuredSlider">
+      <div class="featured-track" id="featuredTrack"></div>
+      <div class="featured-controls">
+        <button class="featured-prev" aria-label="Anterior">❮</button>
+        <button class="featured-next" aria-label="Siguiente">❯</button>
+      </div>
+    </div>
   </div>
 </section>
 
+<!-- ═══ BANNER OFERTA ═══ -->
 <div class="oferta-banner" id="ofertaBanner" data-config="promoBannerText">
   🔥 Hay productos en oferta hoy — ¡aprovechalos antes de que se acaben!
 </div>
@@ -121,8 +136,8 @@
     <div class="footer-col">
       <h4>Horarios</h4>
       <p data-config="horariosLunesViernes">11:00 — 15:00 hs / 18:00 — 23:00 hs</p>
-<p style="margin-top:8px;">Sábados</p>
-<p data-config="horariosSabados">11:00 — 23:00 hs</p>
+      <p style="margin-top:8px;">Sábados</p>
+      <p data-config="horariosSabados">11:00 — 23:00 hs</p>
     </div>
     <div class="footer-col">
       <h4>Contacto</h4>
@@ -177,7 +192,13 @@
 <!-- ═══ TOAST ═══ -->
 <div class="toast" id="toast"></div>
 
-<!-- ═══ SCRIPTS INLINE ═══ -->
+<!-- ═══ CURSOR PERSONALIZADO (escritorio) ═══ -->
+<div class="custom-cursor" id="customCursor"></div>
+
+<!-- ═══ ANIMACIÓN DE VUELO ═══ -->
+<div class="flying-product" id="flyingProduct"></div>
+
+<!-- ═══ SCRIPTS INLINE (drawer, toast, badge, auth) ═══ -->
 <script>
   (function() {
     const overlay = document.getElementById('carritoOverlay');
@@ -258,7 +279,8 @@
 <!-- ═══ MÓDULOS ═══ -->
 <script type="module" src="./js/menu.js"></script>
 <script type="module" src="./js/carrito.js"></script>
-<!-- Animaciones de entrada con Intersection Observer -->
+
+<!-- ═══ ANIMACIONES DE ENTRADA ═══ -->
 <script>
   (function() {
     const observer = new IntersectionObserver((entries) => {
@@ -273,7 +295,9 @@
       observer.observe(el);
     });
   })();
-  <!-- ═══ CMS: carga de configuración desde Firestore ═══ -->
+</script>
+
+<!-- ═══ CMS: carga de configuración desde Firestore ═══ -->
 <script type="module">
   import { db, collection, getDocs } from './js/firebase.js';
 
@@ -285,8 +309,16 @@
         if (doc.id === 'siteConfig') config = doc.data();
       });
 
-      // Aplicar textos usando data-config
-      document.querySelectorAll('[data-config]').forEach(el => {
+      console.log('✅ Configuración cargada:', config);
+
+      if (document.readyState === 'loading') {
+        await new Promise(resolve => document.addEventListener('DOMContentLoaded', resolve));
+      }
+
+      const elementos = document.querySelectorAll('[data-config]');
+      console.log('📌 Elementos encontrados:', elementos.length);
+
+      elementos.forEach(el => {
         const key = el.dataset.config;
         if (config[key]) {
           if (key === 'heroTitle') {
@@ -294,34 +326,171 @@
           } else {
             el.textContent = config[key];
           }
+          console.log('✔ Actualizado:', key);
+        } else {
+          console.warn('⚠ Clave no encontrada en Firestore:', key);
         }
       });
 
-      // Actualizar imagen de fondo del hero
       if (config.heroImageURL) {
-        document.querySelector('.hero').style.setProperty('--hero-bg', `url('${config.heroImageURL}')`);
+        const hero = document.querySelector('.hero');
+        if (hero) {
+          hero.style.setProperty('--hero-bg', `url('${config.heroImageURL}')`);
+          console.log('✔ Imagen del hero actualizada');
+        }
       }
 
-      // Actualizar enlaces de contacto
       if (config.contactPhone) {
-        const waLinks = document.querySelectorAll('a[href*="wa.me"]');
-        waLinks.forEach(link => {
+        document.querySelectorAll('a[href*="wa.me"]').forEach(link => {
           link.href = `https://wa.me/${config.contactPhone}`;
         });
+        console.log('✔ Enlaces de WhatsApp actualizados');
       }
+
       if (config.contactInstagram) {
-        const igLinks = document.querySelectorAll('a[href*="instagram.com"]');
-        igLinks.forEach(link => {
+        document.querySelectorAll('a[href*="instagram.com"]').forEach(link => {
           link.href = `https://instagram.com/${config.contactInstagram}`;
         });
+        console.log('✔ Enlaces de Instagram actualizados');
       }
+
     } catch (err) {
-      console.error('Error cargando configuración del sitio:', err);
+      console.error('❌ Error cargando configuración del sitio:', err);
     }
   }
 
   aplicarConfiguracion();
 </script>
+
+<!-- ═══════════════════════════════════════
+     MEJORAS: cursor, parallax, slider, swipe, vuelo
+═══════════════════════════════════════ -->
+<script type="module">
+  import { db, collection, getDocs } from './js/firebase.js';
+  import { formatPrice } from './utils/format.js';
+  import { escapeHTML } from './utils/escapeHTML.js';
+
+  // ── CURSOR PERSONALIZADO ──
+  const cursor = document.getElementById('customCursor');
+  if (cursor && window.innerWidth > 768) {
+    document.body.style.cursor = 'none';
+    document.addEventListener('mousemove', e => {
+      cursor.style.transform = `translate(${e.clientX - 10}px, ${e.clientY - 10}px)`;
+    });
+    document.querySelectorAll('a, button, .btn-agregar, .ctrl-btn, .btn-carrito-header').forEach(el => {
+      el.addEventListener('mouseenter', () => cursor.classList.add('hover'));
+      el.addEventListener('mouseleave', () => cursor.classList.remove('hover'));
+    });
+  }
+
+  // ── PARALLAX MULTICAPA ──
+  const hero = document.getElementById('hero');
+  const layers = document.querySelectorAll('.hero-parallax-layer');
+  if (hero && layers.length) {
+    window.addEventListener('scroll', () => {
+      const scrollY = window.scrollY;
+      layers.forEach((layer, i) => {
+        const speed = (i + 1) * 0.3;
+        layer.style.transform = `translateY(${scrollY * speed}px)`;
+      });
+    });
+  }
+
+  // ── SLIDER DE DESTACADOS ──
+  async function initFeaturedSlider() {
+    const track = document.getElementById('featuredTrack');
+    if (!track) return;
+    try {
+      const snap = await getDocs(collection(db, 'productos'));
+      const todos = snap.docs.map(doc => ({ id: doc.id, ...doc.data() })).filter(p => p.disponible !== false && p.imagenURL);
+      const destacados = todos.slice(0, 5);
+      if (!destacados.length) {
+        document.getElementById('featuredSlider').style.display = 'none';
+        return;
+      }
+      track.innerHTML = destacados.map(p => {
+        const precio = Number(p.precio) || 0;
+        return `
+        <div class="featured-card">
+          <img src="${p.imagenURL}" alt="${escapeHTML(p.nombre)}" loading="lazy">
+          <div class="featured-info">
+            <h3>${escapeHTML(p.nombre)}</h3>
+            <span>$${formatPrice(precio)}</span>
+          </div>
+        </div>`;
+      }).join('');
+      let index = 0;
+      const cards = track.querySelectorAll('.featured-card');
+      const total = cards.length;
+      const nextBtn = document.querySelector('.featured-next');
+      const prevBtn = document.querySelector('.featured-prev');
+      function show(i) {
+        track.style.transform = `translateX(-${i * 100}%)`;
+      }
+      nextBtn?.addEventListener('click', () => {
+        index = (index + 1) % total;
+        show(index);
+      });
+      prevBtn?.addEventListener('click', () => {
+        index = (index - 1 + total) % total;
+        show(index);
+      });
+      setInterval(() => {
+        index = (index + 1) % total;
+        show(index);
+      }, 4000);
+    } catch (err) {
+      console.error('Error slider destacados:', err);
+    }
+  }
+  initFeaturedSlider();
+
+  // ── SWIPE PARA CERRAR DRAWER ──
+  const drawer = document.getElementById('carritoDrawer');
+  if (drawer) {
+    let startX = 0, started = false;
+    drawer.addEventListener('touchstart', e => {
+      startX = e.touches[0].clientX;
+      started = true;
+    });
+    drawer.addEventListener('touchmove', e => {
+      if (!started) return;
+      const diff = e.touches[0].clientX - startX;
+      if (diff > 50) {
+        document.getElementById('carritoOverlay').classList.remove('abierto');
+        drawer.classList.remove('abierto');
+        document.body.style.overflow = '';
+        started = false;
+      }
+    });
+    drawer.addEventListener('touchend', () => { started = false; });
+  }
+
+  // ── VUELO AL AGREGAR AL CARRITO ──
+  const originalAgregar = window.agregarAlCarrito;
+  window.agregarAlCarrito = function(producto) {
+    originalAgregar(producto);
+    const card = document.querySelector(`.producto button[data-id="${producto.id}"]`)?.closest('.producto');
+    if (!card) return;
+    const imgEl = card.querySelector('.prod-thumb img, .prod-thumb-emoji');
+    const cartBtn = document.getElementById('btnAbrirCarrito');
+    if (!imgEl || !cartBtn) return;
+    const flying = document.getElementById('flyingProduct');
+    const clone = imgEl.cloneNode(true);
+    clone.style.cssText = 'position:absolute;width:60px;height:60px;border-radius:12px;object-fit:cover;transition:transform 0.6s cubic-bezier(0.25,0.8,0.25,1),opacity 0.6s;z-index:9999;pointer-events:none;';
+    const rectImg = imgEl.getBoundingClientRect();
+    const rectCart = cartBtn.getBoundingClientRect();
+    clone.style.left = rectImg.left + rectImg.width/2 - 30 + 'px';
+    clone.style.top = rectImg.top + rectImg.height/2 - 30 + 'px';
+    clone.style.opacity = '1';
+    flying.appendChild(clone);
+    requestAnimationFrame(() => {
+      clone.style.transform = `translate(${rectCart.left + rectCart.width/2 - rectImg.left - rectImg.width/2}px, ${rectCart.top + rectCart.height/2 - rectImg.top - rectImg.height/2}px) scale(0.2)`;
+      clone.style.opacity = '0';
+    });
+    setTimeout(() => clone.remove(), 700);
+  };
 </script>
+
 </body>
 </html>

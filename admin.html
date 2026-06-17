@@ -7,6 +7,8 @@
   <link rel="stylesheet" href="./css/styles.css">
 </head>
 <body>
+  <button class="mobile-menu-btn" id="mobileMenuBtn">☰ Menú</button>
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
 <div class="admin-layout">
   <aside class="admin-sidebar">
     <div class="sidebar-brand">
@@ -77,6 +79,10 @@
             <div class="form-campo"><label>Categoría *</label><input type="text" id="categoria" placeholder="Ej: Sánguches, Lomitos..."></div>
             <div class="form-campo form-full"><label>Descripción</label><input type="text" id="descripcion" placeholder="Ingredientes, tamaño, extras..."></div>
             <div class="form-campo"><label>Precio *</label><input type="number" id="precio" placeholder="0" min="0"></div>
+            <div class="form-campo">
+  <label>Precio por docena ($) <small style="color:var(--gris); font-weight:400;">(opcional)</small></label>
+  <input type="number" id="precioDocena" placeholder="0" min="0">
+</div>
             <div class="form-campo"><label>Descuento (%)</label><input type="number" id="descuento" placeholder="0" min="0" max="99"></div>
             <div class="form-campo form-full">
   <label>Imagen del producto</label>
@@ -199,6 +205,23 @@
       window.location.href = 'login.html';
     }
   };
+</script>
+<script>
+  (function() {
+    const btn = document.getElementById('mobileMenuBtn');
+    const sidebar = document.querySelector('.admin-sidebar');
+    const overlay = document.getElementById('sidebarOverlay');
+    if (btn && sidebar && overlay) {
+      btn.addEventListener('click', () => {
+        sidebar.classList.toggle('open');
+        overlay.classList.toggle('show');
+      });
+      overlay.addEventListener('click', () => {
+        sidebar.classList.remove('open');
+        overlay.classList.remove('show');
+      });
+    }
+  })();
 </script>
 </body>
 </html>
