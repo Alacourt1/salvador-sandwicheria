@@ -40,6 +40,13 @@
         <svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
       </a>
       <div class="header-sep"></div>
+      <button class="btn-user-header" id="btnUserHeader">
+        <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" fill="none" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        <span id="btnUserLabel">Ingresar</span>
+      </button>
+      <button class="btn-user-header" id="btnPuntosHeader" title="Canjea tus puntos">
+  🎁 <span>Puntos</span>
+</button>
       <button class="btn-carrito-header" id="btnAbrirCarrito">
         <svg viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
         Mi pedido
@@ -51,7 +58,6 @@
 
 <!-- ═══ HERO ═══ -->
 <section class="hero" id="hero">
-  <!-- Capas parallax -->
   <div class="hero-parallax-layer hero-parallax-bg"></div>
   <div class="hero-parallax-layer hero-parallax-mid"></div>
   <div class="hero-parallax-layer hero-parallax-front"></div>
@@ -73,7 +79,6 @@
       </div>
     </div>
 
-    <!-- Slider de productos destacados -->
     <div class="featured-slider" id="featuredSlider">
       <div class="featured-track" id="featuredTrack"></div>
       <div class="featured-controls">
@@ -81,6 +86,33 @@
         <button class="featured-next" aria-label="Siguiente">❯</button>
       </div>
     </div>
+  </div>
+</section>
+
+<!-- ═══ SECCIÓN PUNTOS ═══ -->
+<section class="puntos-section" id="puntosSection" style="display: none;">
+  <div class="puntos-inner">
+    <h2 class="puntos-title">🎁 Canjea tus puntos</h2>
+    <div class="puntos-bloqueado" id="puntosBloqueado">
+      <div class="puntos-candado">🔒</div>
+      <p>Registrate o iniciá sesión para acumular puntos y acceder a beneficios exclusivos.</p>
+      <button class="btn btn-primary" id="btnIrLogin">Ingresar / Registrarme</button>
+    </div>
+<div class="puntos-logeado" id="puntosLogeado" style="display:none;">
+  <div class="puntos-resumen">
+    <div class="puntos-stat">
+      <span class="puntos-stat-num" id="puntosTotalGastado">$0</span>
+      <span class="puntos-stat-label">Total gastado</span>
+    </div>
+    <div class="puntos-stat">
+      <span class="puntos-stat-num" id="puntosPuntos">0</span>
+      <span class="puntos-stat-label">Puntos</span>
+    </div>
+  </div>
+  <h3>Línea de recompensas</h3>
+  <div class="timeline" id="timelineRecompensas"></div>
+  <p class="puntos-info">Al alcanzar un umbral, podés canjear tu recompensa. Se abrirá WhatsApp con el mensaje listo.</p>
+</div>
   </div>
 </section>
 
@@ -167,6 +199,10 @@
     <input type="tel" id="clienteTelefono" placeholder="Tu teléfono">
     <input type="text" id="clienteDireccion" placeholder="Dirección (solo si pedís delivery)">
     <textarea id="clienteObservaciones" placeholder="Observaciones o aclaraciones..."></textarea>
+    <div class="historial-pedidos">
+      <button class="btn-historial" id="btnVerHistorial">📋 Ver mis pedidos</button>
+      <div class="historial-lista" id="historialLista" style="display:none;"></div>
+    </div>
   </div>
   <div class="drawer-items" id="carrito">
     <div class="drawer-vacio">
@@ -250,16 +286,19 @@
   })();
 </script>
 
+
 <!-- ═══ FIREBASE AUTH ═══ -->
 <script type="module">
   import { auth, onAuthStateChanged, signOut } from './js/firebase.js';
+
+  const ADMIN_EMAIL = 'agustinsalvador@gmail.com'; 
 
   onAuthStateChanged(auth, user => {
     const bar    = document.getElementById('adminBar');
     const header = document.getElementById('pubHeader');
     const cats   = document.getElementById('catsSection');
 
-    if (user) {
+    if (user && user.email === ADMIN_EMAIL) {
       bar.classList.add('visible');
       document.getElementById('adminBarEmail').textContent = user.email || '';
       header.classList.add('con-admin');
@@ -309,15 +348,11 @@
         if (doc.id === 'siteConfig') config = doc.data();
       });
 
-      console.log('✅ Configuración cargada:', config);
-
       if (document.readyState === 'loading') {
         await new Promise(resolve => document.addEventListener('DOMContentLoaded', resolve));
       }
 
       const elementos = document.querySelectorAll('[data-config]');
-      console.log('📌 Elementos encontrados:', elementos.length);
-
       elementos.forEach(el => {
         const key = el.dataset.config;
         if (config[key]) {
@@ -326,9 +361,6 @@
           } else {
             el.textContent = config[key];
           }
-          console.log('✔ Actualizado:', key);
-        } else {
-          console.warn('⚠ Clave no encontrada en Firestore:', key);
         }
       });
 
@@ -336,7 +368,6 @@
         const hero = document.querySelector('.hero');
         if (hero) {
           hero.style.setProperty('--hero-bg', `url('${config.heroImageURL}')`);
-          console.log('✔ Imagen del hero actualizada');
         }
       }
 
@@ -344,18 +375,16 @@
         document.querySelectorAll('a[href*="wa.me"]').forEach(link => {
           link.href = `https://wa.me/${config.contactPhone}`;
         });
-        console.log('✔ Enlaces de WhatsApp actualizados');
       }
 
       if (config.contactInstagram) {
         document.querySelectorAll('a[href*="instagram.com"]').forEach(link => {
           link.href = `https://instagram.com/${config.contactInstagram}`;
         });
-        console.log('✔ Enlaces de Instagram actualizados');
       }
 
     } catch (err) {
-      console.error('❌ Error cargando configuración del sitio:', err);
+      console.error('Error cargando configuración del sitio:', err);
     }
   }
 
@@ -492,5 +521,230 @@
   };
 </script>
 
+<!-- ═══ MODAL LOGIN / REGISTRO ═══ -->
+<div class="modal-auth-overlay" id="modalAuthOverlay">
+  <div class="modal-auth-card">
+    <button class="modal-auth-close" id="modalAuthClose">✕</button>
+    <div class="auth-tabs">
+      <button class="auth-tab active" data-tab="login">Iniciar sesión</button>
+      <button class="auth-tab" data-tab="register">Registrarse</button>
+    </div>
+    <form id="loginForm" class="auth-form active">
+      <div class="form-campo">
+        <label>Email</label>
+        <input type="email" id="loginEmail" required>
+      </div>
+      <div class="form-campo">
+        <label>Contraseña</label>
+        <input type="password" id="loginPassword" required>
+      </div>
+      <div class="auth-error" id="loginError"></div>
+      <button type="submit" class="btn btn-primary" style="width:100%;">Ingresar</button>
+    </form>
+    <form id="registerForm" class="auth-form">
+      <div class="form-campo">
+        <label>Email</label>
+        <input type="email" id="registerEmail" required>
+      </div>
+      <div class="form-campo">
+        <label>Contraseña</label>
+        <input type="password" id="registerPassword" required minlength="6">
+      </div>
+      <div class="auth-error" id="registerError"></div>
+      <button type="submit" class="btn btn-primary" style="width:100%;">Registrarse</button>
+    </form>
+  </div>
+</div>
+
+<!-- ═══ SCRIPT DE AUTENTICACIÓN, PUNTOS E HISTORIAL ═══ -->
+<script type="module">
+  import { auth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut, db, collection, getDocs, updateDoc, doc, setDoc } from './js/firebase.js';
+
+  // ── Referencias ──
+  const btnUser = document.getElementById('btnUserHeader');
+  const btnUserLabel = document.getElementById('btnUserLabel');
+  const modalOverlay = document.getElementById('modalAuthOverlay');
+  const modalClose = document.getElementById('modalAuthClose');
+  const loginForm = document.getElementById('loginForm');
+  const registerForm = document.getElementById('registerForm');
+  const puntosBloqueado = document.getElementById('puntosBloqueado');
+  const puntosLogeado = document.getElementById('puntosLogeado');
+  const btnIrLogin = document.getElementById('btnIrLogin');
+  let usuarioActual = null;
+
+  // ── Modal tabs ──
+  document.querySelectorAll('.auth-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.auth-form').forEach(f => f.classList.remove('active'));
+      tab.classList.add('active');
+      document.getElementById(tab.dataset.tab + 'Form').classList.add('active');
+    });
+  });
+
+  // ── Abrir/cerrar modal ──
+  btnUser.addEventListener('click', () => modalOverlay.classList.add('show'));
+  modalClose.addEventListener('click', () => modalOverlay.classList.remove('show'));
+  btnIrLogin.addEventListener('click', () => modalOverlay.classList.add('show'));
+
+  // ── Login ──
+  loginForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const email = document.getElementById('loginEmail').value;
+    const password = document.getElementById('loginPassword').value;
+    const errorEl = document.getElementById('loginError');
+    errorEl.textContent = '';
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+      modalOverlay.classList.remove('show');
+    } catch (err) {
+      errorEl.textContent = 'Error: ' + err.message;
+    }
+  });
+
+  // ── Registro ──
+  registerForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const email = document.getElementById('registerEmail').value;
+    const password = document.getElementById('registerPassword').value;
+    const errorEl = document.getElementById('registerError');
+    errorEl.textContent = '';
+    try {
+      await createUserWithEmailAndPassword(auth, email, password);
+      modalOverlay.classList.remove('show');
+    } catch (err) {
+      errorEl.textContent = 'Error: ' + err.message;
+    }
+  });
+
+  // ── Estado de autenticación ──
+  onAuthStateChanged(auth, async (user) => {
+    usuarioActual = user;
+    if (user) {
+      btnUserLabel.textContent = user.email;
+      puntosBloqueado.style.display = 'none';
+      puntosLogeado.style.display = 'block';
+      cargarDatosPuntos(user.uid);
+        document.getElementById('puntosSection').style.display = 'block';
+    } else {
+      btnUserLabel.textContent = 'Ingresar';
+      puntosBloqueado.style.display = 'block';
+      puntosLogeado.style.display = 'none';
+        document.getElementById('puntosSection').style.display = 'none';
+    }
+  });
+
+  // ── Cargar puntos y recompensas ──
+async function cargarDatosPuntos(uid) {
+  const userDocRef = doc(db, 'usuarios', uid);
+  let userData;
+  const snap = await getDocs(collection(db, 'usuarios'));
+  snap.forEach(d => { if (d.id === uid) userData = d.data(); });
+  if (!userData) {
+    userData = { dineroAcumulado: 0, puntos: 0 };
+    await setDoc(userDocRef, userData);
+  }
+
+  // Actualizar resumen de puntos
+  document.getElementById('puntosTotalGastado').textContent = '$' + (userData.dineroAcumulado || 0).toLocaleString('es-AR');
+  document.getElementById('puntosPuntos').textContent = userData.puntos || 0;
+
+  // Cargar recompensas ordenadas por umbral de puntos
+  const recSnap = await getDocs(collection(db, 'recompensas'));
+  const recompensas = [];
+  recSnap.forEach(d => recompensas.push({ id: d.id, ...d.data() }));
+  recompensas.sort((a, b) => a.umbralPuntos - b.umbralPuntos);
+
+  const timeline = document.getElementById('timelineRecompensas');
+  if (!timeline) return;
+
+  const puntosUsuario = userData.puntos || 0;
+
+  // Dibujar línea de tiempo
+  timeline.innerHTML = recompensas.map(r => {
+    const alcanzada = puntosUsuario >= r.umbralPuntos;
+    return `
+      <div class="timeline-item ${alcanzada ? 'alcanzado' : ''}">
+        <h4>${r.descripcion}</h4>
+        <p><span class="timeline-puntos">${r.umbralPuntos} pts</span> ${alcanzada ? '✅ Alcanzado' : '🔒 Te faltan ' + (r.umbralPuntos - puntosUsuario) + ' pts'}</p>
+        ${alcanzada ? `<button class="recompensa-btn">Canjear</button>` : ''}
+      </div>`;
+  }).join('');
+
+  // Eventos de canje
+  timeline.querySelectorAll('.recompensa-btn').forEach((btn, i) => {
+    btn.addEventListener('click', async () => {
+      const r = recompensas[i];
+      if (!confirm(`¿Canjear "${r.descripcion}"?`)) return;
+      // Restar los puntos canjeados (no todo a cero, si hay excedente lo mantenemos)
+      const nuevosPuntos = puntosUsuario - r.umbralPuntos;
+      await updateDoc(userDocRef, { puntos: nuevosPuntos >= 0 ? nuevosPuntos : 0 });
+      window.open(`https://wa.me/5492215376246?text=${encodeURIComponent(r.mensaje)}`, '_blank');
+      cargarDatosPuntos(uid); // refrescar
+    });
+  });
+}
+
+  // ── Actualizar acumulado al hacer pedido ──
+  const originalPedir = window.pedirPorWhatsApp;
+  window.pedirPorWhatsApp = async function() {
+    if (!usuarioActual) {
+      return originalPedir();
+    }
+    await originalPedir();
+    const carrito = JSON.parse(localStorage.getItem('carrito') || '[]');
+    const total = carrito.reduce((s, i) => s + i.precio * i.cantidad, 0);
+  const puntos = Math.floor(total / 10000) * 100;
+    const userDocRef = doc(db, 'usuarios', usuarioActual.uid);
+    const snap = await getDocs(collection(db, 'usuarios'));
+    let userData = { dineroAcumulado: 0, puntos: 0 };
+    snap.forEach(d => { if (d.id === usuarioActual.uid) userData = d.data(); });
+    await setDoc(userDocRef, {
+      dineroAcumulado: (userData.dineroAcumulado || 0) + total,
+      puntos: (userData.puntos || 0) + puntos
+    }, { merge: true });
+  };
+
+  // ── Historial de pedidos ──
+  document.getElementById('btnVerHistorial').addEventListener('click', async () => {
+    const lista = document.getElementById('historialLista');
+    lista.style.display = lista.style.display === 'none' ? 'block' : 'none';
+    if (lista.style.display === 'block' && usuarioActual) {
+      const snap = await getDocs(collection(db, 'pedidos'));
+      const pedidos = [];
+      snap.forEach(d => { if (d.data().uid === usuarioActual.uid) pedidos.push({ id: d.id, ...d.data() }); });
+      pedidos.sort((a,b) => new Date(b.fecha) - new Date(a.fecha));
+      lista.innerHTML = pedidos.map(p => `
+        <div class="pedido-historial">
+          <div>${new Date(p.fecha).toLocaleDateString()} - Total: $${p.total.toLocaleString('es-AR')}</div>
+          <div>${p.productos.map(pr => pr.nombre).join(', ')}</div>
+          <button class="repetir-pedido">Repetir</button>
+        </div>
+      `).join('');
+      lista.querySelectorAll('.repetir-pedido').forEach((btn, i) => {
+        btn.addEventListener('click', () => {
+          const pedido = pedidos[i];
+          localStorage.setItem('carrito', JSON.stringify(pedido.productos.map(p => ({...p, cantidad: p.cantidad || 1}))));
+          window._renderCarritoExterno();
+          document.getElementById('btnAbrirCarrito').click();
+        });
+      });
+    }
+  });
+</script>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const btnPuntos = document.getElementById('btnPuntosHeader');
+    if (btnPuntos) {
+      btnPuntos.addEventListener('click', () => {
+        const sec = document.getElementById('puntosSection');
+        if (sec) {
+          sec.style.display = 'block';
+          sec.scrollIntoView({ behavior: 'smooth' });
+        }
+      });
+    }
+  });
+</script>
 </body>
 </html>

@@ -449,6 +449,80 @@ window.eliminarPedido = async (id) => {
     toast('Error al eliminar pedido', 'error');
   }
 };
+// ══════════════════════════════════════
+//  RECOMPENSAS
+// ══════════════════════════════════════
+
+window.agregarRecompensa = async () => {
+  const umbralPuntos = numVal('rec-umbralPuntos');
+  const descripcion  = val('rec-descripcion');
+  const mensaje      = val('rec-mensaje');
+
+  if (!umbralPuntos || !descripcion) {
+    toast('Completá umbral en puntos y descripción', 'error');
+    return;
+  }
+
+  try {
+    await addDoc(collection(db, 'recompensas'), {
+      umbralPuntos,
+      descripcion,
+      mensaje: mensaje || `Quiero canjear mi recompensa: ${descripcion}`,
+    });
+    limpiarForm('rec-umbralPuntos','rec-descripcion','rec-mensaje');
+    toast('✓ Recompensa agregada');
+    cargarRecompensas();
+  } catch (err) {
+    console.error(err);
+    toast('Error al agregar recompensa', 'error');
+  }
+};
+
+async function cargarRecompensas() {
+  const lista = document.getElementById('lista-recompensas');
+  if (!lista) return;
+
+  try {
+    const snap = await getDocs(collection(db, 'recompensas'));
+    const recompensas = snap.docs
+      .map(doc => ({ id: doc.id, ...doc.data() }))
+      .sort((a, b) => a.umbralPuntos - b.umbralPuntos);
+
+    if (!recompensas.length) {
+      lista.innerHTML = `<p style="color:var(--gris); font-size:.85rem; padding:20px 0;">No hay recompensas configuradas</p>`;
+      return;
+    }
+
+    lista.innerHTML = recompensas.map(r => `
+      <div class="prod-admin-row" style="justify-content:space-between;">
+        <div>
+          <strong>${r.umbralPuntos} pts</strong>
+          <span style="margin-left:12px; color:var(--gris-l);">${r.descripcion}</span>
+        </div>
+        <button class="btn btn-danger btn-sm" onclick="eliminarRecompensa('${r.id}')">🗑️</button>
+      </div>
+    `).join('');
+
+  } catch (err) {
+    console.error(err);
+    lista.innerHTML = `<p style="color:var(--rojo);">Error cargando recompensas</p>`;
+  }
+}
+
+window.eliminarRecompensa = async (id) => {
+  if (!confirm('¿Eliminar esta recompensa?')) return;
+  try {
+    await deleteDoc(doc(db, 'recompensas', id));
+    toast('✓ Recompensa eliminada');
+    cargarRecompensas();
+  } catch (err) {
+    console.error(err);
+    toast('Error al eliminar', 'error');
+  }
+};
+
+// Cargar al iniciar
+cargarRecompensas();
 // ═══ INIT ═══
 cargarProductos();
 cargarPedidos();
