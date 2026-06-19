@@ -23,7 +23,8 @@ async function cargarProductos() {
           descripcion: data.descripcion || '',
           categoria:   data.categoria   || '',
           precio:      Number(data.precio)    || 0,
-           precioDocena: Number(data.precioDocena) || 0,  // ← nueva línea
+          precio3unidades: Number(data.precio3unidades) || 0,
+          precioDocena: Number(data.precioDocena) || 0,
           descuento:   Number(data.descuento) || 0,
           oferta:      Boolean(data.oferta),
           disponible:  data.disponible !== false,
@@ -76,6 +77,7 @@ function aplicarFiltros() {
   renderProductos(lista);
   $id('menuCount').textContent = `${lista.length} producto${lista.length !== 1 ? 's' : ''}`;
 }
+
 function renderProductos(lista) {
   if (!lista.length) {
     mostrarEstado('🔍', 'No encontramos resultados');
@@ -84,9 +86,6 @@ function renderProductos(lista) {
   grid.innerHTML = '';
   const fragment = document.createDocumentFragment();
   lista.forEach(producto => {
-    const tieneOferta  = producto.oferta && producto.descuento > 0;
-    const precioFinal  = tieneOferta ? Math.round(producto.precio * (1 - producto.descuento / 100)) : producto.precio;
-    const precioSeguro = Number(precioFinal) || 0;
     const nombre      = escapeHTML(producto.nombre);
     const descripcion = escapeHTML(producto.descripcion);
     const categoria   = escapeHTML(producto.categoria);
@@ -97,7 +96,7 @@ function renderProductos(lista) {
     card.innerHTML = `
       <div class="prod-thumb">
         ${imagenSrc ? `<img src="${imagenSrc}" alt="${nombre}" loading="lazy">` : `<div class="prod-thumb-emoji">🥖</div>`}
-        ${tieneOferta ? `<div class="prod-oferta-chip">−${producto.descuento}%</div>` : ''}
+        ${producto.oferta && producto.descuento > 0 && producto.precio > 0 ? `<div class="prod-oferta-chip">−${producto.descuento}%</div>` : ''}
       </div>
       <div class="producto-body">
         <div class="prod-cat-label">${categoria}</div>
@@ -105,9 +104,45 @@ function renderProductos(lista) {
         <p class="prod-desc">${descripcion}</p>
         <div class="prod-footer">
           <div class="prod-precio-wrap">
-            ${tieneOferta ? `<div class="prod-precio-original">$${formatPrice(producto.precio)}</div>` : ''}
-            <div class="prod-precio-final">$${formatPrice(precioSeguro)}</div>
-            ${producto.precioDocena && producto.precioDocena > 0 ? `<div class="prod-precio-docena">🛒 x12 un. $${formatPrice(producto.precioDocena)}</div>` : ''}
+            ${(() => {
+              const unit = producto.precio || 0;
+              const trio = producto.precio3unidades || 0;
+              const docena = producto.precioDocena || 0;
+              const tieneOfertaUnit = producto.oferta && producto.descuento > 0 && unit > 0;
+              let mainPrice = 0;
+              let mainLabel = '';
+              let extraLines = '';
+
+              if (trio > 0) {
+                // Precio principal = 3 unidades
+                mainPrice = trio;
+                mainLabel = '/x3 un.';
+                if (unit > 0) {
+                  if (tieneOfertaUnit) extraLines += `<div class="prod-precio-original">$${formatPrice(unit)}</div>`;
+                  extraLines += `<div class="prod-precio-docena">🛒 x1 un. $${formatPrice(unit)}</div>`;
+                }
+                if (docena > 0 && docena !== trio) extraLines += `<div class="prod-precio-docena">🛒 x12 un. $${formatPrice(docena)}</div>`;
+              } else if (docena > 0) {
+                // Precio principal = docena
+                mainPrice = docena;
+                mainLabel = '/x12 un.';
+                if (unit > 0) {
+                  if (tieneOfertaUnit) extraLines += `<div class="prod-precio-original">$${formatPrice(unit)}</div>`;
+                  extraLines += `<div class="prod-precio-docena">🛒 x1 un. $${formatPrice(unit)}</div>`;
+                }
+              } else if (unit > 0) {
+                // Solo unitario
+                mainPrice = tieneOfertaUnit ? Math.round(unit * (1 - producto.descuento / 100)) : unit;
+                mainLabel = '/un.';
+                if (tieneOfertaUnit) extraLines += `<div class="prod-precio-original">$${formatPrice(unit)}</div>`;
+              } else {
+                return `<div class="prod-precio-final" style="font-size:.9rem; color:var(--gris);">Consultar precio</div>`;
+              }
+              return `
+                ${extraLines}
+                <div class="prod-precio-final">$${formatPrice(mainPrice)} <small>${mainLabel}</small></div>
+              `;
+            })()}
           </div>
           <button class="btn-agregar">+ Agregar</button>
         </div>
@@ -116,7 +151,15 @@ function renderProductos(lista) {
       window.agregarAlCarrito({
         id:     producto.id,
         nombre: producto.nombre,
-        precio: precioSeguro,
+        precio: (() => {
+          const unit = producto.precio || 0;
+          const trio = producto.precio3unidades || 0;
+          const docena = producto.precioDocena || 0;
+          if (trio > 0) return trio;
+          if (docena > 0) return docena;
+          if (unit > 0) return producto.oferta && producto.descuento > 0 ? Math.round(unit * (1 - producto.descuento / 100)) : unit;
+          return 0;
+        })(),
         imagen: producto.imagenURL || '',
       });
     });

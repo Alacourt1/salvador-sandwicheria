@@ -1196,3 +1196,58 @@ body {
   color: var(--neon-pink);
   text-shadow: 0 0 10px var(--neon-pink), 0 0 20px var(--neon-pink);
 }
+.prod-precio-tres {
+  font-size: 0.72rem;
+  color: var(--gris-l);
+  margin-top: 2px;
+}
+/* ═══ PWA & MOBILE OPTIMIZATIONS ═══ */
+@media (max-width: 600px) {
+  .hero {
+    min-height: 50vh;
+    padding: 40px 16px 30px;
+  }
+  .hero h1 {
+    font-size: 1.8rem;
+  }
+  #menu-container {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+  .producto {
+    border-radius: 14px;
+  }
+  .producto-body {
+    padding: 14px;
+  }
+  .pub-header-inner {
+    padding: 0 10px;
+  }
+  .puntos-section {
+    padding: 0 16px;
+    margin: 30px auto;
+  }
+  .puntos-resumen {
+    flex-direction: column;
+    gap: 10px;
+  }
+  .drawer-head {
+    padding: 14px 16px;
+  }
+  .drawer-cliente {
+    padding: 12px 16px;
+  }
+  .drawer-items {
+    padding: 10px 16px;
+  }
+  .drawer-footer {
+    padding: 12px 16px 16px;
+  }
+  .btn-agregar {
+    padding: 8px 12px;
+  }
+  .site-footer-inner {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+}

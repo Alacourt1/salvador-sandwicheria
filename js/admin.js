@@ -70,11 +70,11 @@ window.agregarProducto = async () => {
   const descuento   = numVal('descuento');
   const oferta      = checked('oferta');
   const precioDocena = numVal('precioDocena');
+  const precio3unidades = numVal('precio3unidades');
   
   const fileInput = document.getElementById('imagenFile');
   const archivo = fileInput?.files[0] || null;
   let imagenURL = val('imagenURL');
-
 
   if (archivo) {
     try {
@@ -86,10 +86,14 @@ window.agregarProducto = async () => {
     }
   }
 
-  if (!nombre || !categoria || !precio) {
-    toast('Completá nombre, categoría y precio', 'error');
-    return;
-  }
+  if (!nombre || !categoria) {
+  toast('Completá nombre y categoría', 'error');
+  return;
+}
+if (!precio && !precioDocena && !precio3unidades) {
+  toast('Completá al menos un precio (unitario, docena o 3 unidades)', 'error');
+  return;
+}
 
   try {
     await addDoc(collection(db, 'productos'), {
@@ -97,9 +101,10 @@ window.agregarProducto = async () => {
       precio, descuento, oferta,
       disponible: true,
       imagenURL: imagenURL || '',
-      precioDocena: precioDocena > 0 ? precioDocena : null
+      precioDocena: precioDocena > 0 ? precioDocena : null,
+      precio3unidades: precio3unidades > 0 ? precio3unidades : null
     });
-    limpiarForm('nombre','categoria','descripcion','precio','precioDocena','descuento','oferta','imagenURL');
+    limpiarForm('nombre','categoria','descripcion','precio','precioDocena','precio3unidades','descuento','oferta','imagenURL');
     if (fileInput) fileInput.value = '';
     const preview = document.getElementById('previewImagen');
     if (preview) preview.style.display = 'none';
@@ -163,9 +168,13 @@ function editarProducto(id, datos) {
         <div class="form-campo"><label>Descuento (%)</label><input id="_e_descuento" type="number" value="${datos.descuento||0}" min="0" max="99"></div>
       </div>
       <div class="form-campo">
-  <label>Precio por docena ($)</label>
-  <input id="_e_precioDocena" type="number" value="${datos.precioDocena||0}" min="0">
-</div>
+        <label>Precio por docena ($)</label>
+        <input id="_e_precioDocena" type="number" value="${datos.precioDocena||0}" min="0">
+      </div>
+      <div class="form-campo">
+        <label>Precio por 3 unidades ($)</label>
+        <input id="_e_precio3unidades" type="number" value="${datos.precio3unidades||0}" min="0">
+      </div>
       <div class="form-campo"><label>URL de imagen</label><input id="_e_imagen" type="url" value="${escapeHTML(datos.imagenURL||'')}" placeholder="https://..."></div>
       <div style="display:flex;flex-direction:column;gap:8px;padding:6px 0;">
         <label style="display:flex;align-items:center;gap:8px;font-size:.84rem;color:var(--gris-l);cursor:pointer;"><input type="checkbox" id="_e_oferta" ${datos.oferta ? 'checked' : ''}> En oferta</label>
@@ -180,8 +189,14 @@ function editarProducto(id, datos) {
     const oferta = $id('_e_oferta')?.checked ?? false;
     const disponible = $id('_e_disponible')?.checked ?? true;
     const precioDocena = Number($id('_e_precioDocena')?.value) || 0;
-    if (!nombre || !categoria || !precio) { toast('Completá nombre, categoría y precio', 'error'); return false; }
-    updateDoc(doc(db, 'productos', id), { nombre, categoria, descripcion, precio, descuento, oferta, disponible, imagenURL, precioDocena: precioDocena > 0 ? precioDocena : null })
+    const precio3unidades = Number($id('_e_precio3unidades')?.value) || 0;
+    if (!nombre || !categoria) { toast('Completá nombre y categoría', 'error'); return false; }
+if (!precio && !precioDocena && !precio3unidades) { toast('Completá al menos un precio', 'error'); return false; }
+    updateDoc(doc(db, 'productos', id), {
+      nombre, categoria, descripcion, precio, descuento, oferta, disponible, imagenURL,
+      precioDocena: precioDocena > 0 ? precioDocena : null,
+      precio3unidades: precio3unidades > 0 ? precio3unidades : null
+    })
       .then(() => { toast('✓ Producto actualizado'); cargarProductos(); })
       .catch(err => { console.error(err); toast('Error al guardar', 'error'); });
     return true;
@@ -261,8 +276,8 @@ async function cargarPedidos() {
           <div class="pedido-total">$${formatPrice(pedido.total||0)}</div>
           <select class="select-estado" data-id="${id}">
             ${['pendiente','preparando','enviado','entregado','cancelado'].map(e => `<option value="${e}" ${pedido.estado===e?'selected':''}>${ {pendiente:'Pendiente',preparando:'Preparando',enviado:'Enviado',entregado:'Entregado',cancelado:'Cancelado'}[e] }</option>`).join('')}
-         </select>
-<button class="btn btn-danger btn-sm" style="margin-left:8px;" onclick="window.eliminarPedido('${id}')">🗑️</button>
+          </select>
+          <button class="btn btn-danger btn-sm" style="margin-left:8px;" onclick="window.eliminarPedido('${id}')">🗑️</button>
         </div>`;
 
       card.querySelector('.select-estado').addEventListener('change', async (e) => {
@@ -379,12 +394,12 @@ function enviarPromo(telefono) {
 }
 
 $id('buscar-cliente')?.addEventListener('input', e => cargarClientes(e.target.value));
+
 // ══════════════════════════════════════
 //  CONFIGURACIÓN DEL SITIO (CMS)
 // ══════════════════════════════════════
 const CONFIG_DOC_ID = 'siteConfig';
 
-// Cargar configuración actual en los campos
 async function cargarConfiguracion() {
   try {
     const docSnap = await getDocs(collection(db, 'config'));
@@ -393,7 +408,6 @@ async function cargarConfiguracion() {
       if (doc.id === CONFIG_DOC_ID) data = doc.data();
     });
 
-    // Rellenar campos
     document.getElementById('cfg-heroTitle').value       = data.heroTitle || '';
     document.getElementById('cfg-heroSubtitle').value    = data.heroSubtitle || '';
     document.getElementById('cfg-heroChipText').value    = data.heroChipText || '';
@@ -409,7 +423,6 @@ async function cargarConfiguracion() {
   }
 }
 
-// Guardar configuración
 window.guardarConfiguracion = async () => {
   const data = {
     heroTitle:       document.getElementById('cfg-heroTitle').value.trim(),
@@ -425,7 +438,6 @@ window.guardarConfiguracion = async () => {
   };
 
   try {
-    // Usamos setDoc con merge:true para crear o actualizar sin error
     const docRef = doc(db, 'config', 'siteConfig');
     await setDoc(docRef, data, { merge: true });
     document.getElementById('cfg-status').textContent = '✓ Configuración guardada';
@@ -436,8 +448,8 @@ window.guardarConfiguracion = async () => {
   }
 };
 
-// Cargar configuración al iniciar el panel (agregar al init)
 cargarConfiguracion();
+
 window.eliminarPedido = async (id) => {
   if (!confirm('¿Eliminar este pedido permanentemente?')) return;
   try {
@@ -449,6 +461,7 @@ window.eliminarPedido = async (id) => {
     toast('Error al eliminar pedido', 'error');
   }
 };
+
 // ══════════════════════════════════════
 //  RECOMPENSAS
 // ══════════════════════════════════════
@@ -521,8 +534,8 @@ window.eliminarRecompensa = async (id) => {
   }
 };
 
-// Cargar al iniciar
 cargarRecompensas();
+
 // ═══ INIT ═══
 cargarProductos();
 cargarPedidos();
