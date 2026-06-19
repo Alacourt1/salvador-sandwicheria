@@ -76,9 +76,6 @@ function aplicarFiltros() {
   renderProductos(lista);
   $id('menuCount').textContent = `${lista.length} producto${lista.length !== 1 ? 's' : ''}`;
 }
-
-busquedaInput?.addEventListener('input', aplicarFiltros);
-
 function renderProductos(lista) {
   if (!lista.length) {
     mostrarEstado('🔍', 'No encontramos resultados');

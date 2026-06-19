@@ -33,20 +33,16 @@
       <small>Sanguchería</small>
     </a>
     <div class="header-right">
-      <a href="https://wa.me/5492215376246" target="_blank" rel="noopener" class="btn-social wa" title="WhatsApp">
-        <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-      </a>
-      <a href="https://instagram.com/salvadorsangucheria" target="_blank" rel="noopener" class="btn-social ig" title="Instagram">
-        <svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
-      </a>
-      <div class="header-sep"></div>
+      <!-- Login Google -->
       <button class="btn-user-header" id="btnUserHeader">
         <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" fill="none" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
         <span id="btnUserLabel">Ingresar</span>
       </button>
+      <!-- Puntos -->
       <button class="btn-user-header" id="btnPuntosHeader" title="Canjea tus puntos">
-  🎁 <span>Puntos</span>
-</button>
+        🎁 <span>Puntos</span>
+      </button>
+      <!-- Pedido -->
       <button class="btn-carrito-header" id="btnAbrirCarrito">
         <svg viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
         Mi pedido
@@ -55,7 +51,6 @@
     </div>
   </div>
 </header>
-
 <!-- ═══ HERO ═══ -->
 <section class="hero" id="hero">
   <div class="hero-parallax-layer hero-parallax-bg"></div>
@@ -65,7 +60,11 @@
   <div class="hero-inner">
     <div class="hero-text">
       <div class="hero-chip" data-config="heroChipText">🥖 Pedidos online · Retiro y delivery</div>
-      <h1 data-config="heroTitle">Sánguches de<br><em>verdad,</em> hechos<br>con amor</h1>
+      <h1 data-config="heroTitle">
+  <span class="hero-color-yellow">Sánguches de</span><br>
+  <span class="hero-color-blue">verdad,</span>
+  <span class="hero-color-pink">hechos con amor</span>
+</h1>
       <p class="hero-sub" data-config="heroSubtitle">Elegí lo que querés, armá tu pedido y lo coordinamos por WhatsApp.</p>
       <div class="hero-pills">
         <span class="hero-pill">🛵 Delivery disponible</span>
@@ -73,18 +72,6 @@
         <span class="hero-pill">💬 Pedido por WhatsApp</span>
       </div>
       <div class="hero-stats" id="heroDeco"></div>
-      <div class="search-wrap">
-        <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-        <input type="text" id="busqueda" placeholder="Buscar en el menú...">
-      </div>
-    </div>
-
-    <div class="featured-slider" id="featuredSlider">
-      <div class="featured-track" id="featuredTrack"></div>
-      <div class="featured-controls">
-        <button class="featured-prev" aria-label="Anterior">❮</button>
-        <button class="featured-next" aria-label="Siguiente">❯</button>
-      </div>
     </div>
   </div>
 </section>
@@ -313,6 +300,16 @@
   window.cerrarSesionAdmin = async () => {
     await signOut(auth);
   };
+  window.loginGoogle = async () => {
+  const provider = new GoogleAuthProvider();
+  try {
+    const result = await signInWithPopup(auth, provider);
+    window.location.href = 'admin.html';
+  } catch (error) {
+    document.getElementById('loginError').style.display = 'block';
+    document.getElementById('loginError').textContent = 'Error al ingresar con Google.';
+  }
+};
 </script>
 
 <!-- ═══ MÓDULOS ═══ -->
@@ -425,55 +422,6 @@
     });
   }
 
-  // ── SLIDER DE DESTACADOS ──
-  async function initFeaturedSlider() {
-    const track = document.getElementById('featuredTrack');
-    if (!track) return;
-    try {
-      const snap = await getDocs(collection(db, 'productos'));
-      const todos = snap.docs.map(doc => ({ id: doc.id, ...doc.data() })).filter(p => p.disponible !== false && p.imagenURL);
-      const destacados = todos.slice(0, 5);
-      if (!destacados.length) {
-        document.getElementById('featuredSlider').style.display = 'none';
-        return;
-      }
-      track.innerHTML = destacados.map(p => {
-        const precio = Number(p.precio) || 0;
-        return `
-        <div class="featured-card">
-          <img src="${p.imagenURL}" alt="${escapeHTML(p.nombre)}" loading="lazy">
-          <div class="featured-info">
-            <h3>${escapeHTML(p.nombre)}</h3>
-            <span>$${formatPrice(precio)}</span>
-          </div>
-        </div>`;
-      }).join('');
-      let index = 0;
-      const cards = track.querySelectorAll('.featured-card');
-      const total = cards.length;
-      const nextBtn = document.querySelector('.featured-next');
-      const prevBtn = document.querySelector('.featured-prev');
-      function show(i) {
-        track.style.transform = `translateX(-${i * 100}%)`;
-      }
-      nextBtn?.addEventListener('click', () => {
-        index = (index + 1) % total;
-        show(index);
-      });
-      prevBtn?.addEventListener('click', () => {
-        index = (index - 1 + total) % total;
-        show(index);
-      });
-      setInterval(() => {
-        index = (index + 1) % total;
-        show(index);
-      }, 4000);
-    } catch (err) {
-      console.error('Error slider destacados:', err);
-    }
-  }
-  initFeaturedSlider();
-
   // ── SWIPE PARA CERRAR DRAWER ──
   const drawer = document.getElementById('carritoDrawer');
   if (drawer) {
@@ -525,99 +473,43 @@
 <div class="modal-auth-overlay" id="modalAuthOverlay">
   <div class="modal-auth-card">
     <button class="modal-auth-close" id="modalAuthClose">✕</button>
-    <div class="auth-tabs">
-      <button class="auth-tab active" data-tab="login">Iniciar sesión</button>
-      <button class="auth-tab" data-tab="register">Registrarse</button>
-    </div>
-    <form id="loginForm" class="auth-form active">
-      <div class="form-campo">
-        <label>Email</label>
-        <input type="email" id="loginEmail" required>
-      </div>
-      <div class="form-campo">
-        <label>Contraseña</label>
-        <input type="password" id="loginPassword" required>
-      </div>
-      <div class="auth-error" id="loginError"></div>
-      <button type="submit" class="btn btn-primary" style="width:100%;">Ingresar</button>
-    </form>
-    <form id="registerForm" class="auth-form">
-      <div class="form-campo">
-        <label>Email</label>
-        <input type="email" id="registerEmail" required>
-      </div>
-      <div class="form-campo">
-        <label>Contraseña</label>
-        <input type="password" id="registerPassword" required minlength="6">
-      </div>
-      <div class="auth-error" id="registerError"></div>
-      <button type="submit" class="btn btn-primary" style="width:100%;">Registrarse</button>
-    </form>
+    <h3 style="text-align:center; margin-bottom:16px;">Ingresá con Google</h3>
+    <p style="text-align:center; color:var(--gris); font-size:.85rem; margin-bottom:20px;">Registrate o inicia sesión para acceder a puntos y beneficios.</p>
+    <button class="btn-google" onclick="loginWithGoogle()" style="width:100%;">
+      <svg viewBox="0 0 24 24" width="20" height="20" style="margin-right:8px;"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 01-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+      Ingresar con Google
+    </button>
   </div>
 </div>
 
 <!-- ═══ SCRIPT DE AUTENTICACIÓN, PUNTOS E HISTORIAL ═══ -->
 <script type="module">
-  import { auth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut, db, collection, getDocs, updateDoc, doc, setDoc } from './js/firebase.js';
+  import { auth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut, db, collection, getDocs, updateDoc, doc, setDoc } from './js/firebase.js';
 
-  // ── Referencias ──
   const btnUser = document.getElementById('btnUserHeader');
   const btnUserLabel = document.getElementById('btnUserLabel');
   const modalOverlay = document.getElementById('modalAuthOverlay');
   const modalClose = document.getElementById('modalAuthClose');
-  const loginForm = document.getElementById('loginForm');
-  const registerForm = document.getElementById('registerForm');
   const puntosBloqueado = document.getElementById('puntosBloqueado');
   const puntosLogeado = document.getElementById('puntosLogeado');
-  const btnIrLogin = document.getElementById('btnIrLogin');
   let usuarioActual = null;
 
-  // ── Modal tabs ──
-  document.querySelectorAll('.auth-tab').forEach(tab => {
-    tab.addEventListener('click', () => {
-      document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
-      document.querySelectorAll('.auth-form').forEach(f => f.classList.remove('active'));
-      tab.classList.add('active');
-      document.getElementById(tab.dataset.tab + 'Form').classList.add('active');
-    });
-  });
-
-  // ── Abrir/cerrar modal ──
+  // Abrir/cerrar modal
   btnUser.addEventListener('click', () => modalOverlay.classList.add('show'));
   modalClose.addEventListener('click', () => modalOverlay.classList.remove('show'));
-  btnIrLogin.addEventListener('click', () => modalOverlay.classList.add('show'));
 
-  // ── Login ──
-  loginForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const email = document.getElementById('loginEmail').value;
-    const password = document.getElementById('loginPassword').value;
-    const errorEl = document.getElementById('loginError');
-    errorEl.textContent = '';
+  // Login con Google
+  window.loginWithGoogle = async () => {
+    const provider = new GoogleAuthProvider();
     try {
-      await signInWithEmailAndPassword(auth, email, password);
+      await signInWithPopup(auth, provider);
       modalOverlay.classList.remove('show');
-    } catch (err) {
-      errorEl.textContent = 'Error: ' + err.message;
+    } catch (error) {
+      console.error('Error al ingresar con Google:', error);
     }
-  });
+  };
 
-  // ── Registro ──
-  registerForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const email = document.getElementById('registerEmail').value;
-    const password = document.getElementById('registerPassword').value;
-    const errorEl = document.getElementById('registerError');
-    errorEl.textContent = '';
-    try {
-      await createUserWithEmailAndPassword(auth, email, password);
-      modalOverlay.classList.remove('show');
-    } catch (err) {
-      errorEl.textContent = 'Error: ' + err.message;
-    }
-  });
-
-  // ── Estado de autenticación ──
+  // Estado de autenticación
   onAuthStateChanged(auth, async (user) => {
     usuarioActual = user;
     if (user) {
@@ -625,67 +517,62 @@
       puntosBloqueado.style.display = 'none';
       puntosLogeado.style.display = 'block';
       cargarDatosPuntos(user.uid);
-        document.getElementById('puntosSection').style.display = 'block';
+      document.getElementById('puntosSection').style.display = 'block';
     } else {
       btnUserLabel.textContent = 'Ingresar';
       puntosBloqueado.style.display = 'block';
       puntosLogeado.style.display = 'none';
-        document.getElementById('puntosSection').style.display = 'none';
+      document.getElementById('puntosSection').style.display = 'none';
     }
   });
 
-  // ── Cargar puntos y recompensas ──
-async function cargarDatosPuntos(uid) {
-  const userDocRef = doc(db, 'usuarios', uid);
-  let userData;
-  const snap = await getDocs(collection(db, 'usuarios'));
-  snap.forEach(d => { if (d.id === uid) userData = d.data(); });
-  if (!userData) {
-    userData = { dineroAcumulado: 0, puntos: 0 };
-    await setDoc(userDocRef, userData);
+  // cargarDatosPuntos (la misma función que ya tenés, sin cambios)
+  async function cargarDatosPuntos(uid) {
+    const userDocRef = doc(db, 'usuarios', uid);
+    let userData;
+    const snap = await getDocs(collection(db, 'usuarios'));
+    snap.forEach(d => { if (d.id === uid) userData = d.data(); });
+    if (!userData) {
+      userData = { dineroAcumulado: 0, puntos: 0 };
+      await setDoc(userDocRef, userData);
+    }
+
+    document.getElementById('puntosTotalGastado').textContent = '$' + (userData.dineroAcumulado || 0).toLocaleString('es-AR');
+    document.getElementById('puntosPuntos').textContent = userData.puntos || 0;
+
+    const recSnap = await getDocs(collection(db, 'recompensas'));
+    const recompensas = [];
+    recSnap.forEach(d => recompensas.push({ id: d.id, ...d.data() }));
+    recompensas.sort((a, b) => a.umbralPuntos - b.umbralPuntos);
+
+    const timeline = document.getElementById('timelineRecompensas');
+    if (!timeline) return;
+
+    const puntosUsuario = userData.puntos || 0;
+
+    timeline.innerHTML = recompensas.map(r => {
+      const alcanzada = puntosUsuario >= r.umbralPuntos;
+      return `
+        <div class="timeline-item ${alcanzada ? 'alcanzado' : ''}">
+          <h4>${r.descripcion}</h4>
+          <p><span class="timeline-puntos">${r.umbralPuntos} pts</span> ${alcanzada ? '✅ Alcanzado' : '🔒 Te faltan ' + (r.umbralPuntos - puntosUsuario) + ' pts'}</p>
+          ${alcanzada ? `<button class="recompensa-btn">Canjear</button>` : ''}
+        </div>`;
+    }).join('');
+
+    timeline.querySelectorAll('.recompensa-btn').forEach((btn, i) => {
+      btn.addEventListener('click', async () => {
+        const r = recompensas[i];
+        if (!confirm(`¿Canjear "${r.descripcion}"?`)) return;
+        const nuevosPuntos = puntosUsuario - r.umbralPuntos;
+        await updateDoc(userDocRef, { puntos: nuevosPuntos >= 0 ? nuevosPuntos : 0 });
+        window.open(`https://wa.me/5492215376246?text=${encodeURIComponent(r.mensaje)}`, '_blank');
+        cargarDatosPuntos(uid);
+      });
+    });
   }
 
-  // Actualizar resumen de puntos
-  document.getElementById('puntosTotalGastado').textContent = '$' + (userData.dineroAcumulado || 0).toLocaleString('es-AR');
-  document.getElementById('puntosPuntos').textContent = userData.puntos || 0;
-
-  // Cargar recompensas ordenadas por umbral de puntos
-  const recSnap = await getDocs(collection(db, 'recompensas'));
-  const recompensas = [];
-  recSnap.forEach(d => recompensas.push({ id: d.id, ...d.data() }));
-  recompensas.sort((a, b) => a.umbralPuntos - b.umbralPuntos);
-
-  const timeline = document.getElementById('timelineRecompensas');
-  if (!timeline) return;
-
-  const puntosUsuario = userData.puntos || 0;
-
-  // Dibujar línea de tiempo
-  timeline.innerHTML = recompensas.map(r => {
-    const alcanzada = puntosUsuario >= r.umbralPuntos;
-    return `
-      <div class="timeline-item ${alcanzada ? 'alcanzado' : ''}">
-        <h4>${r.descripcion}</h4>
-        <p><span class="timeline-puntos">${r.umbralPuntos} pts</span> ${alcanzada ? '✅ Alcanzado' : '🔒 Te faltan ' + (r.umbralPuntos - puntosUsuario) + ' pts'}</p>
-        ${alcanzada ? `<button class="recompensa-btn">Canjear</button>` : ''}
-      </div>`;
-  }).join('');
-
-  // Eventos de canje
-  timeline.querySelectorAll('.recompensa-btn').forEach((btn, i) => {
-    btn.addEventListener('click', async () => {
-      const r = recompensas[i];
-      if (!confirm(`¿Canjear "${r.descripcion}"?`)) return;
-      // Restar los puntos canjeados (no todo a cero, si hay excedente lo mantenemos)
-      const nuevosPuntos = puntosUsuario - r.umbralPuntos;
-      await updateDoc(userDocRef, { puntos: nuevosPuntos >= 0 ? nuevosPuntos : 0 });
-      window.open(`https://wa.me/5492215376246?text=${encodeURIComponent(r.mensaje)}`, '_blank');
-      cargarDatosPuntos(uid); // refrescar
-    });
-  });
-}
-
-  // ── Actualizar acumulado al hacer pedido ──
+  // Actualizar acumulado al hacer pedido
   const originalPedir = window.pedirPorWhatsApp;
   window.pedirPorWhatsApp = async function() {
     if (!usuarioActual) {
@@ -694,7 +581,7 @@ async function cargarDatosPuntos(uid) {
     await originalPedir();
     const carrito = JSON.parse(localStorage.getItem('carrito') || '[]');
     const total = carrito.reduce((s, i) => s + i.precio * i.cantidad, 0);
-  const puntos = Math.floor(total / 10000) * 100;
+    const puntos = Math.floor(total / 10000) * 100;
     const userDocRef = doc(db, 'usuarios', usuarioActual.uid);
     const snap = await getDocs(collection(db, 'usuarios'));
     let userData = { dineroAcumulado: 0, puntos: 0 };
@@ -705,7 +592,7 @@ async function cargarDatosPuntos(uid) {
     }, { merge: true });
   };
 
-  // ── Historial de pedidos ──
+  // Historial de pedidos
   document.getElementById('btnVerHistorial').addEventListener('click', async () => {
     const lista = document.getElementById('historialLista');
     lista.style.display = lista.style.display === 'none' ? 'block' : 'none';
