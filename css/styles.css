@@ -200,7 +200,7 @@ body {
   justify-content: center;
   background: linear-gradient(135deg, rgba(0,0,0,.8) 0%, rgba(0,0,0,.9) 100%),
               var(--hero-bg, url('https://images.pexels.com/photos/1600727/pexels-photo-1600727.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1')) center/cover no-repeat;
-  border-bottom: 2px solid var(--neon-blue);
+   border-bottom: none;  
   background-attachment: scroll;
 }
 @media (min-width: 1024px) {
@@ -1008,12 +1008,6 @@ body {
   background: rgba(255, 45, 149, 0.15);
   border-color: transparent;
 }
-
-/* ── PARALLAX MULTICAPA ── */
-.hero-parallax-layer { position: absolute; inset: 0; pointer-events: none; z-index: 0; }
-.hero-parallax-bg { background: radial-gradient(circle at 80% 20%, rgba(255, 45, 149, 0.1) 0%, transparent 50%); }
-.hero-parallax-mid { background: repeating-linear-gradient(45deg, transparent, transparent 5px, rgba(0, 212, 255, 0.05) 5px, rgba(0, 212, 255, 0.05) 10px); }
-.hero-parallax-front { background: radial-gradient(circle at 30% 70%, rgba(255, 242, 0, 0.05) 0%, transparent 40%); }
 
 /* ── MICROINTERACCIONES ── */
 .producto::after {
