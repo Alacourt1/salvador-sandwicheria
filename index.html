@@ -612,7 +612,7 @@
     }, { merge: true });
   };
 
-  // Historial de pedidos
+    // Historial de pedidos
   document.getElementById('btnVerHistorial').addEventListener('click', async () => {
     const lista = document.getElementById('historialLista');
     lista.style.display = lista.style.display === 'none' ? 'block' : 'none';
@@ -639,6 +639,7 @@
     }
   });
 </script>
+
 <script>
   document.addEventListener('DOMContentLoaded', function() {
     const btnPuntos = document.getElementById('btnPuntosHeader');
@@ -653,14 +654,9 @@
     }
   });
 </script>
+
 <!-- ═══ PWA: Service Worker ═══ -->
 <script>
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('/service-worker.js');
-    });
-  }
-  <script>
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
       navigator.serviceWorker.register('/service-worker.js').then(registration => {
@@ -676,6 +672,7 @@
     });
   }
 </script>
+
 <script>
   window.addEventListener('beforeinstallprompt', (e) => {
     e.preventDefault();
@@ -689,7 +686,6 @@
       window.deferredPrompt.userChoice.then(() => installBtn.remove());
     });
   });
-</script>
 </script>
 </body>
 </html>

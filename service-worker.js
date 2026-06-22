@@ -1,5 +1,4 @@
-const CACHE_NAME = 'salvador-v6'; // Incrementá este número cuando hagas cambios grandes
-
+const CACHE_NAME = 'salvador-v8'; // versión nueva para forzar actualización
 const urlsToCache = [
   '/index.html',
   '/css/styles.css',
@@ -13,33 +12,33 @@ const urlsToCache = [
   '/js/utils/toast.js'
 ];
 
-// Instalación
 self.addEventListener('install', event => {
-  self.skipWaiting(); // Activa el nuevo SW inmediatamente
+  self.skipWaiting();
   event.waitUntil(
     caches.open(CACHE_NAME).then(cache => cache.addAll(urlsToCache))
   );
 });
 
-// Activación: limpia cachés viejas
 self.addEventListener('activate', event => {
   event.waitUntil(
     caches.keys().then(keys =>
       Promise.all(
-        keys.filter(key => key !== CACHE_NAME)
-            .map(key => caches.delete(key))
+        keys.filter(key => key !== CACHE_NAME).map(key => caches.delete(key))
       )
     )
   );
 });
 
-// Estrategia: Network First (primero red, si falla, caché)
 self.addEventListener('fetch', event => {
+  if (event.request.method !== 'GET') return;
   event.respondWith(
     fetch(event.request)
       .then(response => {
-        const clone = response.clone();
-        caches.open(CACHE_NAME).then(cache => cache.put(event.request, clone));
+        // ¡IMPORTANTE! Solo cachear respuestas exitosas
+        if (response && response.status === 200) {
+          const clone = response.clone();
+          caches.open(CACHE_NAME).then(cache => cache.put(event.request, clone));
+        }
         return response;
       })
       .catch(() => caches.match(event.request))
