@@ -535,7 +535,79 @@ window.eliminarRecompensa = async (id) => {
 };
 
 cargarRecompensas();
+// ══════════════════════════════════════
+//  CÓDIGOS DE DESCUENTO
+// ══════════════════════════════════════
 
+window.agregarCodigoDescuento = async () => {
+  const codigo    = val('dc-codigo').toUpperCase().trim();
+  const porcentaje = numVal('dc-porcentaje');
+  const activo    = document.getElementById('dc-activo')?.checked ?? true;
+
+  if (!codigo || !porcentaje) {
+    toast('Completá el código y el porcentaje', 'error');
+    return;
+  }
+
+  try {
+    await addDoc(collection(db, 'descuentos'), {
+      codigo,
+      porcentaje,
+      activo
+    });
+    limpiarForm('dc-codigo','dc-porcentaje');
+    document.getElementById('dc-activo').checked = true;
+    toast('✓ Código agregado');
+    cargarCodigosDescuento();
+  } catch (err) {
+    console.error(err);
+    toast('Error al agregar código', 'error');
+  }
+};
+
+async function cargarCodigosDescuento() {
+  const lista = document.getElementById('lista-descuentos');
+  if (!lista) return;
+
+  try {
+    const snap = await getDocs(collection(db, 'descuentos'));
+    const codigos = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+    if (!codigos.length) {
+      lista.innerHTML = `<p style="color:var(--gris); font-size:.85rem; padding:20px 0;">No hay códigos creados</p>`;
+      return;
+    }
+
+    lista.innerHTML = codigos.map(c => `
+      <div class="prod-admin-row" style="justify-content:space-between;">
+        <div>
+          <strong>${escapeHTML(c.codigo)}</strong>
+          <span style="margin-left:12px; color:var(--gris-l);">-${c.porcentaje}%</span>
+          <span class="badge ${c.activo ? 'badge-verde' : 'badge-rojo'}">${c.activo ? 'Activo' : 'Inactivo'}</span>
+        </div>
+        <button class="btn btn-danger btn-sm" onclick="eliminarCodigoDescuento('${c.id}')">🗑️</button>
+      </div>
+    `).join('');
+
+  } catch (err) {
+    console.error(err);
+    lista.innerHTML = `<p style="color:var(--rojo);">Error cargando códigos</p>`;
+  }
+}
+
+window.eliminarCodigoDescuento = async (id) => {
+  if (!confirm('¿Eliminar este código?')) return;
+  try {
+    await deleteDoc(doc(db, 'descuentos', id));
+    toast('✓ Código eliminado');
+    cargarCodigosDescuento();
+  } catch (err) {
+    console.error(err);
+    toast('Error al eliminar', 'error');
+  }
+};
+
+cargarCodigosDescuento();
 // ═══ INIT ═══
 cargarProductos();
 cargarPedidos();

@@ -114,7 +114,6 @@ function renderProductos(lista) {
               let extraLines = '';
 
               if (trio > 0) {
-                // Precio principal = 3 unidades
                 mainPrice = trio;
                 mainLabel = '/x3 un.';
                 if (unit > 0) {
@@ -123,7 +122,6 @@ function renderProductos(lista) {
                 }
                 if (docena > 0 && docena !== trio) extraLines += `<div class="prod-precio-docena">🛒 x12 un. $${formatPrice(docena)}</div>`;
               } else if (docena > 0) {
-                // Precio principal = docena
                 mainPrice = docena;
                 mainLabel = '/x12 un.';
                 if (unit > 0) {
@@ -131,7 +129,6 @@ function renderProductos(lista) {
                   extraLines += `<div class="prod-precio-docena">🛒 x1 un. $${formatPrice(unit)}</div>`;
                 }
               } else if (unit > 0) {
-                // Solo unitario
                 mainPrice = tieneOfertaUnit ? Math.round(unit * (1 - producto.descuento / 100)) : unit;
                 mainLabel = '/un.';
                 if (tieneOfertaUnit) extraLines += `<div class="prod-precio-original">$${formatPrice(unit)}</div>`;
@@ -144,7 +141,7 @@ function renderProductos(lista) {
               `;
             })()}
           </div>
-          <button class="btn-agregar">+ Agregar</button>
+          <button class="btn-agregar" data-id="${producto.id}">+ Agregar</button>
         </div>
       </div>`;
     card.querySelector('.btn-agregar').addEventListener('click', () => {
@@ -169,7 +166,8 @@ function renderProductos(lista) {
 }
 
 function actualizarPromociones() {
-  const ofertas = productos.filter(p => p.oferta && p.descuento > 0);
+  // Solo productos con precio unitario pueden tener descuento coherente
+  const ofertas = productos.filter(p => p.oferta && p.descuento > 0 && p.precio > 0);
   const seccion = $id('promociones');
   const contenedor = $id('promociones-container');
   const banner = $id('ofertaBanner');

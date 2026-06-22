@@ -1,4 +1,4 @@
-import { db, collection, addDoc } from './firebase.js';
+import { db, collection, addDoc, getDocs } from './firebase.js';
 import { formatPrice }            from './utils/format.js';
 import { saveStorage, loadStorage } from './utils/storage.js';
 import { showToast }              from './utils/toast.js';
@@ -6,6 +6,7 @@ import { $id }                    from './utils/dom.js';
 
 const WHATSAPP_NUMBER = '5492215376246';
 let carrito = loadStorage('carrito', []);
+window.codigoDescuento = null;
 
 function guardar() {
   saveStorage('carrito', carrito);
@@ -67,13 +68,25 @@ window.pedirPorWhatsApp = async () => {
   const telefono      = $id('clienteTelefono')?.value.trim()      || '';
   const direccion     = $id('clienteDireccion')?.value.trim()     || '';
   const observaciones = $id('clienteObservaciones')?.value.trim() || '';
-  const total = carrito.reduce((suma, item) => suma + item.precio * item.cantidad, 0);
+  let total = carrito.reduce((suma, item) => suma + item.precio * item.cantidad, 0);
+  let descuentoAplicado = 0;
+  if (window.codigoDescuento && window.codigoDescuento.porcentaje) {
+    descuentoAplicado = Math.round(total * window.codigoDescuento.porcentaje / 100);
+    total -= descuentoAplicado;
+  }
 
   try {
     await addDoc(collection(db, 'pedidos'), {
-      clienteNombre: nombre, clienteTelefono: telefono, clienteDireccion: direccion,
-      clienteObservaciones: observaciones, productos: carrito, total,
-      fecha: new Date().toISOString(), estado: 'pendiente',
+      clienteNombre: nombre,
+      clienteTelefono: telefono,
+      clienteDireccion: direccion,
+      clienteObservaciones: observaciones,
+      productos: carrito,
+      total,
+      fecha: new Date().toISOString(),
+      estado: 'pendiente',
+      codigoDescuento: window.codigoDescuento || null,
+      totalConDescuento: total
     });
   } catch (err) {
     console.error('Error al guardar pedido:', err);
@@ -83,13 +96,23 @@ window.pedirPorWhatsApp = async () => {
 
   const lineas = carrito.map(item => `• ${item.cantidad}x ${item.nombre} — $${formatPrice(item.precio * item.cantidad)}`);
   const partes = [
-    '🥖 *Nuevo pedido — Salvador Sanguchería*', '', ...lineas,
-    '─────────────────', `*Total: $${formatPrice(total)}*`, '',
+    '🥖 *Nuevo pedido — Salvador Sanguchería*',
+    '',
+    ...lineas,
+    '─────────────────',
     nombre ? `👤 Nombre: ${nombre}` : null,
     telefono ? `📱 Tel: ${telefono}` : null,
     direccion ? `📍 Dirección: ${direccion}` : null,
     observaciones ? `📝 Obs: ${observaciones}` : null,
   ].filter(Boolean);
+
+  if (window.codigoDescuento) {
+    partes.push(`🏷️ Código: ${window.codigoDescuento.codigo} (-${window.codigoDescuento.porcentaje}%)`);
+    partes.push(`💰 Total con descuento: $${formatPrice(total)}`);
+  } else {
+    partes.push(`*Total: $${formatPrice(total)}*`);
+  }
+
   window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(partes.join('\n'))}`, '_blank');
   carrito = [];
   guardar();
@@ -129,6 +152,48 @@ function render() {
 function esc(str) {
   return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;');
 }
+
+// ═══ APLICAR CÓDIGO DE DESCUENTO ═══
+async function aplicarCodigoDescuento() {
+  const input = document.getElementById('codigoDescuentoInput');
+  const mensajeEl = document.getElementById('codigoDescuentoMensaje');
+  const codigo = input?.value.trim().toUpperCase();
+
+  if (!codigo) {
+    mensajeEl.textContent = 'Ingresá un código válido';
+    return;
+  }
+
+  try {
+    const snap = await getDocs(collection(db, 'descuentos'));
+    let encontrado = false;
+    snap.forEach(doc => {
+      const data = doc.data();
+      if (data.codigo === codigo && data.activo) {
+        window.codigoDescuento = { codigo: data.codigo, porcentaje: data.porcentaje };
+        encontrado = true;
+      }
+    });
+
+    if (encontrado) {
+      mensajeEl.textContent = `✓ Código aplicado: ${window.codigoDescuento.porcentaje}% de descuento`;
+      document.getElementById('codigoPorcentaje').textContent = window.codigoDescuento.porcentaje;
+      document.getElementById('codigoDescuentoInfo').style.display = 'block';
+      guardar(); // Recalcula totales
+    } else {
+      window.codigoDescuento = null;
+      mensajeEl.textContent = 'Código inválido o inactivo';
+      document.getElementById('codigoDescuentoInfo').style.display = 'none';
+      guardar();
+    }
+  } catch (err) {
+    console.error(err);
+    mensajeEl.textContent = 'Error al verificar el código';
+  }
+}
+
+// Asignar el evento al botón (una sola vez)
+document.getElementById('aplicarCodigoBtn')?.addEventListener('click', aplicarCodigoDescuento);
 
 render();
 if (typeof window.sincBadge === 'function') window.sincBadge();

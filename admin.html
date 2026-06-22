@@ -22,6 +22,7 @@
         <span class="nav-section-label">Sitio</span>
         <a onclick="irA('config', this)"><span class="nav-icon">⚙️</span> Configuración</a>
         <a onclick="irA('recompensas', this)"><span class="nav-icon">🎁</span> Recompensas</a>
+        <a onclick="irA('descuentos', this)"><span class="nav-icon">🏷️</span> Descuentos</a>
         <span class="nav-section-label">Catálogo</span>
         <a onclick="irA('productos', this)"><span class="nav-icon">🥖</span> Productos</a>
         <span class="nav-section-label">Clientes</span>
@@ -104,9 +105,9 @@
               <div class="form-campo form-full"><label>Descripción</label><input type="text" id="descripcion" placeholder="Ingredientes, tamaño, extras..."></div>
               <div class="form-campo"><label>Precio *</label><input type="number" id="precio" placeholder="0" min="0"></div>
               <div class="form-campo">
-  <label>Precio por 3 unidades ($) <small style="color:var(--gris); font-weight:400;">(opcional)</small></label>
-  <input type="number" id="precio3unidades" placeholder="0" min="0">
-</div>
+                <label>Precio por 3 unidades ($) <small style="color:var(--gris); font-weight:400;">(opcional)</small></label>
+                <input type="number" id="precio3unidades" placeholder="0" min="0">
+              </div>
               <div class="form-campo"><label>Precio por docena ($) <small style="color:var(--gris); font-weight:400;">(opcional)</small></label><input type="number" id="precioDocena" placeholder="0" min="0"></div>
               <div class="form-campo"><label>Descuento (%)</label><input type="number" id="descuento" placeholder="0" min="0" max="99"></div>
               <div class="form-campo form-full">
@@ -127,6 +128,41 @@
           <div class="admin-card">
             <div class="admin-card-header"><span class="admin-card-title">Productos cargados</span></div>
             <div id="lista-productos"><p style="color:var(--gris); font-size:.85rem; text-align:center; padding:40px 0;">Cargando productos...</p></div>
+          </div>
+        </div>
+
+        <!-- Descuentos -->
+        <div id="sec-descuentos" class="admin-seccion">
+          <div class="admin-card">
+            <div class="admin-card-header">
+              <span class="admin-card-title">Códigos de descuento</span>
+            </div>
+            <div class="form-productos">
+              <div class="form-campo">
+                <label>Código</label>
+                <input type="text" id="dc-codigo" placeholder="Ej: SALVAMIGA">
+              </div>
+              <div class="form-campo">
+                <label>Porcentaje (%)</label>
+                <input type="number" id="dc-porcentaje" placeholder="15" min="1" max="100">
+              </div>
+              <div class="form-campo form-full" style="display:flex;align-items:center;gap:10px;">
+                <input type="checkbox" id="dc-activo" checked>
+                <label for="dc-activo" style="font-size:.84rem; color:var(--gris-l); cursor:pointer;">Activo</label>
+              </div>
+            </div>
+            <div style="margin-top:16px;">
+              <button class="btn btn-primary" onclick="agregarCodigoDescuento()">+ Agregar código</button>
+            </div>
+          </div>
+
+          <div class="admin-card">
+            <div class="admin-card-header">
+              <span class="admin-card-title">Códigos activos</span>
+            </div>
+            <div id="lista-descuentos">
+              <p style="color:var(--gris); font-size:.85rem;">Cargando...</p>
+            </div>
           </div>
         </div>
 
@@ -174,7 +210,8 @@
       productos: 'Productos',
       clientes: 'Clientes',
       config: 'Configuración',
-      recompensas: 'Recompensas'
+      recompensas: 'Recompensas',
+      descuentos: 'Descuentos'
     };
     function irA(sec, el) {
       document.querySelectorAll('.admin-seccion').forEach(s => s.classList.remove('activa'));

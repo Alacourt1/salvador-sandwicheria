@@ -4,9 +4,32 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Salvador Sanguchería</title>
+
+  <!-- ═══ PWA ═══ -->
+  <meta name="theme-color" content="#ff2d95">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Salvador">
+  <link rel="manifest" href="/manifest.json">
+
+  <!-- ═══ TIPOGRAFÍAS ═══ -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- ═══ ESTILOS ═══ -->
   <link rel="stylesheet" href="./css/styles.css">
+
+  <!-- ═══ SAFE AREA (notch) ═══ -->
+  <style>
+    @supports (padding-top: env(safe-area-inset-top)) {
+      body {
+        padding-top: env(safe-area-inset-top);
+      }
+      .pub-header {
+        padding-top: calc(env(safe-area-inset-top) + 8px);
+      }
+    }
+  </style>
 </head>
 <body>
 
@@ -33,16 +56,13 @@
       <small>Sanguchería</small>
     </a>
     <div class="header-right">
-      <!-- Login Google -->
       <button class="btn-user-header" id="btnUserHeader">
         <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" fill="none" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
         <span id="btnUserLabel">Ingresar</span>
       </button>
-      <!-- Puntos -->
       <button class="btn-user-header" id="btnPuntosHeader" title="Canjea tus puntos">
         🎁 <span>Puntos</span>
       </button>
-      <!-- Pedido -->
       <button class="btn-carrito-header" id="btnAbrirCarrito">
         <svg viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
         Mi pedido
@@ -51,16 +71,17 @@
     </div>
   </div>
 </header>
+
 <!-- ═══ HERO ═══ -->
 <section class="hero" id="hero">
   <div class="hero-inner">
     <div class="hero-text">
       <div class="hero-chip" data-config="heroChipText">🥖 Pedidos online · Retiro y delivery</div>
       <h1 data-config="heroTitle">
-  <span class="hero-color-yellow">Sánguches de</span><br>
-  <span class="hero-color-blue">verdad,</span>
-  <span class="hero-color-pink">hechos con amor</span>
-</h1>
+        <span class="hero-color-yellow">Sánguches de</span><br>
+        <span class="hero-color-blue">verdad,</span>
+        <span class="hero-color-pink">hechos con amor</span>
+      </h1>
       <p class="hero-sub" data-config="heroSubtitle">Elegí lo que querés, armá tu pedido y lo coordinamos por WhatsApp.</p>
       <div class="hero-pills">
         <span class="hero-pill">🛵 Delivery disponible</span>
@@ -81,21 +102,21 @@
       <p>Registrate o iniciá sesión para acumular puntos y acceder a beneficios exclusivos.</p>
       <button class="btn btn-primary" id="btnIrLogin">Ingresar / Registrarme</button>
     </div>
-<div class="puntos-logeado" id="puntosLogeado" style="display:none;">
-  <div class="puntos-resumen">
-    <div class="puntos-stat">
-      <span class="puntos-stat-num" id="puntosTotalGastado">$0</span>
-      <span class="puntos-stat-label">Total gastado</span>
+    <div class="puntos-logeado" id="puntosLogeado" style="display:none;">
+      <div class="puntos-resumen">
+        <div class="puntos-stat">
+          <span class="puntos-stat-num" id="puntosTotalGastado">$0</span>
+          <span class="puntos-stat-label">Total gastado</span>
+        </div>
+        <div class="puntos-stat">
+          <span class="puntos-stat-num" id="puntosPuntos">0</span>
+          <span class="puntos-stat-label">Puntos</span>
+        </div>
+      </div>
+      <h3>Línea de recompensas</h3>
+      <div class="timeline" id="timelineRecompensas"></div>
+      <p class="puntos-info">Al alcanzar un umbral, podés canjear tu recompensa. Se abrirá WhatsApp con el mensaje listo.</p>
     </div>
-    <div class="puntos-stat">
-      <span class="puntos-stat-num" id="puntosPuntos">0</span>
-      <span class="puntos-stat-label">Puntos</span>
-    </div>
-  </div>
-  <h3>Línea de recompensas</h3>
-  <div class="timeline" id="timelineRecompensas"></div>
-  <p class="puntos-info">Al alcanzar un umbral, podés canjear tu recompensa. Se abrirá WhatsApp con el mensaje listo.</p>
-</div>
   </div>
 </section>
 
@@ -200,6 +221,19 @@
       <div class="resumen-row"><span>Envío</span><span style="color:var(--gris);">A coordinar</span></div>
       <div class="resumen-row total"><span>Total</span><span id="total-display">$0</span></div>
     </div>
+    <div class="codigo-descuento" style="margin-bottom:14px;">
+      <div style="display:flex; gap:8px; margin-bottom:6px;">
+        <input type="text" id="codigoDescuentoInput" placeholder="Código de descuento" style="flex:1; background:var(--grafito); border:1px solid var(--humo); border-radius:var(--radio-sm); padding:8px 12px; color:var(--crema); font-family:'Inter', sans-serif; font-size:.82rem; outline:none; transition:border-color .15s;">
+        <button id="aplicarCodigoBtn" style="background:var(--accent); color:#fff; border:none; border-radius:var(--radio-sm); padding:8px 14px; font-weight:700; cursor:pointer;">Aplicar</button>
+      </div>
+      <div id="codigoDescuentoMensaje" style="font-size:.75rem; color:var(--gris);"></div>
+      <div id="codigoDescuentoInfo" style="display:none; margin-top:8px;">
+        <div style="display:flex; justify-content:space-between; font-size:.8rem; color:var(--gris-l);">
+          <span>Descuento (<span id="codigoPorcentaje"></span>%)</span>
+          <span id="codigoMonto">-$0</span>
+        </div>
+      </div>
+    </div>
     <button class="btn-pedir-wa" onclick="pedirPorWhatsApp()">
       <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
       Confirmar pedido por WhatsApp
@@ -242,6 +276,10 @@
     window.vaciarCarrito = function() {
       if (!confirm('¿Vaciar el carrito?')) return;
       localStorage.setItem('carrito', '[]');
+      window.codigoDescuento = null;
+      document.getElementById('codigoDescuentoInput').value = '';
+      document.getElementById('codigoDescuentoMensaje').textContent = '';
+      document.getElementById('codigoDescuentoInfo').style.display = 'none';
       if (typeof window._renderCarritoExterno === 'function') window._renderCarritoExterno();
     };
 
@@ -257,18 +295,28 @@
       const carrito  = JSON.parse(localStorage.getItem('carrito') || '[]');
       const cantidad = carrito.reduce((s, i) => s + (Number(i.cantidad) || 0), 0);
       const subtotal = carrito.reduce((s, i) => s + (Number(i.precio) || 0) * (Number(i.cantidad) || 0), 0);
-      const fmt      = v => '$' + v.toLocaleString('es-AR');
+      let descuento = 0;
+      if (window.codigoDescuento && window.codigoDescuento.porcentaje) {
+        descuento = Math.round(subtotal * window.codigoDescuento.porcentaje / 100);
+      }
+      const total = subtotal - descuento;
+      const fmt = v => '$' + v.toLocaleString('es-AR');
 
-      document.getElementById('badge-cantidad').textContent  = cantidad;
-      document.getElementById('drawer-count').textContent    = cantidad + (cantidad === 1 ? ' item' : ' items');
-      document.getElementById('total-display').textContent   = fmt(subtotal);
+      document.getElementById('badge-cantidad').textContent = cantidad;
+      document.getElementById('drawer-count').textContent   = cantidad + (cantidad === 1 ? ' item' : ' items');
       document.getElementById('resumen-subtotal').textContent = fmt(subtotal);
+      document.getElementById('total-display').textContent    = fmt(total);
+
+      if (window.codigoDescuento) {
+        document.getElementById('codigoMonto').textContent = '-$' + descuento.toLocaleString('es-AR');
+        document.getElementById('codigoDescuentoInfo').style.display = 'block';
+      }
     };
 
+    // Llamada inicial que faltaba
     window.sincBadge();
   })();
 </script>
-
 
 <!-- ═══ FIREBASE AUTH ═══ -->
 <script type="module">
@@ -296,16 +344,6 @@
   window.cerrarSesionAdmin = async () => {
     await signOut(auth);
   };
-  window.loginGoogle = async () => {
-  const provider = new GoogleAuthProvider();
-  try {
-    const result = await signInWithPopup(auth, provider);
-    window.location.href = 'admin.html';
-  } catch (error) {
-    document.getElementById('loginError').style.display = 'block';
-    document.getElementById('loginError').textContent = 'Error al ingresar con Google.';
-  }
-};
 </script>
 
 <!-- ═══ MÓDULOS ═══ -->
@@ -385,7 +423,7 @@
 </script>
 
 <!-- ═══════════════════════════════════════
-     MEJORAS: cursor, parallax, slider, swipe, vuelo
+     MEJORAS: cursor, swipe, vuelo
 ═══════════════════════════════════════ -->
 <script type="module">
   import { db, collection, getDocs } from './js/firebase.js';
@@ -402,19 +440,6 @@
     document.querySelectorAll('a, button, .btn-agregar, .ctrl-btn, .btn-carrito-header').forEach(el => {
       el.addEventListener('mouseenter', () => cursor.classList.add('hover'));
       el.addEventListener('mouseleave', () => cursor.classList.remove('hover'));
-    });
-  }
-
-  // ── PARALLAX MULTICAPA ──
-  const hero = document.getElementById('hero');
-  const layers = document.querySelectorAll('.hero-parallax-layer');
-  if (hero && layers.length) {
-    window.addEventListener('scroll', () => {
-      const scrollY = window.scrollY;
-      layers.forEach((layer, i) => {
-        const speed = (i + 1) * 0.3;
-        layer.style.transform = `translateY(${scrollY * speed}px)`;
-      });
     });
   }
 
@@ -522,7 +547,6 @@
     }
   });
 
-  // cargarDatosPuntos (la misma función que ya tenés, sin cambios)
   async function cargarDatosPuntos(uid) {
     const userDocRef = doc(db, 'usuarios', uid);
     let userData;
@@ -628,6 +652,44 @@
       });
     }
   });
+</script>
+<!-- ═══ PWA: Service Worker ═══ -->
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('/service-worker.js');
+    });
+  }
+  <script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('/service-worker.js').then(registration => {
+        registration.addEventListener('updatefound', () => {
+          const newWorker = registration.installing;
+          newWorker.addEventListener('statechange', () => {
+            if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+              window.location.reload(); // Recarga automática
+            }
+          });
+        });
+      });
+    });
+  }
+</script>
+<script>
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    window.deferredPrompt = e;
+    const installBtn = document.createElement('button');
+    installBtn.textContent = '📲 Instalar App';
+    installBtn.style.cssText = 'position:fixed; bottom:20px; right:20px; z-index:9999; background:var(--neon-pink); color:#fff; border:none; padding:12px 18px; border-radius:99px; font-weight:700; box-shadow:0 0 20px var(--neon-pink);';
+    document.body.appendChild(installBtn);
+    installBtn.addEventListener('click', () => {
+      window.deferredPrompt.prompt();
+      window.deferredPrompt.userChoice.then(() => installBtn.remove());
+    });
+  });
+</script>
 </script>
 </body>
 </html>
