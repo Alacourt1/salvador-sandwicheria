@@ -307,11 +307,12 @@ button, a, input, select, textarea {
 .hero h1 em { color: var(--neon-blue); font-style: normal; }
 
 .hero-sub {
-  color: var(--gris-l);
-  font-size: 0.95rem;
+  color: var(--neon-yellow);
+  font-size: 0.9rem;
   line-height: 1.7;
   margin-bottom: 24px;
   max-width: 480px;
+  text-shadow: 0 0 8px var(--neon-yellow), 0 0 20px var(--neon-yellow);
 }
 
 .hero-pills {
@@ -1276,4 +1277,234 @@ button, a, input, select, textarea {
   font-size: 0.72rem;
   color: var(--gris-l);
   margin-top: 2px;
+}
+/* ── PUNTOS MOBILE ── */
+@media (max-width: 600px) {
+  .puntos-section {
+    padding: 0 10px;
+    margin: 20px auto;
+  }
+  .puntos-title {
+    font-size: 1.3rem;
+    margin-bottom: 14px;
+  }
+  .puntos-resumen {
+    flex-direction: column;
+    gap: 8px;
+  }
+  .puntos-stat {
+    padding: 12px 14px;
+  }
+  .puntos-stat-num {
+    font-size: 1.4rem;
+  }
+  .puntos-stat-label {
+    font-size: 0.7rem;
+  }
+  .timeline {
+    margin: 20px 0;
+    padding-left: 20px;
+  }
+  .timeline-item {
+    margin-bottom: 18px;
+    padding-left: 15px;
+  }
+  .timeline-item h4 {
+    font-size: 0.8rem;
+  }
+  .timeline-item p {
+    font-size: 0.72rem;
+  }
+  .recompensa-btn {
+    font-size: 0.7rem;
+    padding: 6px 10px;
+  }
+}
+/* ── CARRITO MOBILE ── */
+@media (max-width: 600px) {
+  .carrito-drawer {
+    width: 100vw;
+    border-left: none;
+  }
+  .drawer-head {
+    padding: 12px 14px;
+  }
+  .drawer-head h2 {
+    font-size: 1rem;
+  }
+  .drawer-cliente {
+    padding: 10px 14px;
+    gap: 6px;
+  }
+  .drawer-cliente input,
+  .drawer-cliente textarea {
+    font-size: 0.78rem;
+    padding: 7px 10px;
+  }
+  .drawer-items {
+    padding: 8px 14px;
+  }
+  .item-carrito {
+    padding: 8px 10px;
+    gap: 6px;
+  }
+  .item-thumb {
+    width: 36px;
+    height: 36px;
+  }
+  .item-nombre {
+    font-size: 0.76rem;
+  }
+  .item-precio-unit {
+    font-size: 0.68rem;
+  }
+  .item-subtotal {
+    font-size: 0.9rem;
+    min-width: 50px;
+  }
+  .ctrl-btn {
+    width: 24px;
+    height: 24px;
+    font-size: 0.8rem;
+  }
+  .ctrl-cantidad {
+    font-size: 0.8rem;
+  }
+  .drawer-footer {
+    padding: 10px 14px 14px;
+  }
+  .drawer-resumen {
+    padding: 10px 12px;
+  }
+  .resumen-row {
+    font-size: 0.75rem;
+  }
+  .resumen-row.total span:last-child {
+    font-size: 1.2rem;
+  }
+  .btn-pedir-wa {
+    font-size: 0.85rem;
+    padding: 12px;
+  }
+  .btn-vaciar-carrito {
+    font-size: 0.7rem;
+  }
+}
+/* ── ADMIN MOBILE (reforzado) ── */
+@media (max-width: 768px) {
+  .admin-content {
+    padding: 10px;
+  }
+  .admin-topbar {
+    padding: 0 12px;
+    height: 50px;
+  }
+  .admin-topbar h1 {
+    font-size: 0.85rem;
+  }
+  .stats-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+  .stat-card {
+    padding: 12px;
+  }
+  .stat-val {
+    font-size: 1.5rem;
+  }
+  .admin-card {
+    padding: 16px;
+    margin-bottom: 12px;
+  }
+  .form-productos {
+    grid-template-columns: 1fr;
+  }
+  .prod-admin-row {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .prod-admin-img {
+    width: 40px;
+    height: 40px;
+  }
+  .prod-admin-precio {
+    font-size: 1rem;
+  }
+}
+/* ── MENÚ PÚBLICO MOBILE (retoque) ── */
+@media (max-width: 400px) {
+  #menu-container {
+    grid-template-columns: 1fr; /* una columna en pantallas muy chicas */
+  }
+  .producto-body {
+    padding: 8px;
+  }
+  .prod-footer {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+  .btn-agregar {
+    width: 100%;
+    justify-content: center;
+  }
+}
+/* ── INDICADOR DE SCROLL PARA CATEGORÍAS ── */
+.cats-inner {
+  position: relative;
+  max-width: 1140px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+.cats-inner::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 24px; /* coincide con el padding */
+  bottom: 0;
+  width: 50px;
+  background: linear-gradient(to right, transparent, var(--carbon) 80%);
+  pointer-events: none;
+  z-index: 1;
+}
+
+#categorias {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  padding: 12px 0;
+  -webkit-overflow-scrolling: touch;
+}
+
+#categorias::-webkit-scrollbar {
+  display: none;
+}
+
+@media (max-width: 900px) {
+  .scroll-arrow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+.cats-inner {
+  position: relative;
+  max-width: 1140px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+.cats-inner::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 24px;
+  bottom: 0;
+  width: 50px;
+  background: linear-gradient(to right, transparent, var(--carbon) 80%);
+  pointer-events: none;
+  z-index: 1;
 }

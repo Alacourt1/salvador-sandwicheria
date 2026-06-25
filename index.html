@@ -704,5 +704,71 @@
     });
   });
 </script>
+<script>
+  (function() {
+    function crearFlechas() {
+      const categoriasContainer = document.getElementById('categorias');
+      const catsInner = categoriasContainer?.parentElement;
+      if (!catsInner) return;
+
+      // Si ya existen, no duplicamos
+      if (document.getElementById('scrollCategoriasLeft')) return;
+
+      // Asegurar posición relativa en el contenedor
+      catsInner.style.position = 'relative';
+
+      // Función para crear un botón
+      function crearBoton(id, innerHTML, left) {
+        const btn = document.createElement('button');
+        btn.id = id;
+        btn.innerHTML = innerHTML;
+        btn.style.cssText = `
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          position: absolute;
+          top: 50%;
+          transform: translateY(-50%);
+          width: 32px;
+          height: 32px;
+          background: #1e1e1e;
+          color: #00e5ff;
+          border: 1px solid #00e5ff;
+          border-radius: 50%;
+          font-size: 1.4rem;
+          font-weight: bold;
+          cursor: pointer;
+          z-index: 999;
+          box-shadow: 0 0 12px #00e5ff;
+          padding: 0;
+          line-height: 1;
+          ${left ? 'left: 10px;' : 'right: 10px;'}
+        `;
+        return btn;
+      }
+
+      // Botón izquierdo (volver)
+      const btnLeft = crearBoton('scrollCategoriasLeft', '‹', true);
+      btnLeft.addEventListener('click', () => {
+        categoriasContainer.scrollBy({ left: -200, behavior: 'smooth' });
+      });
+
+      // Botón derecho (avanzar)
+      const btnRight = crearBoton('scrollCategoriasRight', '›', false);
+      btnRight.addEventListener('click', () => {
+        categoriasContainer.scrollBy({ left: 200, behavior: 'smooth' });
+      });
+
+      catsInner.appendChild(btnLeft);
+      catsInner.appendChild(btnRight);
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', crearFlechas);
+    } else {
+      crearFlechas();
+    }
+  })();
+</script>
 </body>
 </html>
