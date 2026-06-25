@@ -1262,3 +1262,18 @@ button, a, input, select, textarea {
   box-shadow: var(--shadow-pink);
 }
 #aplicarCodigoBtn:hover { background: var(--neon-pink-dark); }
+/* ── PRECIO PROMO (X12) ── */
+.prod-precio-promo {
+  font-size: 0.75rem;
+  color: var(--neon-yellow);
+  text-shadow: 0 0 6px var(--neon-yellow);
+  margin-top: 2px;
+  font-weight: 700;
+}
+
+/* Ajustamos el color de las líneas comunes (x3, x6) */
+.prod-precio-docena {
+  font-size: 0.72rem;
+  color: var(--gris-l);
+  margin-top: 2px;
+}

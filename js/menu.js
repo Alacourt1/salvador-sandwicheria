@@ -115,61 +115,45 @@ function renderProductos(lista) {
         <h2>${nombre}</h2>
         <p class="prod-desc">${descripcion}</p>
         <div class="prod-footer">
-          <div class="prod-precio-wrap">
-            ${(() => {
-              const unit = producto.precio || 0;
-              const trio = producto.precio3unidades || 0;
-              const seis = producto.precio6unidades || 0;
-              const docena = producto.precioDocena || 0;
-              const tieneOfertaUnit = producto.oferta && producto.descuento > 0 && unit > 0;
-              let mainPrice = 0;
-              let mainLabel = '';
-              let extraLines = '';
+         <div class="prod-precio-wrap">
+  ${(() => {
+    const unit = producto.precio || 0;
+    const trio = producto.precio3unidades || 0;
+    const seis = producto.precio6unidades || 0;
+    const docena = producto.precioDocena || 0;
+    const tieneOfertaUnit = producto.oferta && producto.descuento > 0 && unit > 0;
 
-              // Prioridad: 3u → 6u → 12u → unitario
-              if (trio > 0) {
-                mainPrice = trio;
-                mainLabel = '/x3 un.';
-                if (unit > 0) {
-                  if (tieneOfertaUnit) extraLines += `<div class="prod-precio-original">$${formatPrice(unit)}</div>`;
-                  extraLines += `<div class="prod-precio-docena">🛒 x1 un. $${formatPrice(unit)}</div>`;
-                }
-                if (seis > 0 && seis !== trio) extraLines += `<div class="prod-precio-docena">🛒 x6 un. $${formatPrice(seis)}</div>`;
-                if (docena > 0 && docena !== trio) extraLines += `<div class="prod-precio-docena">🛒 x12 un. $${formatPrice(docena)}</div>`;
-              } else if (seis > 0) {
-                mainPrice = seis;
-                mainLabel = '/x6 un.';
-                if (unit > 0) {
-                  if (tieneOfertaUnit) extraLines += `<div class="prod-precio-original">$${formatPrice(unit)}</div>`;
-                  extraLines += `<div class="prod-precio-docena">🛒 x1 un. $${formatPrice(unit)}</div>`;
-                }
-                if (trio > 0 && trio !== seis) extraLines += `<div class="prod-precio-docena">🛒 x3 un. $${formatPrice(trio)}</div>`;
-                if (docena > 0 && docena !== seis) extraLines += `<div class="prod-precio-docena">🛒 x12 un. $${formatPrice(docena)}</div>`;
-              } else if (docena > 0) {
-                mainPrice = docena;
-                mainLabel = '/x12 un.';
-                if (unit > 0) {
-                  if (tieneOfertaUnit) extraLines += `<div class="prod-precio-original">$${formatPrice(unit)}</div>`;
-                  extraLines += `<div class="prod-precio-docena">🛒 x1 un. $${formatPrice(unit)}</div>`;
-                }
-                if (trio > 0 && trio !== docena) extraLines += `<div class="prod-precio-docena">🛒 x3 un. $${formatPrice(trio)}</div>`;
-                if (seis > 0 && seis !== docena) extraLines += `<div class="prod-precio-docena">🛒 x6 un. $${formatPrice(seis)}</div>`;
-              } else if (unit > 0) {
-                mainPrice = tieneOfertaUnit ? Math.round(unit * (1 - producto.descuento / 100)) : unit;
-                mainLabel = '/un.';
-                if (tieneOfertaUnit) extraLines += `<div class="prod-precio-original">$${formatPrice(unit)}</div>`;
-                if (trio > 0) extraLines += `<div class="prod-precio-docena">🛒 x3 un. $${formatPrice(trio)}</div>`;
-                if (seis > 0) extraLines += `<div class="prod-precio-docena">🛒 x6 un. $${formatPrice(seis)}</div>`;
-                if (docena > 0) extraLines += `<div class="prod-precio-docena">🛒 x12 un. $${formatPrice(docena)}</div>`;
-              } else {
-                return `<div class="prod-precio-final" style="font-size:.9rem; color:var(--gris);">Consultar precio</div>`;
-              }
-              return `
-                ${extraLines}
-                <div class="prod-precio-final">$${formatPrice(mainPrice)} <small>${mainLabel}</small></div>
-              `;
-            })()}
-          </div>
+    // Líneas que siempre mostramos en orden ascendente
+    let lineas = '';
+
+    // Si hay precio unitario, lo destacamos como principal
+    if (unit > 0) {
+      const precioFinal = tieneOfertaUnit ? Math.round(unit * (1 - producto.descuento / 100)) : unit;
+      lineas += `
+        <div class="prod-precio-final">$${formatPrice(precioFinal)} <small>/un.</small></div>
+        ${tieneOfertaUnit ? `<div class="prod-precio-original">$${formatPrice(unit)}</div>` : ''}
+      `;
+    }
+
+    // Agregamos las otras opciones siempre en orden: x3 → x6 → x12
+    if (trio > 0 && trio !== unit) {
+      lineas += `<div class="prod-precio-docena">🛒 x3 un. $${formatPrice(trio)}</div>`;
+    }
+    if (seis > 0 && seis !== unit) {
+      lineas += `<div class="prod-precio-docena">🛒 x6 un. $${formatPrice(seis)}</div>`;
+    }
+    if (docena > 0) {
+      lineas += `<div class="prod-precio-promo">🔥 x12 un. $${formatPrice(docena)}</div>`;
+    }
+
+    // Si no hay ningún precio, mostramos mensaje
+    if (!unit && !trio && !seis && !docena) {
+      return `<div class="prod-precio-final" style="font-size:.9rem; color:var(--gris);">Consultar precio</div>`;
+    }
+
+    return lineas;
+  })()}
+</div>
           <button class="btn-agregar" data-id="${producto.id}">+ Agregar</button>
         </div>
       </div>`;
