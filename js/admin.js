@@ -1,7 +1,18 @@
 import { db, storage, ref, uploadBytes, getDownloadURL, collection, addDoc, getDocs, deleteDoc, updateDoc, setDoc, doc } from './firebase.js';
-import { formatPrice }  from './utils/format.js';
-import { escapeHTML }   from './utils/escapeHTML.js';
-import { $id }         from './utils/dom.js';
+import { $id } from './utils/dom.js';
+
+// ── Utilidades locales (evita errores de import en PWA) ──
+function formatPrice(value) {
+  const num = Number(value);
+  if (isNaN(num)) return '0';
+  return num.toLocaleString('es-AR');
+}
+
+function escapeHTML(str) {
+  if (str === null || str === undefined) return '';
+  return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+}
+// ───────────────────────────────────────────
 
 // ═══ TOAST ═══
 function toast(msg, tipo = 'ok') {
@@ -71,7 +82,8 @@ window.agregarProducto = async () => {
   const oferta      = checked('oferta');
   const precioDocena = numVal('precioDocena');
   const precio3unidades = numVal('precio3unidades');
-  
+  const precio6unidades = numVal('precio6unidades');
+
   const fileInput = document.getElementById('imagenFile');
   const archivo = fileInput?.files[0] || null;
   let imagenURL = val('imagenURL');
@@ -87,13 +99,13 @@ window.agregarProducto = async () => {
   }
 
   if (!nombre || !categoria) {
-  toast('Completá nombre y categoría', 'error');
-  return;
-}
-if (!precio && !precioDocena && !precio3unidades) {
-  toast('Completá al menos un precio (unitario, docena o 3 unidades)', 'error');
-  return;
-}
+    toast('Completá nombre y categoría', 'error');
+    return;
+  }
+  if (!precio && !precioDocena && !precio3unidades && !precio6unidades) {
+    toast('Completá al menos un precio (unitario, 3 un., 6 un. o docena)', 'error');
+    return;
+  }
 
   try {
     await addDoc(collection(db, 'productos'), {
@@ -102,9 +114,10 @@ if (!precio && !precioDocena && !precio3unidades) {
       disponible: true,
       imagenURL: imagenURL || '',
       precioDocena: precioDocena > 0 ? precioDocena : null,
-      precio3unidades: precio3unidades > 0 ? precio3unidades : null
+      precio3unidades: precio3unidades > 0 ? precio3unidades : null,
+      precio6unidades: precio6unidades > 0 ? precio6unidades : null
     });
-    limpiarForm('nombre','categoria','descripcion','precio','precioDocena','precio3unidades','descuento','oferta','imagenURL');
+    limpiarForm('nombre','categoria','descripcion','precio','precioDocena','precio3unidades','precio6unidades','descuento','oferta','imagenURL');
     if (fileInput) fileInput.value = '';
     const preview = document.getElementById('previewImagen');
     if (preview) preview.style.display = 'none';
@@ -172,6 +185,10 @@ function editarProducto(id, datos) {
         <input id="_e_precioDocena" type="number" value="${datos.precioDocena||0}" min="0">
       </div>
       <div class="form-campo">
+        <label>Precio por 6 unidades ($)</label>
+        <input id="_e_precio6unidades" type="number" value="${datos.precio6unidades||0}" min="0">
+      </div>
+      <div class="form-campo">
         <label>Precio por 3 unidades ($)</label>
         <input id="_e_precio3unidades" type="number" value="${datos.precio3unidades||0}" min="0">
       </div>
@@ -190,12 +207,14 @@ function editarProducto(id, datos) {
     const disponible = $id('_e_disponible')?.checked ?? true;
     const precioDocena = Number($id('_e_precioDocena')?.value) || 0;
     const precio3unidades = Number($id('_e_precio3unidades')?.value) || 0;
+    const precio6unidades = Number($id('_e_precio6unidades')?.value) || 0;
     if (!nombre || !categoria) { toast('Completá nombre y categoría', 'error'); return false; }
-if (!precio && !precioDocena && !precio3unidades) { toast('Completá al menos un precio', 'error'); return false; }
+    if (!precio && !precioDocena && !precio3unidades && !precio6unidades) { toast('Completá al menos un precio', 'error'); return false; }
     updateDoc(doc(db, 'productos', id), {
       nombre, categoria, descripcion, precio, descuento, oferta, disponible, imagenURL,
       precioDocena: precioDocena > 0 ? precioDocena : null,
-      precio3unidades: precio3unidades > 0 ? precio3unidades : null
+      precio3unidades: precio3unidades > 0 ? precio3unidades : null,
+      precio6unidades: precio6unidades > 0 ? precio6unidades : null
     })
       .then(() => { toast('✓ Producto actualizado'); cargarProductos(); })
       .catch(err => { console.error(err); toast('Error al guardar', 'error'); });
@@ -535,6 +554,7 @@ window.eliminarRecompensa = async (id) => {
 };
 
 cargarRecompensas();
+
 // ══════════════════════════════════════
 //  CÓDIGOS DE DESCUENTO
 // ══════════════════════════════════════
@@ -608,6 +628,7 @@ window.eliminarCodigoDescuento = async (id) => {
 };
 
 cargarCodigosDescuento();
+
 // ═══ INIT ═══
 cargarProductos();
 cargarPedidos();

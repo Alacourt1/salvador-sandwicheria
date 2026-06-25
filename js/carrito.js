@@ -1,8 +1,15 @@
 import { db, collection, addDoc, getDocs } from './firebase.js';
-import { formatPrice }            from './utils/format.js';
 import { saveStorage, loadStorage } from './utils/storage.js';
-import { showToast }              from './utils/toast.js';
-import { $id }                    from './utils/dom.js';
+import { showToast } from './utils/toast.js';
+import { $id } from './utils/dom.js';
+
+// ── Utilidades integradas (evita errores de importación) ──
+function formatPrice(value) {
+  const num = Number(value);
+  if (isNaN(num)) return '0';
+  return num.toLocaleString('es-AR');
+}
+// ───────────────────────────────────────────
 
 const WHATSAPP_NUMBER = '5492215376246';
 let carrito = loadStorage('carrito', []);
@@ -179,7 +186,7 @@ async function aplicarCodigoDescuento() {
       mensajeEl.textContent = `✓ Código aplicado: ${window.codigoDescuento.porcentaje}% de descuento`;
       document.getElementById('codigoPorcentaje').textContent = window.codigoDescuento.porcentaje;
       document.getElementById('codigoDescuentoInfo').style.display = 'block';
-      guardar(); // Recalcula totales
+      guardar();
     } else {
       window.codigoDescuento = null;
       mensajeEl.textContent = 'Código inválido o inactivo';
@@ -192,7 +199,6 @@ async function aplicarCodigoDescuento() {
   }
 }
 
-// Asignar el evento al botón (una sola vez)
 document.getElementById('aplicarCodigoBtn')?.addEventListener('click', aplicarCodigoDescuento);
 
 render();
