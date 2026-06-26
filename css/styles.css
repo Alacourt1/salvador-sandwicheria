@@ -1355,3 +1355,143 @@ body::before {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* ═══════════════════════════════════════════════════
+   MODO APP NATIVA — PANTALLAS COMPLETAS EN MOBILE
+   ═══════════════════════════════════════════════════
+   En desktop, el carrito sigue siendo un cajón lateral
+   y el admin sigue con su sidebar fijo — eso ya funciona
+   bien con espacio de sobra.
+   En celular (≤768px), en cambio, "cajón lateral" y
+   "sidebar angosto" obligan a hacer zoom o se ven
+   apretados. Acá los convertimos en pantallas completas
+   dedicadas, como cualquier app nativa: el carrito tapa
+   toda la pantalla con su propio header y un botón
+   "← Volver", y el menú del admin hace lo mismo.
+   ═══════════════════════════════════════════════════ */
+@media (max-width: 768px) {
+
+  /* ── CARRITO: pantalla completa con header propio ── */
+  .carrito-drawer {
+    width: 100vw;
+    /* El overlay oscuro de fondo ya no hace falta en pantalla
+       completa — el carrito ES la pantalla, no flota sobre nada. */
+  }
+  .carrito-overlay {
+    /* Se mantiene en el DOM por compatibilidad con el JS existente,
+       pero en mobile no se ve ni bloquea el click detrás, porque
+       el drawer ya cubre el 100% de la pantalla. */
+    background: transparent;
+  }
+
+  /* Botón "← Volver" — solo existe en mobile.
+     En desktop el drawer-head ya tiene su botón "✕" normal,
+     así que ese se oculta y este lo reemplaza. */
+  .btn-cerrar-drawer {
+    display: none;
+  }
+  .btn-volver-mobile {
+    display: flex !important;
+    align-items: center;
+    gap: 8px;
+    background: none;
+    border: none;
+    color: var(--crema);
+    font-family: 'Inter', sans-serif;
+    font-size: var(--fs-base);
+    font-weight: 600;
+    cursor: pointer;
+    padding: 0;
+    min-height: var(--tap-min);
+  }
+  .btn-volver-mobile svg {
+    width: 22px; height: 22px;
+    stroke: var(--neon-blue); fill: none; stroke-width: 2.5;
+    flex-shrink: 0;
+  }
+
+  /* El header del drawer pasa a comportarse como app-bar nativa:
+     el título queda centrado, "Volver" a la izquierda. */
+  .drawer-head {
+    position: relative;
+    padding-top: max(var(--sp-md), env(safe-area-inset-top));
+  }
+  .drawer-head-left {
+    position: absolute;
+    left: var(--sp-md);
+    top: 50%;
+    transform: translateY(-50%);
+    margin-top: max(0px, calc(env(safe-area-inset-top) / 2));
+  }
+  .drawer-head h2 {
+    width: 100%;
+    text-align: center;
+    font-size: var(--fs-md);
+  }
+  .drawer-items-count {
+    display: none; /* el contador ya no hace falta arriba, queda en el resumen */
+  }
+}
+
+/* En desktop, el botón "← Volver" nunca se muestra —
+   ahí el cajón lateral funciona perfecto con la "✕" de siempre. */
+.btn-volver-mobile { display: none; }
+
+
+/* ═══════════════════════════════════════════════════
+   ADMIN — sidebar de navegación a pantalla completa
+   en mobile, en vez de drawer angosto encimado
+   ═══════════════════════════════════════════════════ */
+@media (max-width: 768px) {
+  .admin-sidebar {
+    width: 100vw;
+    left: -100vw; /* arranca oculto, se desliza desde afuera */
+  }
+  .admin-sidebar.open { left: 0; }
+
+  /* Botón hamburguesa: ahora se comporta como un ícono
+     dentro de la topbar, no flotante tapando contenido. */
+  .mobile-menu-btn {
+    position: static;
+    box-shadow: none;
+    background: var(--grafito);
+    border: 1px solid var(--neon-blue);
+    color: var(--neon-blue);
+    width: 40px; height: 40px;
+    flex-shrink: 0;
+  }
+  .admin-topbar {
+    gap: var(--sp-sm);
+  }
+
+  /* Dentro del sidebar a pantalla completa, los links de
+     navegación se agrandan: se tocan como botones de un
+     menú principal, no como ítems de una lista compacta. */
+  .sidebar-brand {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: max(var(--sp-md), env(safe-area-inset-top));
+  }
+  .btn-cerrar-sidebar {
+    display: flex !important;
+    align-items: center; justify-content: center;
+    width: var(--tap-min); height: var(--tap-min);
+    background: var(--grafito);
+    border: 1px solid var(--humo);
+    border-radius: 50%;
+    color: var(--gris-l);
+    font-size: var(--fs-md);
+    cursor: pointer;
+  }
+  .admin-nav a {
+    font-size: var(--fs-md);
+    padding: 1em 0.9em;
+    min-height: 56px;
+  }
+  .nav-icon {
+    font-size: var(--fs-lg);
+    width: 30px;
+  }
+}
+.btn-cerrar-sidebar { display: none; }
