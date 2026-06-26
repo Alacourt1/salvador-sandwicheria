@@ -535,7 +535,7 @@
 
 <!-- ═══ SCRIPT DE AUTENTICACIÓN, PUNTOS E HISTORIAL ═══ -->
 <script type="module">
-  import { auth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut, db, collection, getDocs, updateDoc, doc, setDoc } from './js/firebase.js';
+  import { auth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut, db, collection, getDocs, getDoc, updateDoc, doc, setDoc } from './js/firebase.js';
 
   const btnUser = document.getElementById('btnUserHeader');
   const btnUserLabel = document.getElementById('btnUserLabel');
@@ -554,10 +554,9 @@
     const provider = new GoogleAuthProvider();
     try {
       await signInWithPopup(auth, provider);
-      modalOverlay.classList.remove('show'); // Cierra el modal también
+      modalOverlay.classList.remove('show');
     } catch (error) {
       console.error('Error al ingresar con Google:', error);
-      // Mostrar feedback visual si falla
       const msg = document.createElement('p');
       msg.style.color = 'var(--neon-pink)';
       msg.style.fontSize = '0.9rem';
@@ -597,9 +596,11 @@
   async function cargarDatosPuntos(uid) {
     const userDocRef = doc(db, 'usuarios', uid);
     let userData;
-    const snap = await getDocs(collection(db, 'usuarios'));
-    snap.forEach(d => { if (d.id === uid) userData = d.data(); });
-    if (!userData) {
+    // Optimización: usar getDoc en lugar de getDocs sobre toda la colección
+    const userSnap = await getDoc(userDocRef);
+    if (userSnap.exists()) {
+      userData = userSnap.data();
+    } else {
       userData = { dineroAcumulado: 0, puntos: 0 };
       await setDoc(userDocRef, userData);
     }
@@ -650,9 +651,11 @@
     const total = carrito.reduce((s, i) => s + i.precio * i.cantidad, 0);
     const puntos = Math.floor(total / 10000) * 100;
     const userDocRef = doc(db, 'usuarios', usuarioActual.uid);
-    const snap = await getDocs(collection(db, 'usuarios'));
+    const userSnap = await getDoc(userDocRef);
     let userData = { dineroAcumulado: 0, puntos: 0 };
-    snap.forEach(d => { if (d.id === usuarioActual.uid) userData = d.data(); });
+    if (userSnap.exists()) {
+      userData = userSnap.data();
+    }
     await setDoc(userDocRef, {
       dineroAcumulado: (userData.dineroAcumulado || 0) + total,
       puntos: (userData.puntos || 0) + puntos
