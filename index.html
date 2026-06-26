@@ -554,33 +554,46 @@
     const provider = new GoogleAuthProvider();
     try {
       await signInWithPopup(auth, provider);
-      modalOverlay.classList.remove('show');
+      modalOverlay.classList.remove('show'); // Cierra el modal también
     } catch (error) {
       console.error('Error al ingresar con Google:', error);
+      // Mostrar feedback visual si falla
+      const msg = document.createElement('p');
+      msg.style.color = 'var(--neon-pink)';
+      msg.style.fontSize = '0.9rem';
+      msg.style.marginTop = '1rem';
+      msg.textContent = 'Hubo un error. Reintentá.';
+      modalOverlay.querySelector('.modal-auth-card')?.appendChild(msg);
+      setTimeout(() => msg.remove(), 3000);
     }
   };
 
-  // Estado de autenticación
+  // ── Mostrar el overlay SOLO en PWA y sin sesión ──
+  const isPWA = window.matchMedia('(display-mode: standalone)').matches;
+  const welcomeOverlay = document.getElementById('welcomeOverlay');
+
   onAuthStateChanged(auth, async (user) => {
     usuarioActual = user;
     if (user) {
+      welcomeOverlay?.classList.remove('mostrar');
       btnUserLabel.textContent = user.email;
       puntosBloqueado.style.display = 'none';
       puntosLogeado.style.display = 'block';
       cargarDatosPuntos(user.uid);
       document.getElementById('puntosSection').style.display = 'block';
-     // 👇 Ocultar la pantalla de login forzoso
-    document.getElementById('welcomeOverlay').classList.add('hidden');
-  } else {
+    } else {
+      if (isPWA) {
+        welcomeOverlay?.classList.add('mostrar');
+      } else {
+        welcomeOverlay?.classList.remove('mostrar');
+      }
       btnUserLabel.textContent = 'Ingresar';
       puntosBloqueado.style.display = 'block';
       puntosLogeado.style.display = 'none';
       document.getElementById('puntosSection').style.display = 'none';
-  
-    // 👇 Mostrar la pantalla de login forzoso nuevamente
-    document.getElementById('welcomeOverlay').classList.remove('hidden');
-  }
-});
+    }
+  });
+
   async function cargarDatosPuntos(uid) {
     const userDocRef = doc(db, 'usuarios', uid);
     let userData;

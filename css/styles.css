@@ -1008,57 +1008,57 @@ button, a, input, select, textarea {
   .site-footer-inner { grid-template-columns: 1fr 1fr; }
 }
 
-/* ── MÓVIL (600px) ── */
+/* ── MÓVIL (600px) — TAMAÑOS GIGANTES ── */
 @media (max-width: 600px) {
-  html { font-size: 24px; } /* base mucho más grande para todo */
+  html { font-size: 32px; } /* base enorme */
 
   /* Header */
   .pub-header {
-    height: 100px;
+    height: 120px;
   }
   .pub-header-inner {
-    padding: 0 20px;
-    height: 100px;
+    padding: 0 24px;
+    height: 120px;
     justify-content: center;
-    gap: 20px;
+    gap: 24px;
   }
   .pub-logo {
-    font-size: 3rem;
+    font-size: 4rem;           /* ~128px */
   }
   .pub-logo small {
-    font-size: 1rem;
+    font-size: 1.2rem;
   }
   .btn-user-header,
   .btn-carrito-header {
-    padding: 16px 24px;
-    font-size: 1.2rem;
+    padding: 20px 30px;
+    font-size: 1.4rem;
   }
   .btn-user-header svg,
   .btn-carrito-header svg {
-    width: 26px;
-    height: 26px;
+    width: 32px;
+    height: 32px;
   }
   .header-right {
-    gap: 14px;
+    gap: 18px;
   }
 
   /* Hero */
   .hero {
-    min-height: 75vh;
-    padding: 80px 20px 70px;
+    min-height: 80vh;
+    padding: 100px 24px 80px;
     text-align: center;
   }
   .hero h1 {
-    font-size: 4rem;
-    line-height: 1.1;
+    font-size: 4rem;           /* 128px */
+    line-height: 1.05;
   }
   .hero-sub {
-    font-size: 1.6rem;
-    line-height: 1.4;
+    font-size: 1.8rem;
+    line-height: 1.3;
   }
   .hero-chip {
-    font-size: 1.2rem;
-    padding: 10px 24px;
+    font-size: 1.4rem;
+    padding: 12px 28px;
   }
   .hero-pills { display: none; }
   .pub-logo small { display: none; }
@@ -1066,64 +1066,64 @@ button, a, input, select, textarea {
   .admin-bar-email { display: none; }
 
   /* Menú productos */
-  .menu-section { padding: 32px 16px 90px; }
-  .menu-section-header { margin-bottom: 24px; }
-  .menu-section-title { font-size: 2rem; text-align: center; width: 100%; }
-  .menu-count { font-size: 1.1rem; }
+  .menu-section { padding: 36px 18px 100px; }
+  .menu-section-header { margin-bottom: 28px; }
+  .menu-section-title { font-size: 2.4rem; text-align: center; width: 100%; }
+  .menu-count { font-size: 1.2rem; }
   #menu-container {
     grid-template-columns: 1fr;
-    gap: 24px;
+    gap: 28px;
   }
-  .producto { border-radius: 20px; }
-  .prod-thumb { height: 260px; }
-  .producto-body { padding: 24px; gap: 12px; }
-  .prod-cat-label { font-size: 1rem; }
-  .producto h2 { font-size: 1.6rem; }
-  .prod-desc { display: block; font-size: 1.1rem; line-height: 1.5; }
-  .prod-precio-final { font-size: 2rem; }
-  .prod-precio-docena { font-size: 1rem; }
-  .prod-precio-promo { font-size: 1.1rem; }
-  .btn-agregar { width: 100%; justify-content: center; padding: 16px; font-size: 1.2rem; }
+  .producto { border-radius: 24px; }
+  .prod-thumb { height: 320px; }
+  .producto-body { padding: 28px; gap: 14px; }
+  .prod-cat-label { font-size: 1.2rem; }
+  .producto h2 { font-size: 1.8rem; }
+  .prod-desc { display: block; font-size: 1.3rem; line-height: 1.5; }
+  .prod-precio-final { font-size: 2.4rem; }
+  .prod-precio-docena { font-size: 1.2rem; }
+  .prod-precio-promo { font-size: 1.3rem; }
+  .btn-agregar { width: 100%; justify-content: center; padding: 18px; font-size: 1.4rem; }
 
   /* Footer */
-  .site-footer-inner { grid-template-columns: 1fr; gap: 32px; }
+  .site-footer-inner { grid-template-columns: 1fr; gap: 36px; }
 
   /* Puntos */
-  .puntos-section { padding: 0 16px; margin: 40px auto; }
-  .puntos-title { font-size: 2.2rem; margin-bottom: 28px; text-align: center; }
-  .puntos-resumen { flex-direction: column; gap: 16px; }
-  .puntos-stat { padding: 24px; }
-  .puntos-stat-num { font-size: 2.8rem; }
-  .puntos-stat-label { font-size: 1.1rem; }
-  .timeline { margin: 40px 0; padding-left: 20px; }
-  .timeline-item h4 { font-size: 1.2rem; }
-  .timeline-item p { font-size: 1.1rem; }
-  .recompensa-btn { font-size: 1.1rem; padding: 12px 18px; }
+  .puntos-section { padding: 0 18px; margin: 48px auto; }
+  .puntos-title { font-size: 2.6rem; margin-bottom: 32px; text-align: center; }
+  .puntos-resumen { flex-direction: column; gap: 20px; }
+  .puntos-stat { padding: 28px; }
+  .puntos-stat-num { font-size: 3.2rem; }
+  .puntos-stat-label { font-size: 1.2rem; }
+  .timeline { margin: 48px 0; padding-left: 24px; }
+  .timeline-item h4 { font-size: 1.4rem; }
+  .timeline-item p { font-size: 1.2rem; }
+  .recompensa-btn { font-size: 1.2rem; padding: 14px 20px; }
 
   /* Carrito */
   .carrito-drawer {
     width: 100vw;
     border-left: none;
   }
-  .drawer-head { padding: 22px 20px; }
-  .drawer-head h2 { font-size: 1.6rem; }
-  .drawer-cliente { padding: 18px 20px; gap: 16px; }
+  .drawer-head { padding: 28px 24px; }
+  .drawer-head h2 { font-size: 1.8rem; }
+  .drawer-cliente { padding: 22px 24px; gap: 18px; }
   .drawer-cliente input,
-  .drawer-cliente textarea { font-size: 1.2rem; padding: 16px 18px; }
-  .drawer-items { padding: 16px 20px; }
-  .item-carrito { padding: 16px 18px; gap: 16px; }
-  .item-thumb { width: 60px; height: 60px; }
-  .item-nombre { font-size: 1.2rem; }
-  .item-precio-unit { font-size: 1rem; }
-  .item-subtotal { font-size: 1.4rem; }
-  .ctrl-btn { width: 42px; height: 42px; font-size: 1.4rem; }
-  .ctrl-cantidad { font-size: 1.2rem; }
-  .drawer-footer { padding: 18px 20px 22px; }
-  .drawer-resumen { padding: 18px; }
-  .resumen-row { font-size: 1.1rem; }
-  .resumen-row.total span:last-child { font-size: 2.2rem; }
-  .btn-pedir-wa { font-size: 1.3rem; padding: 20px; }
-  .btn-vaciar-carrito { font-size: 1.1rem; }
+  .drawer-cliente textarea { font-size: 1.4rem; padding: 18px 20px; }
+  .drawer-items { padding: 20px 24px; }
+  .item-carrito { padding: 20px 22px; gap: 18px; }
+  .item-thumb { width: 72px; height: 72px; }
+  .item-nombre { font-size: 1.4rem; }
+  .item-precio-unit { font-size: 1.1rem; }
+  .item-subtotal { font-size: 1.6rem; }
+  .ctrl-btn { width: 48px; height: 48px; font-size: 1.6rem; }
+  .ctrl-cantidad { font-size: 1.4rem; }
+  .drawer-footer { padding: 22px 24px 28px; }
+  .drawer-resumen { padding: 22px; }
+  .resumen-row { font-size: 1.2rem; }
+  .resumen-row.total span:last-child { font-size: 2.6rem; }
+  .btn-pedir-wa { font-size: 1.5rem; padding: 24px; }
+  .btn-vaciar-carrito { font-size: 1.2rem; }
 }
 
 /* ── TABLET (768px) ── */
@@ -1385,32 +1385,31 @@ button, a, input, select, textarea {
 }
 #aplicarCodigoBtn:hover { background: var(--neon-pink-dark); }
 
-/* ═══ PANTALLA DE LOGIN OBLIGATORIO ═══ */
+/* ═══ PANTALLA DE LOGIN OBLIGATORIO (solo PWA) ═══ */
 .welcome-overlay {
   position: fixed;
   inset: 0;
   z-index: 9999;
   background:
-    radial-gradient(circle at top left, #ff008866, transparent 40%),
+      radial-gradient(circle at top left, #ff008866, transparent 40%),
     radial-gradient(circle at bottom right, #00e5ff66, transparent 40%),
     linear-gradient(135deg, #070b17, #111827, #0f172a);
-  display: flex;
+  display: none;
   align-items: center;
   justify-content: center;
-  transition: opacity 0.4s ease, visibility 0.4s ease;
 }
-.welcome-overlay.hidden {
-  opacity: 0;
-  visibility: hidden;
+.welcome-overlay.mostrar {
+  display: flex;                /* solo se muestra con esta clase */
 }
+
 .welcome-card-overlay {
-  background: rgba(15, 18, 33, 0.9);
-  backdrop-filter: blur(25px);
+  background: rgba(15, 18, 33, 0.95);
+  backdrop-filter: blur(30px);
   border: 2px solid var(--neon-blue);
   border-radius: 24px;
-  padding: 50px 36px;
+  padding: 40px 28px;
   text-align: center;
-  max-width: 420px;
+  max-width: 380px;          /* más estrecho para que el título no desborde */
   width: 90%;
   box-shadow: 0 0 60px rgba(0, 229, 255, 0.4), 0 0 120px rgba(255, 0, 136, 0.3);
   animation: neonPulse 2s infinite alternate;
@@ -1421,38 +1420,41 @@ button, a, input, select, textarea {
 }
 .welcome-logo {
   font-family: 'Orbitron', sans-serif;
-  font-size: 3.2rem;
+  font-size: 2.6rem;         /* más chico que antes para caber en la tarjeta */
   font-weight: 900;
   color: #fff;
-  text-shadow: 0 0 30px var(--neon-blue), 0 0 60px var(--neon-blue);
-  letter-spacing: 8px;
-  margin-bottom: 12px;
+  text-shadow: 0 0 20px var(--neon-blue), 0 0 40px var(--neon-blue);
+  letter-spacing: 6px;
+  margin-bottom: 8px;
+  line-height: 1.2;
+  word-break: break-word;
 }
 .welcome-sub {
   font-family: 'Inter', sans-serif;
-  font-size: 1rem;
+  font-size: 0.9rem;
   font-weight: 700;
-  letter-spacing: 6px;
+  letter-spacing: 5px;
   text-transform: uppercase;
   color: var(--neon-pink);
-  margin-bottom: 30px;
+  margin-bottom: 24px;
 }
 .welcome-divider {
-  width: 80px;
+  width: 70px;
   height: 3px;
   background: linear-gradient(90deg, var(--neon-pink), var(--neon-blue), var(--neon-pink));
-  margin: 0 auto 30px;
+  margin: 0 auto 24px;
 }
 .welcome-message {
-  font-size: 1.1rem;
+  font-size: 1rem;
   color: var(--gris-l);
-  line-height: 1.7;
-  margin-bottom: 36px;
+  line-height: 1.6;
+  margin-bottom: 30px;
+  padding: 0 10px;
 }
 .welcome-google-btn {
   width: 100%;
-  padding: 18px;
-  font-size: 1.2rem;
+  padding: 16px;
+  font-size: 1.1rem;
   border-radius: 12px;
   font-weight: 700;
   background: #fff;
