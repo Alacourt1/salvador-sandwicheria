@@ -1439,21 +1439,29 @@ body::before {
 .btn-cerrar-sidebar { display: none; }
 
 /* ═══════════════════════════════════════════════════════════
-   MODO APP NATIVA — ESCALA REDUCIDA + EDGE-TO-EDGE EN MOBILE
+   MODO APP NATIVA — ESCALA ESTÁNDAR + CONSISTENCIA
    ═══════════════════════════════════════════════════════════ */
 @media (max-width: 768px) {
 
-  :root {
-    /* Escala "app" mucho más chica – similar a la fluida de base */
-    --fs-app-xs:   0.75rem;
-    --fs-app-sm:   0.85rem;
-    --fs-app-base: 0.95rem;
-    --fs-app-md:   1.1rem;
-    --fs-app-lg:   1.3rem;
-    --fs-app-xl:   1.6rem;
-    --fs-app-hero: 2.2rem;
+  /* Fijar tamaño base de fuente: 16px en cualquier dispositivo.
+     Así las variables --fs-app-* en rem se vuelven estables,
+     sin importar ajustes de accesibilidad del sistema. */
+  html {
+    font-size: 16px;
   }
 
+  :root {
+    /* Valores en rem (ahora 1rem = 16px) */
+    --fs-app-xs:   0.75rem;   /* 12px – chips, labels */
+    --fs-app-sm:   0.875rem;  /* 14px – texto secundario */
+    --fs-app-base: 1rem;      /* 16px – cuerpo */
+    --fs-app-md:   1.125rem;  /* 18px – subtítulos */
+    --fs-app-lg:   1.375rem;  /* 22px – títulos de sección */
+    --fs-app-xl:   1.75rem;   /* 28px – destacados */
+    --fs-app-hero: 2.5rem;    /* 40px – título hero */
+  }
+
+  /* Edge‑to‑edge */
   .hero-inner,
   .promociones-inner,
   .cats-inner,
