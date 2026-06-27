@@ -1,7 +1,7 @@
 /* ═══════════════════════════════════════
    SALVADOR SANGUCHERÍA — Cyberpunk Premium
    Neon Rosa/Azul/Amarillo · Glassmorphism
-   Base tipográfica fluida — responsive real
+   Reconstrucción final — sin bugs de escala
    ═══════════════════════════════════════ */
 
 @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;800;900&family=Inter:wght@400;500;600;700;800&display=swap');
@@ -17,7 +17,6 @@
   --gris-xl:   #d8d8e0;
   --crema:     #f5f5f7;
 
-  /* ═══ PALETA NEÓN ═══ */
   --neon-pink:        #ff0088;
   --neon-pink-dark:   #cc0066;
   --neon-pink-light:  #ff80c0;
@@ -42,18 +41,25 @@
   --shadow-purple: 0 0 10px var(--neon-purple), 0 0 20px var(--neon-purple);
 
   /* ═══════════════════════════════════════
-     ESCALA TIPOGRÁFICA FLUIDA
-     ═══════════════════════════════════════ */
-  --fs-xs:    clamp(0.75rem,  0.7rem  + 0.2vw, 0.85rem);
-  --fs-sm:    clamp(0.85rem,  0.8rem  + 0.25vw, 0.95rem);
-  --fs-base:  clamp(0.95rem,  0.9rem  + 0.3vw,  1.05rem);
-  --fs-md:    clamp(1.05rem,  1rem    + 0.35vw, 1.2rem);
-  --fs-lg:    clamp(1.2rem,   1.1rem  + 0.6vw,  1.5rem);
-  --fs-xl:    clamp(1.5rem,   1.3rem  + 1vw,    2rem);
-  --fs-2xl:   clamp(2rem,     1.7rem  + 1.8vw,  2.8rem);
-  --fs-hero:  clamp(2.4rem,   2rem    + 3.2vw,  4rem);
+     ESCALA TIPOGRÁFICA — ÚNICA FUENTE DE VERDAD
+     ═══════════════════════════════════════
+     UNA sola escala para toda la app, fluida con clamp().
+     IMPORTANTE: nunca se fija html{font-size} en ningún
+     media query. Eso es justamente lo que rompía la
+     accesibilidad — un teléfono con "letra grande" del
+     sistema multiplicaba ese valor fijo y todo se veía
+     gigante. clamp() en rem respeta el tamaño base del
+     navegador/sistema y además fluye con el ancho real
+     de pantalla — las dos cosas a la vez. */
+  --fs-xs:    clamp(0.72rem,  0.68rem + 0.25vw, 0.85rem);
+  --fs-sm:    clamp(0.84rem,  0.78rem + 0.3vw,  0.95rem);
+  --fs-base:  clamp(0.92rem,  0.86rem + 0.35vw, 1.05rem);
+  --fs-md:    clamp(1.02rem,  0.94rem + 0.45vw, 1.2rem);
+  --fs-lg:    clamp(1.15rem,  1.02rem + 0.7vw,  1.5rem);
+  --fs-xl:    clamp(1.4rem,   1.2rem  + 1.1vw,  2rem);
+  --fs-2xl:   clamp(1.8rem,   1.5rem  + 1.9vw,  2.8rem);
+  --fs-hero:  clamp(2.1rem,   1.7rem  + 3.4vw,  4rem);
 
-  /* Espaciados fluidos */
   --sp-xs:  clamp(0.5rem,  0.45rem + 0.3vw, 0.7rem);
   --sp-sm:  clamp(0.75rem, 0.65rem + 0.4vw, 1rem);
   --sp-md:  clamp(1.1rem,  1rem    + 0.6vw, 1.5rem);
@@ -66,6 +72,7 @@
 /* ── RESET ── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+/* NUNCA fijar font-size acá ni en ningún @media — ver nota arriba. */
 html {
   scroll-behavior: smooth;
   -webkit-text-size-adjust: 100%;
@@ -86,7 +93,6 @@ body {
 }
 img { max-width: 100%; display: block; }
 
-/* ── GLOBAL TRANSITIONS ── */
 button, a, input, select, textarea {
   transition: background 0.2s, color 0.2s, border-color 0.2s, transform 0.2s, box-shadow 0.2s;
   font-size: inherit;
@@ -95,18 +101,15 @@ button, a, input, select, textarea {
   outline: 2px solid var(--neon-blue);
   outline-offset: 2px;
 }
-
 button, input, select, textarea, a.btn-social, a.btn-carrito-header {
   min-height: var(--tap-min);
 }
 
-/* ── SCROLLBAR ── */
 ::-webkit-scrollbar { width: 8px; }
 ::-webkit-scrollbar-track { background: var(--carbon); }
 ::-webkit-scrollbar-thumb { background: var(--neon-pink); border-radius: 999px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--neon-blue); }
 
-/* ── PARTÍCULAS NEÓN ── */
 .bg-particles { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
 .bg-particles span {
   position: absolute; width: 4px; height: 4px;
@@ -120,7 +123,6 @@ button, input, select, textarea, a.btn-social, a.btn-carrito-header {
 .bg-particles span:nth-child(5) { left: 90%; animation-delay: -1s; background: var(--neon-pink); }
 @keyframes floatUp { from { transform: translateY(100vh); opacity: 0.8; } to { transform: translateY(-100px); opacity: 0; } }
 
-/* ── FONDO GRID CYBERPUNK ── */
 body::before {
   content: '';
   position: fixed; inset: 0; z-index: -1;
@@ -155,26 +157,30 @@ body::before {
   display: flex; align-items: center; justify-content: space-between;
   gap: var(--sp-sm); flex-wrap: wrap; padding-block: var(--sp-xs);
 }
-.admin-bar-left { display: flex; align-items: center; gap: var(--sp-xs); }
+.admin-bar-left { display: flex; align-items: center; gap: var(--sp-xs); min-width: 0; }
 .admin-bar-dot {
   width: 7px; height: 7px; background: #fff; border-radius: 50%;
   opacity: .5; animation: pulse 2s infinite; flex-shrink: 0;
 }
 @keyframes pulse { 0%,100%{opacity:.45} 50%{opacity:1} }
-.admin-bar-label { letter-spacing: .5px; text-transform: uppercase; font-size: var(--fs-xs); font-weight: 800; }
-.admin-bar-email { font-weight: 500; opacity: .75; font-size: var(--fs-xs); }
-.admin-bar-right { display: flex; align-items: center; gap: var(--sp-xs); }
+.admin-bar-label { letter-spacing: .5px; text-transform: uppercase; font-size: var(--fs-xs); font-weight: 800; flex-shrink: 0; }
+.admin-bar-email {
+  font-weight: 500; opacity: .75; font-size: var(--fs-xs);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  min-width: 0;
+}
+.admin-bar-right { display: flex; align-items: center; gap: var(--sp-xs); flex-shrink: 0; }
 .admin-bar-btn {
   background: rgba(0,0,0,.15); color: #fff; border: none; border-radius: 6px;
   padding: 6px 14px; font-family: 'Inter', sans-serif;
   font-size: var(--fs-xs); font-weight: 700; cursor: pointer;
   text-decoration: none; display: inline-flex; align-items: center; gap: 5px;
-  min-height: 32px; transition: background .15s;
+  min-height: 32px; transition: background .15s; white-space: nowrap;
 }
 .admin-bar-btn:hover { background: rgba(0,0,0,.28); }
 
 /* ═══════════════════════════════════════
-   HEADER (glass) — centrado, fluido
+   HEADER (glass)
    ═══════════════════════════════════════ */
 .pub-header {
   position: sticky; top: 0; z-index: 100;
@@ -244,6 +250,7 @@ body::before {
   cursor: pointer; flex-shrink: 0;
   min-height: var(--tap-min);
   transition: transform .1s, box-shadow .2s;
+  white-space: nowrap;
 }
 .btn-carrito-header:hover, .btn-user-header:hover {
   transform: translateY(-2px);
@@ -257,7 +264,7 @@ body::before {
 }
 
 /* ═══════════════════════════════════════
-   HERO — centrado, fluido, sin saltos
+   HERO
    ═══════════════════════════════════════ */
 .hero {
   position: relative;
@@ -287,7 +294,7 @@ body::before {
   display: flex; flex-direction: column; align-items: center;
   text-align: center;
 }
-.hero-text { max-width: 700px; display: flex; flex-direction: column; align-items: center; }
+.hero-text { max-width: 700px; display: flex; flex-direction: column; align-items: center; width: 100%; }
 
 .hero-chip {
   display: inline-flex; align-items: center; gap: 6px;
@@ -434,7 +441,7 @@ body::before {
 .promo-card-btn:hover { background: var(--neon-pink-dark); }
 
 /* ═══════════════════════════════════════
-   CATEGORÍAS — sticky, scroll horizontal táctil
+   CATEGORÍAS
    ═══════════════════════════════════════ */
 .cats-section {
   position: sticky; top: 64px; z-index: 90;
@@ -473,9 +480,8 @@ body::before {
   font-weight: 700;
   box-shadow: var(--shadow-blue);
 }
-
 /* ═══════════════════════════════════════
-   GRID PRODUCTOS — fluido, sin saltos abruptos
+   GRID PRODUCTOS
    ═══════════════════════════════════════ */
 .menu-section { max-width: 1140px; margin: 0 auto; padding: var(--sp-lg) var(--sp-md) calc(var(--sp-xl) * 2); }
 .menu-section-header {
@@ -594,7 +600,6 @@ body::before {
 .estado-icono { font-size: var(--fs-2xl); margin-bottom: var(--sp-sm); }
 .estado-menu p { font-size: var(--fs-base); }
 
-/* Efecto shine sutil al hover */
 .producto::after {
   content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
   background: linear-gradient(45deg, transparent 40%, rgba(255, 0, 136, 0.08) 50%, transparent 60%);
@@ -602,9 +607,21 @@ body::before {
 }
 .producto:hover::after { transform: rotate(45deg) translateX(100%); }
 
-/* ═══════════════════════════════════════
-   CARRITO DRAWER — full height, fluido
-   ═══════════════════════════════════════ */
+/* ═══════════════════════════════════════════════════
+   CARRITO — overlay + drawer
+   ═══════════════════════════════════════════════════
+   ARQUITECTURA DE ANCHO (clave del fix):
+   - Desktop: el drawer es un panel angosto pegado a la
+     derecha. Ancho fijo en px (no vw), porque en desktop
+     no hay riesgo de error de cálculo de WebView.
+   - Mobile (ver bloque @media más abajo en el archivo):
+     el drawer pasa a ocupar el 100% via left:0 + right:0
+     (position:fixed con las 4 esquinas ancladas), NUNCA
+     con width:100vw. Esa unidad es la que fallaba en
+     WebViews de PWA instaladas en Android — el cálculo de
+     100vw ahí puede incluir el ancho de scrollbar virtual
+     y queda "casi" completo pero no exacto.
+   ═══════════════════════════════════════════════════ */
 .carrito-overlay {
   position: fixed; inset: 0; background: rgba(0,0,0,.8);
   z-index: 300; opacity: 0; pointer-events: none; transition: opacity .28s;
@@ -612,8 +629,13 @@ body::before {
 .carrito-overlay.abierto { opacity: 1; pointer-events: all; }
 
 .carrito-drawer {
-  position: fixed; top: 0; right: 0; bottom: 0;
-  width: min(460px, 100vw);
+  position: fixed;
+  top: 0; bottom: 0; right: 0;
+  /* Ancho desktop: fijo en px, alineado a la derecha. En mobile
+     este max-width se anula (ver media query) y el drawer pasa
+     a ocupar todo el ancho real vía left:0. */
+  width: 100%;
+  max-width: 460px;
   height: 100dvh;
   background: var(--glass-bg);
   backdrop-filter: blur(24px);
@@ -630,15 +652,18 @@ body::before {
   padding: var(--sp-md); flex-shrink: 0;
   border-bottom: 1px solid rgba(0,229,255,0.3);
   display: flex; align-items: center; justify-content: space-between;
+  gap: var(--sp-sm);
 }
-.drawer-head-left { display: flex; align-items: center; gap: var(--sp-xs); }
+.drawer-head-left { display: flex; align-items: center; gap: var(--sp-xs); min-width: 0; }
 .drawer-head h2 {
   font-family: 'Orbitron', sans-serif; font-size: var(--fs-lg);
   color: var(--neon-yellow); text-shadow: var(--shadow-yellow);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
 .drawer-items-count {
   background: rgba(255, 0, 136, 0.2); border-radius: 99px;
   font-size: var(--fs-xs); font-weight: 700; padding: 3px 10px; color: var(--neon-pink);
+  flex-shrink: 0; white-space: nowrap;
 }
 .btn-cerrar-drawer {
   background: rgba(255,255,255,.1); border: none; border-radius: 50%;
@@ -648,6 +673,29 @@ body::before {
   transition: background .15s, color .15s;
 }
 .btn-cerrar-drawer:hover { background: var(--neon-pink); color: #fff; }
+
+/* Botón "← Volver" — solo se muestra en mobile (ver media query).
+   En desktop el botón "✕" de arriba ya cubre esa función. */
+.btn-volver-mobile {
+  display: none;
+  align-items: center;
+  gap: 8px;
+  background: none;
+  border: none;
+  color: var(--crema);
+  font-family: 'Inter', sans-serif;
+  font-size: var(--fs-base);
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+  min-height: var(--tap-min);
+  flex-shrink: 0;
+}
+.btn-volver-mobile svg {
+  width: 22px; height: 22px;
+  stroke: var(--neon-blue); fill: none; stroke-width: 2.5;
+  flex-shrink: 0;
+}
 
 .drawer-cliente {
   padding: var(--sp-md); flex-shrink: 0;
@@ -795,7 +843,7 @@ body::before {
 .toast.toast-error { border-color: rgba(255,0,136,.5); color: var(--neon-pink); }
 
 /* ═══════════════════════════════════════
-   FOOTER — centrado, fluido
+   FOOTER
    ═══════════════════════════════════════ */
 .site-footer {
   border-top: 1px solid var(--neon-blue);
@@ -840,7 +888,6 @@ body::before {
   display: flex; align-items: center; justify-content: space-between;
   font-size: var(--fs-sm); color: var(--gris); gap: var(--sp-sm); flex-wrap: wrap;
 }
-
 /* ═══════════════════════════════════════
    LOGIN PAGE
    ═══════════════════════════════════════ */
@@ -887,21 +934,45 @@ body::before {
 }
 .btn-login:hover { background: var(--neon-pink-dark); }
 
-/* ═══════════════════════════════════════
-   ADMIN PANEL — sidebar fluido + responsive real
-   ═══════════════════════════════════════ */
+/* ═══════════════════════════════════════════════════
+   ADMIN PANEL
+   ═══════════════════════════════════════════════════
+   Misma lógica de ancho que el carrito: en desktop el
+   sidebar tiene un ancho fijo en px y vive "sticky" al
+   lado del contenido. En mobile (ver media query) pasa
+   a ocupar toda la pantalla via left:0/right:0 + transform,
+   nunca con width:100vw.
+   ═══════════════════════════════════════════════════ */
 .admin-layout { display: flex; min-height: 100dvh; }
 .admin-sidebar {
   width: 240px; flex-shrink: 0; background: var(--carbon);
   border-right: 1px solid var(--neon-blue); display: flex; flex-direction: column;
   position: sticky; top: 0; height: 100dvh; overflow-y: auto;
 }
-.sidebar-brand { padding: var(--sp-md); border-bottom: 1px solid var(--grafito); }
+.sidebar-brand {
+  padding: var(--sp-md); border-bottom: 1px solid var(--grafito);
+  display: flex; align-items: center; justify-content: space-between; gap: var(--sp-sm);
+}
 .sidebar-brand-logo {
   font-family: 'Orbitron', sans-serif; font-size: var(--fs-lg); font-weight: 800;
   color: var(--neon-yellow); text-shadow: var(--shadow-yellow);
 }
 .sidebar-brand small { display: block; color: var(--gris); font-size: var(--fs-xs); text-transform: uppercase; letter-spacing: .05em; margin-top: 4px; }
+
+/* Botón "✕" para cerrar el sidebar — solo visible en mobile pantalla completa */
+.btn-cerrar-sidebar {
+  display: none;
+  align-items: center; justify-content: center;
+  width: var(--tap-min); height: var(--tap-min);
+  background: var(--grafito);
+  border: 1px solid var(--humo);
+  border-radius: 50%;
+  color: var(--gris-l);
+  font-size: var(--fs-md);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
 .admin-nav { padding: var(--sp-sm); flex: 1; display: flex; flex-direction: column; gap: 4px; }
 .nav-section-label {
   font-size: var(--fs-xs); font-weight: 700; text-transform: uppercase; letter-spacing: .08em;
@@ -1067,30 +1138,19 @@ body::before {
 .welcome-card p { color: var(--gris-l); font-size: var(--fs-base); line-height: 1.6; }
 .welcome-card p strong { color: var(--neon-pink); }
 
-/* ── Sidebar mobile: drawer en vez de comprimir layout ── */
-@media (max-width: 768px) {
-  .admin-sidebar {
-    position: fixed; left: -260px; top: 0; bottom: 0;
-    width: 260px; z-index: 240;
-    transition: left 0.3s ease;
-  }
-  .admin-sidebar.open { left: 0; }
-}
 .sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 230; }
 .sidebar-overlay.show { display: block; }
 .mobile-menu-btn {
   display: none;
-  position: fixed; top: var(--sp-sm); left: var(--sp-sm); z-index: 250;
-  background: var(--neon-pink); color: #fff; border: none;
+  background: var(--grafito); color: var(--neon-blue); border: 1px solid var(--neon-blue);
   width: var(--tap-min); height: var(--tap-min);
   border-radius: var(--radio-sm);
   font-weight: 700; font-size: var(--fs-lg); cursor: pointer;
-  box-shadow: var(--shadow-pink);
+  flex-shrink: 0;
 }
-@media (max-width: 768px) { .mobile-menu-btn { display: block; } }
 
 /* ═══════════════════════════════════════
-   PUNTOS Y RECOMPENSAS — fluido
+   PUNTOS Y RECOMPENSAS
    ═══════════════════════════════════════ */
 .puntos-section { max-width: 1140px; margin: var(--sp-xl) auto; padding: 0 var(--sp-md); }
 .puntos-title {
@@ -1156,6 +1216,18 @@ body::before {
   cursor: pointer; min-height: var(--tap-min); transition: background .15s;
 }
 .btn-google:hover { background: #f1f1f1; }
+
+.btn-user-header {
+  display: flex; align-items: center; gap: var(--sp-xs);
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(0, 212, 255, 0.3);
+  color: var(--crema); border-radius: 99px;
+  padding: 0.55em 1em; font-family: 'Inter', sans-serif;
+  font-size: var(--fs-sm); font-weight: 600; cursor: pointer;
+  transition: background .15s, border-color .15s, box-shadow .15s;
+}
+.btn-user-header:hover { background: rgba(0, 212, 255, 0.1); border-color: var(--neon-blue); box-shadow: var(--shadow-blue); }
+.btn-user-header svg { stroke: currentColor; }
 
 .modal-auth-overlay {
   position: fixed; inset: 0; background: rgba(0,0,0,0.8);
@@ -1281,87 +1353,55 @@ body::before {
 @media (pointer: coarse) { .custom-cursor { display: none; } }
 
 .flying-product { position: fixed; pointer-events: none; z-index: 10000; top: 0; left: 0; width: 100%; height: 100%; }
+/* ═══════════════════════════════════════════════════════════
+   MODO APP NATIVA — BLOQUE ÚNICO PARA MOBILE (≤768px)
+   ═══════════════════════════════════════════════════════════
+   Todo lo que cambia en celular vive ACÁ, en un solo lugar,
+   para que no haya dos reglas distintas peleando por la
+   misma propiedad (que fue la causa de los bugs anteriores).
 
-/* ═══════════════════════════════════════
-   RESPONSIVE — solo ajustes de LAYOUT,
-   nunca tamaños de fuente fijos en px.
-   La tipografía ya fluye sola por las
-   variables --fs-* con clamp().
-   ═══════════════════════════════════════ */
-
-/* Tablet: header y hero ya fluyen, solo ajustamos columnas de grids */
-@media (max-width: 900px) {
-  .site-footer-inner { grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); }
-  .puntos-resumen { flex-direction: column; }
-}
-
-/* Mobile: layout vertical donde corresponde, SIN tocar font-size */
-@media (max-width: 640px) {
-  .pub-header-inner { justify-content: center; text-align: center; }
-  .header-right { width: 100%; justify-content: center; }
-  .hero-pills { gap: var(--sp-xs); }
-
-  /* Drawer ocupa todo el ancho en celulares chicos — comportamiento
-     de app nativa, no "ventana flotante" angosta */
-  .carrito-drawer { width: 100vw; }
-
-  /* Stats del admin: 2 columnas en vez de 1, se aprovecha mejor el ancho */
-  .stats-grid { grid-template-columns: 1fr 1fr; }
-
-  .footer-bottom { flex-direction: column; text-align: center; gap: var(--sp-xs); }
-}
-
-/* Celular muy angosto (320–375px): apretamos espaciados, no fuentes */
-@media (max-width: 380px) {
-  .hero { padding: var(--sp-lg) var(--sp-sm); }
-  .menu-section { padding: var(--sp-md) var(--sp-sm) var(--sp-xl); }
-  #menu-container { gap: var(--sp-sm); }
-}
-
-/* Accesibilidad: respeta reduce motion en toda la app */
-@media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-  }
-}
-
-/* ═══════════════════════════════════════════════════
-   MODO APP NATIVA — PANTALLAS COMPLETAS EN MOBILE
-   ═══════════════════════════════════════════════════ */
+   Reglas de oro de este bloque:
+   1. NUNCA se fija html{font-size}. La tipografía ya fluye
+      sola por las variables --fs-* con clamp() definidas
+      arriba — eso respeta la accesibilidad del teléfono.
+      Fijar un px acá fue lo que hizo que la app se viera
+      "gigante" en el celular del dueño.
+   2. NUNCA se usa width:100vw para pantallas completas.
+      En WebViews de PWA instaladas en Android ese cálculo
+      puede quedar "casi" completo pero no exacto. En su
+      lugar, todo elemento de pantalla completa se ancla
+      con left:0 + right:0 sobre position:fixed (ya heredado
+      del bloque base) y se anima con transform, nunca
+      animando un ancho en vw.
+   ═══════════════════════════════════════════════════════════ */
 @media (max-width: 768px) {
 
-  /* ── CARRITO: pantalla completa con header propio ── */
+  /* ── Header centrado en pantallas angostas ── */
+  .pub-header-inner { justify-content: center; text-align: center; }
+  .header-right { width: 100%; justify-content: center; }
+  .admin-bar-email { max-width: 140px; }
+
+  /* ══════════════════════════════════════════
+     CARRITO — pantalla completa con "← Volver"
+     ══════════════════════════════════════════ */
   .carrito-drawer {
-    width: 100vw;
+    /* FIX: se anula el límite de desktop y se ancla con
+       left:0 además del right:0 ya heredado. El ancho lo
+       resuelve el navegador automáticamente entre los dos
+       anclajes — exacto siempre, sin vw de por medio. */
+    left: 0;
+    max-width: none;
   }
   .carrito-overlay {
+    /* En pantalla completa el overlay de fondo no se ve
+       (el drawer ya cubre todo), pero se mantiene en el DOM
+       para no romper el JS existente que lo togglea. */
     background: transparent;
   }
 
-  .btn-cerrar-drawer {
-    display: none;
-  }
-  .btn-volver-mobile {
-    display: flex !important;
-    align-items: center;
-    gap: 8px;
-    background: none;
-    border: none;
-    color: var(--crema);
-    font-family: 'Inter', sans-serif;
-    font-size: var(--fs-base);
-    font-weight: 600;
-    cursor: pointer;
-    padding: 0;
-    min-height: var(--tap-min);
-  }
-  .btn-volver-mobile svg {
-    width: 22px; height: 22px;
-    stroke: var(--neon-blue); fill: none; stroke-width: 2.5;
-    flex-shrink: 0;
-  }
+  /* El "✕" de desktop se reemplaza por "← Volver" */
+  .btn-cerrar-drawer { display: none; }
+  .btn-volver-mobile { display: flex; }
 
   .drawer-head {
     position: relative;
@@ -1369,99 +1409,47 @@ body::before {
   }
   .drawer-head-left {
     position: absolute;
-    left: var(--sp-md);
+    left: 50%;
     top: 50%;
-    transform: translateY(-50%);
+    transform: translate(-50%, -50%);
     margin-top: max(0px, calc(env(safe-area-inset-top) / 2));
+    pointer-events: none; /* el título centrado no debe tapar clicks */
   }
-  .drawer-head h2 {
-    width: 100%;
-    text-align: center;
-    font-size: var(--fs-md);
-  }
-  .drawer-items-count {
-    display: none;
-  }
-}
+  .drawer-head h2 { font-size: var(--fs-md); }
+  .drawer-items-count { display: none; }
 
-.btn-volver-mobile { display: none; }
-
-/* ═══════════════════════════════════════════════════
-   ADMIN — sidebar de navegación a pantalla completa
-   ═══════════════════════════════════════════════════ */
-@media (max-width: 768px) {
+  /* ══════════════════════════════════════════
+     ADMIN — sidebar a pantalla completa
+     ══════════════════════════════════════════ */
   .admin-sidebar {
-    width: 100vw;
-    left: -100vw;
+    position: fixed;
+    top: 0; bottom: 0;
+    left: 0; right: 0;
+    width: auto; /* anulamos el width:240px de desktop */
+    z-index: 240;
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
   }
-  .admin-sidebar.open { left: 0; }
+  .admin-sidebar.open { transform: translateX(0); }
+
+  .btn-cerrar-sidebar { display: flex; }
 
   .mobile-menu-btn {
-    position: static;
-    box-shadow: none;
-    background: var(--grafito);
-    border: 1px solid var(--neon-blue);
-    color: var(--neon-blue);
-    width: 40px; height: 40px;
-    flex-shrink: 0;
-  }
-  .admin-topbar {
-    gap: var(--sp-sm);
-  }
-
-  .sidebar-brand {
     display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding-top: max(var(--sp-md), env(safe-area-inset-top));
-  }
-  .btn-cerrar-sidebar {
-    display: flex !important;
     align-items: center; justify-content: center;
-    width: var(--tap-min); height: var(--tap-min);
-    background: var(--grafito);
-    border: 1px solid var(--humo);
-    border-radius: 50%;
-    color: var(--gris-l);
-    font-size: var(--fs-md);
-    cursor: pointer;
   }
-  .admin-nav a {
-    font-size: var(--fs-md);
-    padding: 1em 0.9em;
-    min-height: 56px;
-  }
-  .nav-icon {
-    font-size: var(--fs-lg);
-    width: 30px;
-  }
-}
-.btn-cerrar-sidebar { display: none; }
+  .admin-topbar { gap: var(--sp-sm); }
 
-/* ═══════════════════════════════════════════════════════════
-   MODO APP NATIVA — ESCALA ESTÁNDAR + CONSISTENCIA
-   ═══════════════════════════════════════════════════════════ */
-@media (max-width: 768px) {
+  .sidebar-brand { padding-top: max(var(--sp-md), env(safe-area-inset-top)); }
+  .admin-nav a { min-height: 52px; }
+  .nav-icon { font-size: var(--fs-lg); width: 30px; }
 
-  /* Fijar tamaño base de fuente: 16px en cualquier dispositivo.
-     Así las variables --fs-app-* en rem se vuelven estables,
-     sin importar ajustes de accesibilidad del sistema. */
-  html {
-    font-size: 16px;
-  }
-
-  :root {
-    /* Valores en rem (ahora 1rem = 16px) */
-    --fs-app-xs:   0.75rem;   /* 12px – chips, labels */
-    --fs-app-sm:   0.875rem;  /* 14px – texto secundario */
-    --fs-app-base: 1rem;      /* 16px – cuerpo */
-    --fs-app-md:   1.125rem;  /* 18px – subtítulos */
-    --fs-app-lg:   1.375rem;  /* 22px – títulos de sección */
-    --fs-app-xl:   1.75rem;   /* 28px – destacados */
-    --fs-app-hero: 2.5rem;    /* 40px – título hero */
-  }
-
-  /* Edge‑to‑edge */
+  /* ══════════════════════════════════════════
+     HERO — edge-to-edge, pero sin perder escala
+     fluida (sigue usando --fs-hero con clamp,
+     que ya está calibrado para verse bien chico
+     y crecer en pantallas más anchas)
+     ══════════════════════════════════════════ */
   .hero-inner,
   .promociones-inner,
   .cats-inner,
@@ -1471,8 +1459,6 @@ body::before {
     padding-right: var(--sp-sm);
     max-width: 100%;
   }
-
-  /* ═══ HERO ═══ */
   .hero {
     padding-left: 0;
     padding-right: 0;
@@ -1480,125 +1466,72 @@ body::before {
     padding-top: calc(var(--sp-lg) + env(safe-area-inset-top));
     padding-bottom: var(--sp-lg);
   }
-  .hero-chip {
-    font-size: var(--fs-app-xs);
-    padding: 0.4em 0.9em;
-  }
-  .hero h1 {
-    font-size: var(--fs-app-hero);
-    letter-spacing: 0.02em;
-    line-height: 1.1;
-  }
-  .hero-sub {
-    font-size: var(--fs-app-sm);
-    max-width: 100%;
-  }
-  .hero-pill {
-    font-size: var(--fs-app-sm);
-    padding: 0.4em 0.8em;
-  }
-  .hero-stat {
-    font-size: var(--fs-app-sm);
-    padding: 0.5em 0.9em;
-  }
+  .hero-pills { display: flex; }
 
-  /* ═══ CATEGORÍAS ═══ */
-  .cats-inner { padding-left: var(--sp-xs); padding-right: var(--sp-xs); }
-  #categorias button {
-    font-size: var(--fs-app-sm);
-    padding: 0.6em 1.2em;
-  }
-
-  /* ═══ MENÚ (productos) ═══ */
-  .menu-section-title { font-size: var(--fs-app-lg); }
-  .menu-count { font-size: var(--fs-app-xs); }
-
+  /* ══════════════════════════════════════════
+     MENÚ — una columna ancha en vez de varias
+     angostas, mismo criterio de "se siente app"
+     ══════════════════════════════════════════ */
   #menu-container {
     grid-template-columns: 1fr;
     gap: var(--sp-sm);
   }
-  .prod-cat-label   { font-size: var(--fs-app-xs); }
-  .producto h2       { font-size: var(--fs-app-md); }
-  .prod-desc         { font-size: var(--fs-app-sm); -webkit-line-clamp: 3; }
-  .prod-precio-final { font-size: var(--fs-app-xl); }
-  .prod-precio-original { font-size: var(--fs-app-sm); }
-  .btn-agregar {
-    font-size: var(--fs-app-sm);
-    padding: 0.7em 1.2em;
-  }
+  .promociones-grid { grid-template-columns: 1fr; }
+  .recompensas-grid { grid-template-columns: 1fr; }
 
-  /* ═══ PROMOCIONES ═══ */
-  .promociones-title  { font-size: var(--fs-app-lg); }
-  .promo-card-nombre  { font-size: var(--fs-app-base); }
-  .promo-card-final   { font-size: var(--fs-app-lg); }
-  .promociones-grid   { grid-template-columns: 1fr; }
+  /* ══════════════════════════════════════════
+     ADMIN — stats en 2 columnas, mejor uso del
+     ancho que 1 sola columna larga
+     ══════════════════════════════════════════ */
+  .stats-grid { grid-template-columns: 1fr 1fr; }
 
-  /* ═══ PUNTOS ═══ */
-  .puntos-section     { padding-left: var(--sp-sm); padding-right: var(--sp-sm); }
-  .puntos-title       { font-size: var(--fs-app-xl); }
-  .puntos-stat-num    { font-size: var(--fs-app-xl); }
-  .puntos-stat-label  { font-size: var(--fs-app-xs); }
-  .puntos-resumen     { gap: var(--sp-sm); }
-  .timeline-item h4   { font-size: var(--fs-app-base); }
-  .timeline-item p    { font-size: var(--fs-app-sm); }
-  .recompensa-card    { padding: var(--sp-sm); }
-  .recompensa-desc    { font-size: var(--fs-app-base); }
-  .recompensa-btn     { font-size: var(--fs-app-sm); padding: 0.6em; }
-  .recompensas-grid   { grid-template-columns: 1fr; }
-  .puntos-bloqueado p { font-size: var(--fs-app-base); }
-  .puntos-candado     { font-size: var(--fs-app-xl); }
+  .footer-bottom { flex-direction: column; text-align: center; gap: var(--sp-xs); }
+}
 
-  /* ═══ HEADER ═══ */
-  .pub-logo       { font-size: var(--fs-app-md); }
-  .pub-logo small { font-size: var(--fs-app-xs); }
-  .btn-carrito-header,
-  .btn-user-header {
-    font-size: var(--fs-app-sm);
-    padding: 0.5em 1em 0.5em 0.8em;
-  }
-  .carrito-badge { font-size: var(--fs-app-xs); }
-
-  /* ═══ TOAST ═══ */
-  .toast { font-size: var(--fs-app-sm); padding: 0.6em 1.2em; }
+/* Celular muy angosto (≤380px): solo se ajustan espaciados,
+   nunca tamaños de fuente — la escala fluida ya los achica
+   sola en este rango. */
+@media (max-width: 380px) {
+  .hero { padding-left: var(--sp-xs); padding-right: var(--sp-xs); }
+  .menu-section { padding-left: var(--sp-xs); padding-right: var(--sp-xs); }
+  #menu-container { gap: var(--sp-sm); }
 }
 
 /* ═══════════════════════════════════════════════════════════
-   LOGIN MODAL — más grande y mejor centrado en mobile
+   LOGIN MODAL — más grande y centrado en mobile.
+   Se queda como modal (no pantalla completa), a pedido
+   explícito en una ronda anterior de cambios.
    ═══════════════════════════════════════════════════════════ */
 @media (max-width: 768px) {
-  .modal-auth-overlay {
-    padding: var(--sp-md);
-  }
+  .modal-auth-overlay { padding: var(--sp-md); }
   .modal-auth-card {
     width: 100%;
     max-width: 440px;
     padding: var(--sp-xl) var(--sp-lg);
     border-radius: 24px;
   }
-  .modal-auth-card h3 {
-    font-size: var(--fs-app-lg, 1.9rem);
-  }
-  .modal-auth-card p {
-    font-size: var(--fs-app-base, 1.3rem) !important;
-  }
+  .modal-auth-card h3 { font-size: var(--fs-lg); }
+  .modal-auth-card p  { font-size: var(--fs-base) !important; }
   .modal-auth-close {
     width: 44px; height: 44px;
-    font-size: 1.4rem;
+    font-size: var(--fs-md);
     top: var(--sp-sm); right: var(--sp-sm);
     display: flex; align-items: center; justify-content: center;
   }
-  .btn-google {
-    font-size: var(--fs-app-base, 1.3rem);
-    padding: 1em;
-    min-height: 56px;
-  }
+  .btn-google { font-size: var(--fs-base); padding: 1em; min-height: 56px; }
 
-  .welcome-card-overlay {
-    max-width: 92vw;
-    padding: var(--sp-xl) var(--sp-lg);
+  .welcome-card-overlay { max-width: 92vw; padding: var(--sp-xl) var(--sp-lg); }
+  .welcome-logo { font-size: var(--fs-2xl); }
+  .welcome-sub { font-size: var(--fs-base); }
+  .welcome-message { font-size: var(--fs-base); }
+  .welcome-google-btn { font-size: var(--fs-base); padding: 1em; min-height: 56px; }
+}
+
+/* Accesibilidad: respeta reduce motion en toda la app */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
-  .welcome-logo { font-size: 3rem; }
-  .welcome-sub { font-size: 1.2rem; }
-  .welcome-message { font-size: 1.3rem; }
-  .welcome-google-btn { font-size: 1.3rem; padding: 1em; min-height: 56px; }
 }
