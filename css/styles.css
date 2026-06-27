@@ -1495,3 +1495,192 @@ body::before {
   }
 }
 .btn-cerrar-sidebar { display: none; }
+
+
+/* ═══════════════════════════════════════════════════════════
+   MODO APP NATIVA — ESCALA GRANDE + EDGE-TO-EDGE EN MOBILE
+   ═══════════════════════════════════════════════════════════
+   Todo lo de acá abajo SOLO corre en mobile (≤768px).
+   Desktop no se toca en absoluto.
+
+   Qué cambia:
+   - Hero/Subhero, Menú/Categorías y Puntos pasan a usar el
+     100% del ancho de pantalla (sin el padding lateral de
+     "página web" que tenían antes) y una escala tipográfica
+     notoriamente más grande — se sienten títulos de app, no
+     texto de sitio web encogido.
+   - El modal de Login crece y se centra mejor, sin volverse
+     pantalla completa (a pedido explícito).
+   - Carrito y Admin sidebar ya tenían su propio modo pantalla
+     completa de un ajuste anterior; no se duplica acá.
+   ═══════════════════════════════════════════════════════════ */
+@media (max-width: 768px) {
+
+  :root {
+    /* Escala "app" — más generosa que la fluida de base.
+       Se usa SOLO dentro de este media query, así que en
+       desktop nada cambia. */
+    --fs-app-xs:   1rem;        /* antes ~0.8rem  — chips, labels */
+    --fs-app-sm:   1.15rem;     /* antes ~0.9rem  — texto secundario */
+    --fs-app-base: 1.3rem;      /* antes ~1rem    — cuerpo */
+    --fs-app-md:   1.55rem;     /* antes ~1.1rem  — subtítulos */
+    --fs-app-lg:   1.9rem;      /* antes ~1.3rem  — títulos de sección */
+    --fs-app-xl:   2.4rem;      /* antes ~1.6rem  — destacados */
+    --fs-app-hero: 3.4rem;      /* antes clamp ~2.6rem en mobile — título hero */
+  }
+
+  /* ── Quitamos el padding lateral de "página" en las
+       secciones de contenido principal: hero, promociones,
+       categorías, menú y puntos pasan a edge-to-edge. El
+       padding interno de cada card/botón se mantiene, para
+       que el texto no toque el borde físico del celular. ── */
+  .hero-inner,
+  .promociones-inner,
+  .cats-inner,
+  .menu-section,
+  .puntos-section {
+    padding-left: var(--sp-sm);
+    padding-right: var(--sp-sm);
+    max-width: 100%;
+  }
+
+  /* ═══ HERO / SUBHERO — escala app, ancho completo ═══ */
+  .hero {
+    padding-left: 0;
+    padding-right: 0;
+    min-height: auto;
+    padding-top: calc(var(--sp-xl) + env(safe-area-inset-top));
+    padding-bottom: var(--sp-xl);
+  }
+  .hero-chip {
+    font-size: var(--fs-app-xs);
+    padding: 0.6em 1.3em;
+  }
+  .hero h1 {
+    font-size: var(--fs-app-hero);
+    letter-spacing: 0.02em;
+    line-height: 1.05;
+  }
+  .hero-sub {
+    font-size: var(--fs-app-md);
+    max-width: 100%;
+  }
+  .hero-pill {
+    font-size: var(--fs-app-sm);
+    padding: 0.6em 1.2em;
+  }
+  .hero-stat {
+    font-size: var(--fs-app-sm);
+    padding: 0.7em 1.3em;
+  }
+
+  /* ═══ CATEGORÍAS — botones más grandes, edge-to-edge ═══ */
+  .cats-inner { padding-left: var(--sp-xs); padding-right: var(--sp-xs); }
+  #categorias button {
+    font-size: var(--fs-app-sm);
+    padding: 0.8em 1.6em;
+  }
+
+  /* ═══ MENÚ — título de sección y cards en escala app ═══ */
+  .menu-section-title { font-size: var(--fs-app-lg); }
+  .menu-count { font-size: var(--fs-app-xs); }
+
+  /* Grid: en vez de varias columnas chicas, una sola card
+     ancha por fila — coincide con "letras grandes": una
+     card angosta con texto grande se ve apretada, una card
+     ancha respira. */
+  #menu-container {
+    grid-template-columns: 1fr;
+    gap: var(--sp-md);
+  }
+  .prod-cat-label { font-size: var(--fs-app-xs); }
+  .producto h2     { font-size: var(--fs-app-md); }
+  .prod-desc       { font-size: var(--fs-app-sm); -webkit-line-clamp: 3; }
+  .prod-precio-final { font-size: var(--fs-app-xl); }
+  .prod-precio-original { font-size: var(--fs-app-sm); }
+  .btn-agregar {
+    font-size: var(--fs-app-sm);
+    padding: 0.9em 1.6em;
+  }
+
+  /* ═══ PROMOCIONES — mismo criterio ═══ */
+  .promociones-title { font-size: var(--fs-app-lg); }
+  .promo-card-nombre { font-size: var(--fs-app-base); }
+  .promo-card-final  { font-size: var(--fs-app-lg); }
+  .promociones-grid { grid-template-columns: 1fr; }
+
+  /* ═══ PUNTOS — se queda en el scroll principal, pero
+       con la misma escala grande que el resto ═══ */
+  .puntos-section { padding-left: var(--sp-sm); padding-right: var(--sp-sm); }
+  .puntos-title { font-size: var(--fs-app-xl); }
+  .puntos-stat-num { font-size: var(--fs-app-xl); }
+  .puntos-stat-label { font-size: var(--fs-app-xs); }
+  .puntos-resumen { gap: var(--sp-md); }
+  .timeline-item h4 { font-size: var(--fs-app-base); }
+  .timeline-item p  { font-size: var(--fs-app-sm); }
+  .recompensa-card { padding: var(--sp-md); }
+  .recompensa-desc { font-size: var(--fs-app-base); }
+  .recompensa-btn  { font-size: var(--fs-app-sm); padding: 0.8em; }
+  .recompensas-grid { grid-template-columns: 1fr; }
+  .puntos-bloqueado p { font-size: var(--fs-app-base); }
+  .puntos-candado { font-size: var(--fs-app-xl); }
+
+  /* ═══ HEADER — logo y botones a escala app también,
+       para que no quede chico al lado del resto agrandado ═══ */
+  .pub-logo { font-size: var(--fs-app-md); }
+  .pub-logo small { font-size: var(--fs-app-xs); }
+  .btn-carrito-header, .btn-user-header {
+    font-size: var(--fs-app-sm);
+    padding: 0.7em 1.3em 0.7em 1em;
+  }
+  .carrito-badge { font-size: var(--fs-app-xs); }
+
+  /* ═══ TOAST — legible a la nueva escala ═══ */
+  .toast { font-size: var(--fs-app-sm); padding: 0.8em 1.6em; }
+}
+
+
+/* ═══════════════════════════════════════════════════════════
+   LOGIN MODAL — más grande y mejor centrado en mobile
+   (se queda como modal, NO pasa a pantalla completa,
+   a pedido explícito)
+   ═══════════════════════════════════════════════════════════ */
+@media (max-width: 768px) {
+  .modal-auth-overlay {
+    padding: var(--sp-md);
+  }
+  .modal-auth-card {
+    width: 100%;
+    max-width: 440px;
+    padding: var(--sp-xl) var(--sp-lg);
+    border-radius: 24px;
+  }
+  .modal-auth-card h3 {
+    font-size: var(--fs-app-lg, 1.9rem);
+  }
+  .modal-auth-card p {
+    font-size: var(--fs-app-base, 1.3rem) !important;
+  }
+  .modal-auth-close {
+    width: 44px; height: 44px;
+    font-size: 1.4rem;
+    top: var(--sp-sm); right: var(--sp-sm);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .btn-google {
+    font-size: var(--fs-app-base, 1.3rem);
+    padding: 1em;
+    min-height: 56px;
+  }
+
+  /* La pantalla de bienvenida obligatoria (PWA standalone)
+     usa la misma escala grande */
+  .welcome-card-overlay {
+    max-width: 92vw;
+    padding: var(--sp-xl) var(--sp-lg);
+  }
+  .welcome-logo { font-size: 3rem; }
+  .welcome-sub { font-size: 1.2rem; }
+  .welcome-message { font-size: 1.3rem; }
+  .welcome-google-btn { font-size: 1.3rem; padding: 1em; min-height: 56px; }
+}
