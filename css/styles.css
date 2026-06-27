@@ -1187,18 +1187,6 @@ body::before {
 }
 .btn-google:hover { background: #f1f1f1; }
  
-.btn-user-header {
-  display: flex; align-items: center; gap: var(--sp-xs);
-  background: rgba(255,255,255,0.05);
-  border: 1px solid rgba(0, 212, 255, 0.3);
-  color: var(--crema); border-radius: 99px;
-  padding: 0.55em 1em; font-family: 'Inter', sans-serif;
-  font-size: var(--fs-sm); font-weight: 600; cursor: pointer;
-  transition: background .15s, border-color .15s, box-shadow .15s;
-}
-.btn-user-header:hover { background: rgba(0, 212, 255, 0.1); border-color: var(--neon-blue); box-shadow: var(--shadow-blue); }
-.btn-user-header svg { stroke: currentColor; }
- 
 .modal-auth-overlay {
   position: fixed; inset: 0; background: rgba(0,0,0,0.8);
   z-index: 400; display: flex; align-items: center; justify-content: center;
@@ -1552,13 +1540,13 @@ body::before {
     /* Escala "app" — más generosa que la fluida de base.
        Se usa SOLO dentro de este media query, así que en
        desktop nada cambia. */
-    --fs-app-xs:   1rem;        /* antes ~0.8rem  — chips, labels */
-    --fs-app-sm:   1.15rem;     /* antes ~0.9rem  — texto secundario */
-    --fs-app-base: 1.3rem;      /* antes ~1rem    — cuerpo */
-    --fs-app-md:   1.55rem;     /* antes ~1.1rem  — subtítulos */
-    --fs-app-lg:   1.9rem;      /* antes ~1.3rem  — títulos de sección */
-    --fs-app-xl:   2.4rem;      /* antes ~1.6rem  — destacados */
-    --fs-app-hero: 3.4rem;      /* antes clamp ~2.6rem en mobile — título hero */
+    --fs-app-xs:   1.2rem;        /* antes ~0.8rem  — chips, labels */
+    --fs-app-sm:   1.4rem;     /* antes ~0.9rem  — texto secundario */
+    --fs-app-base: 1.55rem;      /* antes ~1rem    — cuerpo */
+    --fs-app-md:   1.85rem;     /* antes ~1.1rem  — subtítulos */
+    --fs-app-lg:   2.3rem;      /* antes ~1.3rem  — títulos de sección */
+    --fs-app-xl:   2.9rem;      /* antes ~1.6rem  — destacados */
+    --fs-app-hero: 4rem;      /* antes clamp ~2.6rem en mobile — título hero */
   }
  
   /* ── Quitamos el padding lateral de "página" en las

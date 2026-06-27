@@ -14,6 +14,7 @@
       <div class="sidebar-brand">
         <div class="sidebar-brand-logo">Salvador</div>
         <small>Panel Admin</small>
+      <button class="btn-cerrar-sidebar" id="btnCerrarSidebar" aria-label="Cerrar menú">✕</button>
       </div>
       <nav class="admin-nav">
         <span class="nav-section-label">General</span>
@@ -265,5 +266,11 @@
       }
     })();
   </script>
+<script>
+  document.getElementById('btnCerrarSidebar').addEventListener('click', () => {
+    document.querySelector('.admin-sidebar').classList.remove('open');
+    document.getElementById('sidebarOverlay').classList.remove('show');
+  });
+</script>
 </body>
 </html>
