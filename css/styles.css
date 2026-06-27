@@ -3,9 +3,9 @@
    Neon Rosa/Azul/Amarillo · Glassmorphism
    Base tipográfica fluida — responsive real
    ═══════════════════════════════════════ */
- 
+
 @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;800;900&family=Inter:wght@400;500;600;700;800&display=swap');
- 
+
 /* ── TOKENS ── */
 :root {
   --negro:     #080b14;
@@ -16,7 +16,7 @@
   --gris-l:    #b0b0bb;
   --gris-xl:   #d8d8e0;
   --crema:     #f5f5f7;
- 
+
   /* ═══ PALETA NEÓN ═══ */
   --neon-pink:        #ff0088;
   --neon-pink-dark:   #cc0066;
@@ -25,7 +25,7 @@
   --neon-blue-dark:   #0099cc;
   --neon-yellow:      #ffc300;
   --neon-purple:      #7a5cff;
- 
+
   --rojo:      #e74c3c;
   --verde:     #2ecc71;
   --verde-wa:  #25D366;
@@ -35,12 +35,12 @@
   --sombra:    0 8px 24px rgba(0,0,0,.6);
   --glass-bg:  rgba(18, 20, 30, 0.82);
   --glass-border: rgba(255, 255, 255, 0.08);
- 
+
   --shadow-pink:   0 0 10px var(--neon-pink), 0 0 20px var(--neon-pink);
   --shadow-blue:   0 0 10px var(--neon-blue), 0 0 20px var(--neon-blue);
   --shadow-yellow: 0 0 10px var(--neon-yellow), 0 0 20px var(--neon-yellow);
   --shadow-purple: 0 0 10px var(--neon-purple), 0 0 20px var(--neon-purple);
- 
+
   /* ═══════════════════════════════════════
      ESCALA TIPOGRÁFICA FLUIDA
      clamp(mínimo, preferido-en-vw, máximo)
@@ -56,21 +56,21 @@
   --fs-xl:    clamp(1.5rem,   1.3rem  + 1vw,    2rem);     /* títulos grandes */
   --fs-2xl:   clamp(2rem,     1.7rem  + 1.8vw,  2.8rem);   /* precios destacados */
   --fs-hero:  clamp(2.4rem,   2rem    + 3.2vw,  4rem);     /* hero h1 */
- 
+
   /* Espaciados fluidos */
   --sp-xs:  clamp(0.5rem,  0.45rem + 0.3vw, 0.7rem);
   --sp-sm:  clamp(0.75rem, 0.65rem + 0.4vw, 1rem);
   --sp-md:  clamp(1.1rem,  1rem    + 0.6vw, 1.5rem);
   --sp-lg:  clamp(1.5rem,  1.3rem  + 1vw,   2.2rem);
   --sp-xl:  clamp(2.2rem,  1.8rem  + 1.8vw, 3.5rem);
- 
+
   /* Altura mínima táctil — estándar accesibilidad móvil */
   --tap-min: 44px;
 }
- 
+
 /* ── RESET ── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
- 
+
 /* IMPORTANTE: NO fijar font-size en html.
    Dejamos el default del navegador (16px) y toda
    la escala fluye desde las variables --fs-* con clamp().
@@ -81,7 +81,7 @@ html {
   scroll-behavior: smooth;
   -webkit-text-size-adjust: 100%;
 }
- 
+
 body {
   font-family: 'Inter', sans-serif;
   font-size: var(--fs-base);
@@ -96,7 +96,7 @@ body {
   overflow-x: hidden; /* nunca scroll horizontal, clave para "se sienta app" */
 }
 img { max-width: 100%; display: block; }
- 
+
 /* ── GLOBAL TRANSITIONS ── */
 button, a, input, select, textarea {
   transition: background 0.2s, color 0.2s, border-color 0.2s, transform 0.2s, box-shadow 0.2s;
@@ -106,20 +106,20 @@ button, a, input, select, textarea {
   outline: 2px solid var(--neon-blue);
   outline-offset: 2px;
 }
- 
+
 /* Inputs y botones SIEMPRE con área táctil mínima de 44px,
    sin importar el tamaño de pantalla — esto es lo que hace
    que se sienta "nativo" en el celular, no una web encogida. */
 button, input, select, textarea, a.btn-social, a.btn-carrito-header {
   min-height: var(--tap-min);
 }
- 
+
 /* ── SCROLLBAR ── */
 ::-webkit-scrollbar { width: 8px; }
 ::-webkit-scrollbar-track { background: var(--carbon); }
 ::-webkit-scrollbar-thumb { background: var(--neon-pink); border-radius: 999px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--neon-blue); }
- 
+
 /* ── PARTÍCULAS NEÓN ── */
 .bg-particles { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
 .bg-particles span {
@@ -133,7 +133,7 @@ button, input, select, textarea, a.btn-social, a.btn-carrito-header {
 .bg-particles span:nth-child(4) { left: 70%; animation-delay: -6s; background: var(--neon-purple); }
 .bg-particles span:nth-child(5) { left: 90%; animation-delay: -1s; background: var(--neon-pink); }
 @keyframes floatUp { from { transform: translateY(100vh); opacity: 0.8; } to { transform: translateY(-100px); opacity: 0; } }
- 
+
 /* ── FONDO GRID CYBERPUNK ── */
 body::before {
   content: '';
@@ -149,7 +149,7 @@ body::before {
 @media (prefers-reduced-motion: reduce) {
   body::before, .bg-particles span { animation: none; }
 }
- 
+
 /* ═══════════════════════════════════════
    ADMIN BAR
    ═══════════════════════════════════════ */
@@ -186,7 +186,7 @@ body::before {
   min-height: 32px; transition: background .15s;
 }
 .admin-bar-btn:hover { background: rgba(0,0,0,.28); }
- 
+
 /* ═══════════════════════════════════════
    HEADER (glass) — centrado, fluido
    ═══════════════════════════════════════ */
@@ -230,7 +230,7 @@ body::before {
 }
 .header-right { display: flex; align-items: center; gap: var(--sp-xs); flex-wrap: wrap; }
 .header-sep { width: 1px; height: 24px; background: var(--humo); flex-shrink: 0; }
- 
+
 .btn-social {
   width: var(--tap-min); height: var(--tap-min);
   border-radius: 50%;
@@ -242,7 +242,7 @@ body::before {
 .btn-social.wa { background: var(--verde-wa); }
 .btn-social.ig { background: radial-gradient(circle at 30% 107%, #fdf497 0%, #fd5949 45%, #d6249f 60%, #285AEB 90%); }
 .btn-social svg { width: 20px; height: 20px; fill: #fff; }
- 
+
 .btn-carrito-header,
 .btn-user-header {
   display: flex; align-items: center; gap: var(--sp-xs);
@@ -269,7 +269,7 @@ body::before {
   border-radius: 99px; font-size: var(--fs-xs); font-weight: 800;
   padding: 2px 8px; min-width: 22px; text-align: center; line-height: 1.5;
 }
- 
+
 /* ═══════════════════════════════════════
    HERO — centrado, fluido, sin saltos
    ═══════════════════════════════════════ */
@@ -302,7 +302,7 @@ body::before {
   text-align: center;
 }
 .hero-text { max-width: 700px; display: flex; flex-direction: column; align-items: center; }
- 
+
 .hero-chip {
   display: inline-flex; align-items: center; gap: 6px;
   background: rgba(255, 0, 136, 0.12);
@@ -315,7 +315,7 @@ body::before {
   color: var(--neon-pink);
   backdrop-filter: blur(8px);
 }
- 
+
 .hero h1 {
   font-family: 'Orbitron', sans-serif;
   font-size: var(--fs-hero);
@@ -328,7 +328,7 @@ body::before {
   letter-spacing: 0.04em;
 }
 .hero h1 em { color: var(--neon-blue); font-style: normal; }
- 
+
 .hero-sub {
   color: var(--neon-yellow);
   font-size: var(--fs-md);
@@ -337,7 +337,7 @@ body::before {
   max-width: 560px;
   text-shadow: 0 0 8px var(--neon-yellow), 0 0 20px var(--neon-yellow);
 }
- 
+
 .hero-pills {
   display: flex; flex-wrap: wrap; gap: var(--sp-xs);
   margin-bottom: var(--sp-md);
@@ -352,7 +352,7 @@ body::before {
   padding: 0.5em 1em;
   backdrop-filter: blur(4px);
 }
- 
+
 .hero-stats {
   display: flex; gap: var(--sp-xs);
   margin-bottom: var(--sp-lg); flex-wrap: wrap;
@@ -380,7 +380,7 @@ body::before {
   box-shadow: var(--shadow-pink);
 }
 .oferta-banner.visible { display: block; }
- 
+
 /* ═══════════════════════════════════════
    PROMOCIONES
    ═══════════════════════════════════════ */
@@ -445,7 +445,7 @@ body::before {
   box-shadow: var(--shadow-pink);
 }
 .promo-card-btn:hover { background: var(--neon-pink-dark); }
- 
+
 /* ═══════════════════════════════════════
    CATEGORÍAS — sticky, scroll horizontal táctil
    ═══════════════════════════════════════ */
@@ -486,7 +486,7 @@ body::before {
   font-weight: 700;
   box-shadow: var(--shadow-blue);
 }
- 
+
 /* ═══════════════════════════════════════
    GRID PRODUCTOS — fluido, sin saltos abruptos
    ═══════════════════════════════════════ */
@@ -502,7 +502,7 @@ body::before {
   text-shadow: var(--shadow-blue);
 }
 .menu-count { font-size: var(--fs-sm); color: var(--gris); }
- 
+
 #menu-container {
   display: grid;
   /* En vez de saltar a 1 columna fija en mobile con tarjetas gigantes,
@@ -511,7 +511,7 @@ body::before {
   grid-template-columns: repeat(auto-fill, minmax(min(260px, 100%), 1fr));
   gap: var(--sp-md);
 }
- 
+
 .producto {
   background: rgba(18,18,18,.7);
   backdrop-filter: blur(12px);
@@ -526,7 +526,7 @@ body::before {
 }
 @keyframes fadeInUp { 0% { opacity: 0; transform: translateY(16px); } 100% { opacity: 1; transform: translateY(0); } }
 .producto:hover { transform: translateY(-5px); border-color: var(--neon-pink); box-shadow: 0 16px 40px rgba(0,0,0,0.5), var(--shadow-pink); }
- 
+
 .prod-thumb {
   position: relative;
   aspect-ratio: 4 / 3; /* proporcional, NO altura fija en px — crece y decrece con el ancho de la card */
@@ -593,7 +593,7 @@ body::before {
   font-size: var(--fs-xs); color: var(--neon-yellow);
   text-shadow: 0 0 6px var(--neon-yellow); margin-top: 4px; font-weight: 700;
 }
- 
+
 .btn-agregar {
   background: var(--neon-pink); color: #fff;
   box-shadow: var(--shadow-pink);
@@ -607,11 +607,11 @@ body::before {
 .btn-agregar:hover { background: var(--neon-pink-dark); transform: scale(1.03); }
 .btn-agregar:active { transform: scale(0.95); transition: transform 0.1s; }
 .btn-agregar svg { width: 15px; height: 15px; stroke: #fff; fill: none; stroke-width: 3; flex-shrink: 0; }
- 
+
 .estado-menu { grid-column: 1 / -1; text-align: center; padding: var(--sp-xl) var(--sp-md); color: var(--gris); }
 .estado-icono { font-size: var(--fs-2xl); margin-bottom: var(--sp-sm); }
 .estado-menu p { font-size: var(--fs-base); }
- 
+
 /* Efecto shine sutil al hover, queda como microinteracción */
 .producto::after {
   content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
@@ -619,7 +619,7 @@ body::before {
   transform: rotate(45deg) translateX(-100%); transition: transform 0.6s; pointer-events: none;
 }
 .producto:hover::after { transform: rotate(45deg) translateX(100%); }
- 
+
 /* ═══════════════════════════════════════
    CARRITO DRAWER — full height, fluido
    ═══════════════════════════════════════ */
@@ -628,23 +628,10 @@ body::before {
   z-index: 300; opacity: 0; pointer-events: none; transition: opacity .28s;
 }
 .carrito-overlay.abierto { opacity: 1; pointer-events: all; }
- 
+
 .carrito-drawer {
-  position: fixed; top: 0; right: 0; bottom: 0; left: 0;
-  /* FIX: antes usaba width: min(460px, 100vw). En WebViews de
-     PWA instaladas en Android, 100vw puede calcularse sobre un
-     ancho de documento levemente mayor al de la pantalla visible
-     (por cómo el WebView maneja la scrollbar virtual), dando un
-     resultado "casi" pantalla completa pero no exacto — exactamente
-     el síntoma de "agranda pero no llega a ocupar todo".
-     Solución: en vez de fijar un width en vw, anclamos con
-     left:0 + right:0 (ya están arriba) y dejamos que el ancho
-     se resuelva por el propio posicionamiento fixed, que sí usa
-     el viewport visual real del WebView sin el margen de error
-     de vw. max-width sigue limitando a 460px en desktop. */
-  width: auto;
-  max-width: 460px;
-  margin-left: auto; /* en desktop pega el drawer a la derecha */
+  position: fixed; top: 0; right: 0; bottom: 0;
+  width: min(460px, 100vw);
   height: 100dvh; /* clave PWA: usa el viewport dinámico real, no 100vh fijo */
   background: var(--glass-bg);
   backdrop-filter: blur(24px);
@@ -656,7 +643,7 @@ body::before {
   box-shadow: -5px 0 20px var(--neon-blue);
 }
 .carrito-drawer.abierto { transform: translateX(0); }
- 
+
 .drawer-head {
   padding: var(--sp-md); flex-shrink: 0;
   border-bottom: 1px solid rgba(0,229,255,0.3);
@@ -679,7 +666,7 @@ body::before {
   transition: background .15s, color .15s;
 }
 .btn-cerrar-drawer:hover { background: var(--neon-pink); color: #fff; }
- 
+
 .drawer-cliente {
   padding: var(--sp-md); flex-shrink: 0;
   border-bottom: 1px solid rgba(0,229,255,0.3);
@@ -702,7 +689,7 @@ body::before {
   box-shadow: 0 0 10px var(--neon-blue);
 }
 .drawer-cliente textarea { resize: none; height: 4.2em; }
- 
+
 .drawer-items {
   flex: 1; overflow-y: auto; padding: var(--sp-md);
   display: flex; flex-direction: column; gap: var(--sp-sm);
@@ -721,7 +708,7 @@ body::before {
 }
 .drawer-vacio p { font-size: var(--fs-base); }
 .drawer-vacio small { font-size: var(--fs-sm); color: var(--humo); }
- 
+
 .item-carrito {
   background: rgba(255,255,255,.05);
   border: 1px solid rgba(0, 229, 255, 0.2);
@@ -767,7 +754,7 @@ body::before {
   min-height: auto; /* excepción: ícono pequeño, no necesita 44px */
 }
 .btn-quitar-item:hover { color: var(--rojo); }
- 
+
 .drawer-footer {
   border-top: 1px solid rgba(0,229,255,0.3);
   padding: var(--sp-md);
@@ -786,7 +773,7 @@ body::before {
 }
 .resumen-row.total span:first-child { font-weight: 700; color: var(--crema); font-size: var(--fs-md); }
 .resumen-row.total span:last-child { font-family: 'Orbitron', sans-serif; font-size: var(--fs-xl); color: var(--neon-yellow); }
- 
+
 .btn-pedir-wa {
   width: 100%; background: var(--verde-wa); color: #fff;
   border: none; border-radius: 99px; padding: 0.9em;
@@ -823,7 +810,7 @@ body::before {
 }
 .toast.visible { transform: translateX(-50%) translateY(0); opacity: 1; }
 .toast.toast-error { border-color: rgba(255,0,136,.5); color: var(--neon-pink); }
- 
+
 /* ═══════════════════════════════════════
    FOOTER — centrado, fluido
    ═══════════════════════════════════════ */
@@ -870,7 +857,7 @@ body::before {
   display: flex; align-items: center; justify-content: space-between;
   font-size: var(--fs-sm); color: var(--gris); gap: var(--sp-sm); flex-wrap: wrap;
 }
- 
+
 /* ═══════════════════════════════════════
    LOGIN PAGE
    ═══════════════════════════════════════ */
@@ -916,7 +903,7 @@ body::before {
   box-shadow: var(--shadow-pink);
 }
 .btn-login:hover { background: var(--neon-pink-dark); }
- 
+
 /* ═══════════════════════════════════════
    ADMIN PANEL — sidebar fluido + responsive real
    ═══════════════════════════════════════ */
@@ -972,7 +959,7 @@ body::before {
 .admin-content { padding: var(--sp-lg) var(--sp-md) calc(var(--sp-xl) * 1.5); }
 .admin-seccion { display: none; }
 .admin-seccion.activa { display: block; }
- 
+
 .stats-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(min(170px, 100%), 1fr));
@@ -984,11 +971,11 @@ body::before {
   font-family: 'Orbitron', sans-serif; font-size: var(--fs-2xl); color: var(--neon-yellow);
   line-height: 1; text-shadow: var(--shadow-yellow);
 }
- 
+
 .admin-card { background: var(--carbon); border: 1px solid var(--grafito); border-radius: var(--radio-lg); padding: var(--sp-md) var(--sp-lg); margin-bottom: var(--sp-md); }
 .admin-card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--sp-md); gap: var(--sp-sm); flex-wrap: wrap; }
 .admin-card-title { font-size: var(--fs-md); font-weight: 600; color: var(--crema); }
- 
+
 .form-productos {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(min(220px, 100%), 1fr));
@@ -1004,7 +991,7 @@ body::before {
 }
 .form-campo input:focus, .form-campo select:focus, .form-campo textarea:focus { border-color: var(--neon-blue); }
 .oferta-check-row { display: flex; align-items: center; gap: var(--sp-xs); padding: var(--sp-xs) 0; }
- 
+
 .btn {
   display: inline-flex; align-items: center; gap: 6px; padding: 0.65em 1.3em; border-radius: var(--radio);
   font-family: 'Orbitron', sans-serif; font-size: var(--fs-sm); font-weight: 700; cursor: pointer; border: none;
@@ -1019,7 +1006,7 @@ body::before {
 .btn-ghost:hover { border-color: var(--neon-blue); color: var(--neon-blue); }
 .btn-sm { padding: 0.5em 0.9em; font-size: var(--fs-xs); min-height: 36px; }
 .btn-success { background: rgba(39,174,96,.15); color: #2ecc71; border: 1px solid rgba(39,174,96,.25); }
- 
+
 #lista-productos { display: flex; flex-direction: column; gap: var(--sp-sm); }
 .prod-admin-row {
   background: var(--grafito); border-radius: var(--radio); padding: var(--sp-sm) var(--sp-md);
@@ -1031,7 +1018,7 @@ body::before {
 .prod-admin-meta { color: var(--gris); font-size: var(--fs-sm); margin-top: 2px; }
 .prod-admin-precio { color: var(--neon-yellow); font-family: 'Orbitron', sans-serif; font-size: var(--fs-lg); font-weight: 700; flex-shrink: 0; }
 .prod-admin-acciones { display: flex; gap: var(--sp-xs); flex-shrink: 0; }
- 
+
 .badge {
   display: inline-flex; align-items: center; padding: 3px 11px; border-radius: 99px;
   font-size: var(--fs-xs); font-weight: 700; letter-spacing: .04em; text-transform: uppercase;
@@ -1040,7 +1027,7 @@ body::before {
 .badge-rojo { background: rgba(255,0,136,.15); color: var(--neon-pink); }
 .badge-mostaza { background: rgba(255, 0, 136, 0.15); color: var(--neon-pink); }
 .badge-gris { background: rgba(115,115,115,.2); color: var(--gris-l); }
- 
+
 #lista-pedidos { display: flex; flex-direction: column; gap: var(--sp-sm); }
 .pedido-card { background: var(--grafito); border-radius: var(--radio); padding: var(--sp-md); border-left: 4px solid var(--neon-blue); }
 .pedido-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--sp-sm); gap: var(--sp-xs); flex-wrap: wrap; }
@@ -1056,7 +1043,7 @@ body::before {
   padding: 0.5em 0.8em; color: var(--crema); font-family: 'Inter', sans-serif; font-size: var(--fs-sm);
   cursor: pointer; outline: none; min-height: 40px;
 }
- 
+
 .clientes-form { display: flex; gap: var(--sp-xs); flex-wrap: wrap; margin-bottom: var(--sp-md); }
 .clientes-form input {
   background: var(--grafito); border: 1px solid var(--humo); border-radius: var(--radio-sm);
@@ -1079,7 +1066,7 @@ body::before {
 .cliente-nombre { font-weight: 600; font-size: var(--fs-base); }
 .cliente-tel { color: var(--gris-l); font-size: var(--fs-sm); }
 .cliente-acciones { display: flex; gap: var(--sp-xs); margin-top: 4px; flex-wrap: wrap; }
- 
+
 #productos-mas-vendidos { display: flex; flex-direction: column; gap: var(--sp-sm); }
 .ranking-row {
   display: flex; align-items: center; gap: var(--sp-sm); padding: var(--sp-sm) var(--sp-md);
@@ -1088,7 +1075,7 @@ body::before {
 .ranking-pos { font-family: 'Orbitron', sans-serif; font-size: var(--fs-md); color: var(--neon-pink); width: 30px; flex-shrink: 0; }
 .ranking-nombre { flex: 1; font-weight: 600; font-size: var(--fs-base); min-width: 120px; }
 .ranking-cant { font-size: var(--fs-sm); color: var(--gris-l); background: var(--humo); padding: 3px 11px; border-radius: 99px; }
- 
+
 .welcome-card {
   background: linear-gradient(135deg, rgba(255, 0, 136, 0.08) 0%, transparent 60%);
   border: 1px solid rgba(255, 0, 136, 0.2); border-radius: var(--radio-lg); padding: var(--sp-md) var(--sp-lg); margin-bottom: var(--sp-md);
@@ -1096,15 +1083,15 @@ body::before {
 .welcome-card h2 { font-family: 'Orbitron', sans-serif; font-size: var(--fs-lg); margin-bottom: var(--sp-xs); color: var(--neon-yellow); }
 .welcome-card p { color: var(--gris-l); font-size: var(--fs-base); line-height: 1.6; }
 .welcome-card p strong { color: var(--neon-pink); }
- 
-/* ── Sidebar mobile: pantalla completa via transform (ver fix
-     más abajo en el bloque MODO APP NATIVA, que define el
-     comportamiento final con left:0/right:0 + transform) ── */
+
+/* ── Sidebar mobile: drawer en vez de comprimir layout ── */
 @media (max-width: 768px) {
   .admin-sidebar {
-    position: fixed; top: 0; bottom: 0;
-    z-index: 240;
+    position: fixed; left: -260px; top: 0; bottom: 0;
+    width: 260px; z-index: 240;
+    transition: left 0.3s ease;
   }
+  .admin-sidebar.open { left: 0; }
 }
 .sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 230; }
 .sidebar-overlay.show { display: block; }
@@ -1118,7 +1105,7 @@ body::before {
   box-shadow: var(--shadow-pink);
 }
 @media (max-width: 768px) { .mobile-menu-btn { display: block; } }
- 
+
 /* ═══════════════════════════════════════
    PUNTOS Y RECOMPENSAS — fluido
    ═══════════════════════════════════════ */
@@ -1156,13 +1143,13 @@ body::before {
 }
 .recompensa-btn:hover { background: var(--neon-pink-dark); }
 .puntos-info { font-size: var(--fs-sm); color: var(--gris); }
- 
+
 .historial-pedidos { margin-top: var(--sp-md); border-top: 1px solid var(--grafito); padding-top: var(--sp-sm); }
 .btn-historial { background: none; border: 1px solid var(--humo); color: var(--gris-l); border-radius: var(--radio-sm); padding: var(--sp-sm); width: 100%; cursor: pointer; font-weight: 600; font-size: var(--fs-sm); min-height: var(--tap-min); }
 .historial-lista { max-height: 300px; overflow-y: auto; margin-top: var(--sp-xs); display: flex; flex-direction: column; gap: var(--sp-xs); }
 .pedido-historial { background: var(--grafito); border-radius: var(--radio); padding: var(--sp-sm); font-size: var(--fs-sm); }
 .pedido-historial button { background: var(--neon-pink); color: #fff; border: none; border-radius: var(--radio-sm); padding: 5px 12px; font-weight: 700; cursor: pointer; margin-top: var(--sp-xs); font-size: var(--fs-xs); }
- 
+
 .timeline { position: relative; margin: var(--sp-lg) 0; padding-left: var(--sp-lg); }
 .timeline::before { content: ''; position: absolute; left: 10px; top: 0; bottom: 0; width: 2px; background: var(--neon-blue); }
 .timeline-item { position: relative; margin-bottom: var(--sp-md); padding-left: var(--sp-sm); }
@@ -1175,7 +1162,7 @@ body::before {
 .timeline-item h4 { font-size: var(--fs-base); margin: 0 0 4px; color: var(--crema); }
 .timeline-item p { font-size: var(--fs-sm); color: var(--gris-l); margin: 0; }
 .timeline-puntos { font-weight: 700; color: var(--neon-yellow); }
- 
+
 /* ═══════════════════════════════════════
    MODAL AUTH + BOTÓN GOOGLE
    ═══════════════════════════════════════ */
@@ -1186,7 +1173,19 @@ body::before {
   cursor: pointer; min-height: var(--tap-min); transition: background .15s;
 }
 .btn-google:hover { background: #f1f1f1; }
- 
+
+.btn-user-header {
+  display: flex; align-items: center; gap: var(--sp-xs);
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(0, 212, 255, 0.3);
+  color: var(--crema); border-radius: 99px;
+  padding: 0.55em 1em; font-family: 'Inter', sans-serif;
+  font-size: var(--fs-sm); font-weight: 600; cursor: pointer;
+  transition: background .15s, border-color .15s, box-shadow .15s;
+}
+.btn-user-header:hover { background: rgba(0, 212, 255, 0.1); border-color: var(--neon-blue); box-shadow: var(--shadow-blue); }
+.btn-user-header svg { stroke: currentColor; }
+
 .modal-auth-overlay {
   position: fixed; inset: 0; background: rgba(0,0,0,0.8);
   z-index: 400; display: flex; align-items: center; justify-content: center;
@@ -1216,7 +1215,7 @@ body::before {
 .auth-form { display: none; flex-direction: column; gap: var(--sp-sm); }
 .auth-form.active { display: flex; }
 .auth-error { color: var(--rojo); font-size: var(--fs-sm); min-height: 1.2em; }
- 
+
 /* ═══════════════════════════════════════
    PANTALLA WELCOME / LOGIN PWA OBLIGATORIO
    ═══════════════════════════════════════ */
@@ -1230,7 +1229,7 @@ body::before {
   padding: var(--sp-md);
 }
 .welcome-overlay.mostrar { display: flex; }
- 
+
 .welcome-card-overlay {
   background: rgba(15, 18, 33, 0.95);
   backdrop-filter: blur(30px);
@@ -1277,7 +1276,7 @@ body::before {
   transition: all 0.3s ease;
 }
 .welcome-google-btn:hover { background: var(--neon-blue); color: #000; box-shadow: 0 0 30px var(--neon-blue); }
- 
+
 /* ═══════════════════════════════════════
    CÓDIGO DE DESCUENTO
    ═══════════════════════════════════════ */
@@ -1289,14 +1288,14 @@ body::before {
   transition: background .15s; box-shadow: var(--shadow-pink);
 }
 #aplicarCodigoBtn:hover { background: var(--neon-pink-dark); }
- 
+
 /* ═══════════════════════════════════════
    COLORES NEÓN UTILITARIOS
    ═══════════════════════════════════════ */
 .hero-color-yellow { color: var(--neon-yellow); text-shadow: var(--shadow-yellow), 0 0 30px var(--neon-yellow); }
 .hero-color-blue   { color: var(--neon-blue);   text-shadow: var(--shadow-blue),   0 0 30px var(--neon-blue); }
 .hero-color-pink   { color: var(--neon-pink);   text-shadow: var(--shadow-pink),   0 0 30px var(--neon-pink); }
- 
+
 /* ═══════════════════════════════════════
    CURSOR PERSONALIZADO (solo desktop con mouse real)
    ═══════════════════════════════════════ */
@@ -1309,50 +1308,45 @@ body::before {
 }
 .custom-cursor.hover { width: 30px; height: 30px; background: rgba(255, 0, 136, 0.15); border-color: transparent; }
 @media (pointer: coarse) { .custom-cursor { display: none; } }
- 
+
 .flying-product { position: fixed; pointer-events: none; z-index: 10000; top: 0; left: 0; width: 100%; height: 100%; }
- 
+
 /* ═══════════════════════════════════════
    RESPONSIVE — solo ajustes de LAYOUT,
    nunca tamaños de fuente fijos en px.
    La tipografía ya fluye sola por las
    variables --fs-* con clamp().
    ═══════════════════════════════════════ */
- 
+
 /* Tablet: header y hero ya fluyen, solo ajustamos columnas de grids */
 @media (max-width: 900px) {
   .site-footer-inner { grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); }
   .puntos-resumen { flex-direction: column; }
 }
- 
+
 /* Mobile: layout vertical donde corresponde, SIN tocar font-size */
 @media (max-width: 640px) {
   .pub-header-inner { justify-content: center; text-align: center; }
   .header-right { width: 100%; justify-content: center; }
   .hero-pills { gap: var(--sp-xs); }
- 
+
   /* Drawer ocupa todo el ancho en celulares chicos — comportamiento
-     de app nativa, no "ventana flotante" angosta.
-     FIX: ya no forzamos width:100vw (esa unidad es la que causaba
-     el cálculo impreciso en WebViews de PWA). En vez de eso,
-     quitamos el max-width y el margin-left:auto de desktop —
-     así el ancho lo define directamente left:0/right:0 del
-     position:fixed, que es exacto en cualquier WebView. */
-  .carrito-drawer { max-width: none; margin-left: 0; left: 0; }
- 
+     de app nativa, no "ventana flotante" angosta */
+  .carrito-drawer { width: 100vw; }
+
   /* Stats del admin: 2 columnas en vez de 1, se aprovecha mejor el ancho */
   .stats-grid { grid-template-columns: 1fr 1fr; }
- 
+
   .footer-bottom { flex-direction: column; text-align: center; gap: var(--sp-xs); }
 }
- 
+
 /* Celular muy angosto (320–375px): apretamos espaciados, no fuentes */
 @media (max-width: 380px) {
   .hero { padding: var(--sp-lg) var(--sp-sm); }
   .menu-section { padding: var(--sp-md) var(--sp-sm) var(--sp-xl); }
   #menu-container { gap: var(--sp-sm); }
 }
- 
+
 /* Accesibilidad: respeta reduce motion en toda la app */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
@@ -1361,7 +1355,7 @@ body::before {
     transition-duration: 0.01ms !important;
   }
 }
- 
+
 /* ═══════════════════════════════════════════════════
    MODO APP NATIVA — PANTALLAS COMPLETAS EN MOBILE
    ═══════════════════════════════════════════════════
@@ -1376,15 +1370,12 @@ body::before {
    "← Volver", y el menú del admin hace lo mismo.
    ═══════════════════════════════════════════════════ */
 @media (max-width: 768px) {
- 
+
   /* ── CARRITO: pantalla completa con header propio ── */
   .carrito-drawer {
-    /* FIX: mismo criterio que el breakpoint de 640px — se quita
-       el límite de desktop en vez de forzar una unidad vw que
-       resultaba imprecisa en WebViews de PWA instaladas. */
-    max-width: none;
-    margin-left: 0;
-    left: 0;
+    width: 100vw;
+    /* El overlay oscuro de fondo ya no hace falta en pantalla
+       completa — el carrito ES la pantalla, no flota sobre nada. */
   }
   .carrito-overlay {
     /* Se mantiene en el DOM por compatibilidad con el JS existente,
@@ -1392,7 +1383,7 @@ body::before {
        el drawer ya cubre el 100% de la pantalla. */
     background: transparent;
   }
- 
+
   /* Botón "← Volver" — solo existe en mobile.
      En desktop el drawer-head ya tiene su botón "✕" normal,
      así que ese se oculta y este lo reemplaza. */
@@ -1418,7 +1409,7 @@ body::before {
     stroke: var(--neon-blue); fill: none; stroke-width: 2.5;
     flex-shrink: 0;
   }
- 
+
   /* El header del drawer pasa a comportarse como app-bar nativa:
      el título queda centrado, "Volver" a la izquierda. */
   .drawer-head {
@@ -1441,34 +1432,23 @@ body::before {
     display: none; /* el contador ya no hace falta arriba, queda en el resumen */
   }
 }
- 
+
 /* En desktop, el botón "← Volver" nunca se muestra —
    ahí el cajón lateral funciona perfecto con la "✕" de siempre. */
 .btn-volver-mobile { display: none; }
- 
- 
+
+
 /* ═══════════════════════════════════════════════════
    ADMIN — sidebar de navegación a pantalla completa
    en mobile, en vez de drawer angosto encimado
    ═══════════════════════════════════════════════════ */
 @media (max-width: 768px) {
   .admin-sidebar {
-    /* FIX: igual que el carrito — width:100vw + left:-100vw resulta
-       impreciso en WebViews de PWA instaladas en Android (el sidebar
-       "casi" cubre la pantalla pero no del todo). En vez de calcular
-       un ancho en vw, anclamos directamente con left:0 + right:0 y
-       dejamos que el navegador resuelva el ancho real, que sí es
-       exacto con position:fixed. Para la animación de entrada/salida
-       usamos transform en vez de animar "left", que es más barato
-       y no depende de ningún cálculo de vw. */
-    left: 0;
-    right: 0;
-    width: auto;
-    transform: translateX(-100%);
-    transition: transform 0.3s ease;
+    width: 100vw;
+    left: -100vw; /* arranca oculto, se desliza desde afuera */
   }
-  .admin-sidebar.open { transform: translateX(0); }
- 
+  .admin-sidebar.open { left: 0; }
+
   /* Botón hamburguesa: ahora se comporta como un ícono
      dentro de la topbar, no flotante tapando contenido. */
   .mobile-menu-btn {
@@ -1483,7 +1463,7 @@ body::before {
   .admin-topbar {
     gap: var(--sp-sm);
   }
- 
+
   /* Dentro del sidebar a pantalla completa, los links de
      navegación se agrandan: se tocan como botones de un
      menú principal, no como ítems de una lista compacta. */
@@ -1515,14 +1495,14 @@ body::before {
   }
 }
 .btn-cerrar-sidebar { display: none; }
- 
- 
+
+
 /* ═══════════════════════════════════════════════════════════
    MODO APP NATIVA — ESCALA GRANDE + EDGE-TO-EDGE EN MOBILE
    ═══════════════════════════════════════════════════════════
    Todo lo de acá abajo SOLO corre en mobile (≤768px).
    Desktop no se toca en absoluto.
- 
+
    Qué cambia:
    - Hero/Subhero, Menú/Categorías y Puntos pasan a usar el
      100% del ancho de pantalla (sin el padding lateral de
@@ -1535,20 +1515,20 @@ body::before {
      completa de un ajuste anterior; no se duplica acá.
    ═══════════════════════════════════════════════════════════ */
 @media (max-width: 768px) {
- 
+
   :root {
     /* Escala "app" — más generosa que la fluida de base.
        Se usa SOLO dentro de este media query, así que en
        desktop nada cambia. */
-    --fs-app-xs:   1.2rem;        /* antes ~0.8rem  — chips, labels */
-    --fs-app-sm:   1.4rem;     /* antes ~0.9rem  — texto secundario */
-    --fs-app-base: 1.55rem;      /* antes ~1rem    — cuerpo */
-    --fs-app-md:   1.85rem;     /* antes ~1.1rem  — subtítulos */
-    --fs-app-lg:   2.3rem;      /* antes ~1.3rem  — títulos de sección */
-    --fs-app-xl:   2.9rem;      /* antes ~1.6rem  — destacados */
-    --fs-app-hero: 4rem;      /* antes clamp ~2.6rem en mobile — título hero */
+    --fs-app-xs:   1rem;        /* antes ~0.8rem  — chips, labels */
+    --fs-app-sm:   1.15rem;     /* antes ~0.9rem  — texto secundario */
+    --fs-app-base: 1.3rem;      /* antes ~1rem    — cuerpo */
+    --fs-app-md:   1.55rem;     /* antes ~1.1rem  — subtítulos */
+    --fs-app-lg:   1.9rem;      /* antes ~1.3rem  — títulos de sección */
+    --fs-app-xl:   2.4rem;      /* antes ~1.6rem  — destacados */
+    --fs-app-hero: 3.4rem;      /* antes clamp ~2.6rem en mobile — título hero */
   }
- 
+
   /* ── Quitamos el padding lateral de "página" en las
        secciones de contenido principal: hero, promociones,
        categorías, menú y puntos pasan a edge-to-edge. El
@@ -1563,7 +1543,7 @@ body::before {
     padding-right: var(--sp-sm);
     max-width: 100%;
   }
- 
+
   /* ═══ HERO / SUBHERO — escala app, ancho completo ═══ */
   .hero {
     padding-left: 0;
@@ -1593,18 +1573,18 @@ body::before {
     font-size: var(--fs-app-sm);
     padding: 0.7em 1.3em;
   }
- 
+
   /* ═══ CATEGORÍAS — botones más grandes, edge-to-edge ═══ */
   .cats-inner { padding-left: var(--sp-xs); padding-right: var(--sp-xs); }
   #categorias button {
     font-size: var(--fs-app-sm);
     padding: 0.8em 1.6em;
   }
- 
+
   /* ═══ MENÚ — título de sección y cards en escala app ═══ */
   .menu-section-title { font-size: var(--fs-app-lg); }
   .menu-count { font-size: var(--fs-app-xs); }
- 
+
   /* Grid: en vez de varias columnas chicas, una sola card
      ancha por fila — coincide con "letras grandes": una
      card angosta con texto grande se ve apretada, una card
@@ -1622,13 +1602,13 @@ body::before {
     font-size: var(--fs-app-sm);
     padding: 0.9em 1.6em;
   }
- 
+
   /* ═══ PROMOCIONES — mismo criterio ═══ */
   .promociones-title { font-size: var(--fs-app-lg); }
   .promo-card-nombre { font-size: var(--fs-app-base); }
   .promo-card-final  { font-size: var(--fs-app-lg); }
   .promociones-grid { grid-template-columns: 1fr; }
- 
+
   /* ═══ PUNTOS — se queda en el scroll principal, pero
        con la misma escala grande que el resto ═══ */
   .puntos-section { padding-left: var(--sp-sm); padding-right: var(--sp-sm); }
@@ -1644,7 +1624,7 @@ body::before {
   .recompensas-grid { grid-template-columns: 1fr; }
   .puntos-bloqueado p { font-size: var(--fs-app-base); }
   .puntos-candado { font-size: var(--fs-app-xl); }
- 
+
   /* ═══ HEADER — logo y botones a escala app también,
        para que no quede chico al lado del resto agrandado ═══ */
   .pub-logo { font-size: var(--fs-app-md); }
@@ -1654,12 +1634,12 @@ body::before {
     padding: 0.7em 1.3em 0.7em 1em;
   }
   .carrito-badge { font-size: var(--fs-app-xs); }
- 
+
   /* ═══ TOAST — legible a la nueva escala ═══ */
   .toast { font-size: var(--fs-app-sm); padding: 0.8em 1.6em; }
 }
- 
- 
+
+
 /* ═══════════════════════════════════════════════════════════
    LOGIN MODAL — más grande y mejor centrado en mobile
    (se queda como modal, NO pasa a pantalla completa,
@@ -1692,7 +1672,7 @@ body::before {
     padding: 1em;
     min-height: 56px;
   }
- 
+
   /* La pantalla de bienvenida obligatoria (PWA standalone)
      usa la misma escala grande */
   .welcome-card-overlay {
