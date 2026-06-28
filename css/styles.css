@@ -220,7 +220,13 @@ body::before {
   color: var(--neon-pink);
   margin-top: 3px;
 }
-.header-right { display: flex; align-items: center; gap: var(--sp-xs); flex-wrap: wrap; }
+/* FIX: antes header-right tenía flex-wrap, lo que hacía que el
+   botón "Mi pedido" se cayera impredeciblemente a una segunda
+   línea cuando los 3 botones (usuario, puntos, carrito) no
+   entraban junto al logo. Ahora nunca hace wrap acá — el
+   acomodo en 2 filas prolijas para mobile se define en el
+   bloque @media más abajo de forma explícita y controlada. */
+.header-right { display: flex; align-items: center; gap: var(--sp-xs); flex-wrap: nowrap; }
 .header-sep { width: 1px; height: 24px; background: var(--humo); flex-shrink: 0; }
 
 .btn-social {
@@ -642,7 +648,16 @@ body::before {
   -webkit-backdrop-filter: blur(24px);
   border-left: 1px solid rgba(0,229,255,0.3);
   z-index: 301; display: flex; flex-direction: column;
-  transform: translateX(100%);
+  /* FIX: translateX(100%) es relativo al propio ancho del
+     elemento. Cuando ese ancho cambia entre desktop (460px) y
+     mobile (100% del viewport vía left:0), algunos WebViews de
+     Android redondean ese cálculo con un error de 1-2px, dejando
+     una línea fina del borde (con su box-shadow cian) visible
+     todo el alto de la pantalla cuando el drawer "está cerrado".
+     Usar 100vw + un margen de sobra en vez de 100% elimina el
+     redondeo: garantiza sacar el panel completamente de pantalla
+     sin importar el ancho real que tenga en cada breakpoint. */
+  transform: translateX(calc(100vw + 20px));
   transition: transform .3s cubic-bezier(.4,0,.2,1);
   box-shadow: -5px 0 20px var(--neon-blue);
 }
@@ -1151,8 +1166,59 @@ body::before {
 
 /* ═══════════════════════════════════════
    PUNTOS Y RECOMPENSAS
-   ═══════════════════════════════════════ */
-.puntos-section { max-width: 1140px; margin: var(--sp-xl) auto; padding: 0 var(--sp-md); }
+   ═══════════════════════════════════════
+   FIX: antes esta sección, cuando el usuario estaba logueado,
+   se mostraba siempre desplegada por completo arriba de todo
+   — empujaba el menú de productos fuera de la pantalla inicial,
+   que es lo que más importa mostrar primero. Ahora es un panel
+   colapsable: arranca cerrado (solo una barra compacta con el
+   resumen de puntos) y se expande al tocarla. El menú de
+   productos queda visible de entrada. */
+.puntos-section {
+  max-width: 1140px; margin: var(--sp-md) auto; padding: 0 var(--sp-md);
+}
+
+/* Barra compacta siempre visible — resumen + flecha para expandir */
+.puntos-resumen-bar {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: var(--sp-sm);
+  background: var(--carbon);
+  border: 1px solid rgba(255, 0, 136, 0.3);
+  border-radius: var(--radio-lg);
+  padding: var(--sp-sm) var(--sp-md);
+  cursor: pointer;
+  transition: border-color .15s;
+}
+.puntos-resumen-bar:hover { border-color: var(--neon-pink); }
+.puntos-resumen-bar-left {
+  display: flex; align-items: center; gap: var(--sp-sm);
+  min-width: 0;
+}
+.puntos-resumen-bar-icon { font-size: var(--fs-lg); flex-shrink: 0; }
+.puntos-resumen-bar-texto { display: flex; flex-direction: column; min-width: 0; }
+.puntos-resumen-bar-titulo {
+  font-family: 'Orbitron', sans-serif; font-size: var(--fs-sm);
+  color: var(--neon-yellow); font-weight: 700;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.puntos-resumen-bar-sub { font-size: var(--fs-xs); color: var(--gris); }
+.puntos-resumen-bar-chevron {
+  font-size: var(--fs-md); color: var(--neon-blue); flex-shrink: 0;
+  transition: transform .25s;
+}
+.puntos-section.expandido .puntos-resumen-bar-chevron { transform: rotate(180deg); }
+
+/* Contenido expandible — oculto por defecto */
+.puntos-contenido {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height .35s ease;
+}
+.puntos-section.expandido .puntos-contenido {
+  max-height: 2000px; /* suficientemente alto para cualquier contenido real */
+}
+.puntos-contenido-inner { padding-top: var(--sp-md); }
+
 .puntos-title {
   font-family: 'Orbitron', sans-serif; font-size: var(--fs-xl);
   color: var(--neon-yellow); margin-bottom: var(--sp-md); text-shadow: var(--shadow-yellow);
@@ -1353,6 +1419,160 @@ body::before {
 @media (pointer: coarse) { .custom-cursor { display: none; } }
 
 .flying-product { position: fixed; pointer-events: none; z-index: 10000; top: 0; left: 0; width: 100%; height: 100%; }
+
+
+/* ═══════════════════════════════════════════════════════════
+   MEJORAS VISUALES — bloque 100% aditivo
+   ═══════════════════════════════════════════════════════════
+   Nada de lo de arriba se tocó. Estas reglas solo agregan
+   detalles encima de lo que ya existe y funciona. Si alguna
+   no convence, se puede borrar su sección sin afectar el
+   resto de la app.
+   ═══════════════════════════════════════════════════════════ */
+
+/* ── 1. Transición Hero → contenido con efecto de luz ──
+   Hoy el hero corta seco al fondo negro. Se agrega un
+   degradé de luz en el borde inferior que continúa la
+   energía neón hacia la sección siguiente, en vez de un
+   corte abrupto. */
+.hero {
+  position: relative;
+}
+.hero::after {
+  content: '';
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  height: 120px;
+  background: linear-gradient(
+    to bottom,
+    transparent 0%,
+    rgba(255, 0, 136, 0.04) 40%,
+    rgba(0, 229, 255, 0.06) 100%
+  );
+  pointer-events: none;
+  z-index: 1;
+}
+/* Línea de luz fina justo en el borde — el "cierre" visual del hero */
+.hero-inner::after {
+  content: '';
+  display: block;
+  width: min(280px, 70%);
+  height: 2px;
+  margin: var(--sp-lg) auto 0;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--neon-pink) 25%,
+    var(--neon-blue) 50%,
+    var(--neon-yellow) 75%,
+    transparent
+  );
+  opacity: 0.6;
+  box-shadow: 0 0 12px rgba(0, 229, 255, 0.4);
+}
+
+/* ── 2. Glow sutil permanente en cards de producto ──
+   Antes el glow solo aparecía al hover. Ahora hay un brillo
+   tenue constante (mucho más débil que el de hover) para que
+   las cards "respiren" mientras el usuario solo está mirando
+   el menú, sin tener que tocar nada. El hover sigue
+   intensificándolo igual que antes. */
+.producto {
+  box-shadow:
+    0 4px 12px rgba(0,0,0,0.3),
+    0 0 16px rgba(0, 229, 255, 0.06);
+}
+.producto:hover {
+  /* Se mantiene el comportamiento original y se suma un
+     toque extra de profundidad */
+  box-shadow:
+    0 16px 40px rgba(0,0,0,0.5),
+    var(--shadow-pink),
+    0 0 30px rgba(255, 0, 136, 0.12);
+}
+/* Borde con gradiente sutil en vez de un solo color plano —
+   pequeño detalle que distingue las cards del resto de la UI */
+.prod-oferta-chip {
+  box-shadow: 0 0 10px rgba(255, 0, 136, 0.35);
+}
+
+/* ── 3. Botón flotante de WhatsApp — siempre visible al navegar ──
+   No reemplaza el botón del header ni el del footer (esos
+   quedan igual). Es un acceso rápido extra que aparece fijo
+   en la esquina mientras se scrollea el menú, como en los
+   sitios de delivery que más convierten. Usa el mismo número
+   que ya está en el resto del sitio. */
+.fab-whatsapp {
+  position: fixed;
+  bottom: var(--sp-lg);
+  right: var(--sp-lg);
+  width: 58px;
+  height: 58px;
+  background: #25D366;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 20px rgba(37, 211, 102, 0.5), 0 0 0 0 rgba(37, 211, 102, 0.5);
+  z-index: 150;
+  text-decoration: none;
+  animation: fabPulse 2.5s infinite;
+  transition: transform 0.2s;
+}
+.fab-whatsapp:hover { transform: scale(1.08); }
+.fab-whatsapp svg { width: 30px; height: 30px; fill: #fff; }
+@keyframes fabPulse {
+  0%   { box-shadow: 0 4px 20px rgba(37, 211, 102, 0.5), 0 0 0 0 rgba(37, 211, 102, 0.5); }
+  70%  { box-shadow: 0 4px 20px rgba(37, 211, 102, 0.5), 0 0 0 14px rgba(37, 211, 102, 0); }
+  100% { box-shadow: 0 4px 20px rgba(37, 211, 102, 0.5), 0 0 0 0 rgba(37, 211, 102, 0); }
+}
+/* Se oculta cuando el carrito está abierto, para no pisarse
+   con el drawer */
+body:has(.carrito-drawer.abierto) .fab-whatsapp { opacity: 0; pointer-events: none; }
+@media (max-width: 768px) {
+  .fab-whatsapp {
+    width: 52px; height: 52px;
+    bottom: max(var(--sp-md), env(safe-area-inset-bottom));
+    right: var(--sp-md);
+  }
+  .fab-whatsapp svg { width: 26px; height: 26px; }
+}
+
+/* ── 4. Más vida visual en la pantalla de bienvenida (PWA) ──
+   Se agrega un brillo giratorio de fondo detrás de la card,
+   sutil, para que la primera pantalla que ve el dueño cada
+   vez que abre la app tenga más presencia premium. No toca
+   el contenido ni la lógica, solo el fondo detrás de la card
+   ya existente. */
+.welcome-overlay {
+  position: relative;
+  overflow: hidden;
+}
+.welcome-overlay::before {
+  content: '';
+  position: absolute;
+  top: 50%; left: 50%;
+  width: 600px; height: 600px;
+  background: conic-gradient(
+    from 0deg,
+    transparent,
+    rgba(255, 0, 136, 0.08),
+    transparent,
+    rgba(0, 229, 255, 0.08),
+    transparent
+  );
+  transform: translate(-50%, -50%);
+  animation: welcomeSpin 12s linear infinite;
+  pointer-events: none;
+}
+@keyframes welcomeSpin {
+  from { transform: translate(-50%, -50%) rotate(0deg); }
+  to   { transform: translate(-50%, -50%) rotate(360deg); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .welcome-overlay::before { animation: none; }
+}
+
 /* ═══════════════════════════════════════════════════════════
    MODO APP NATIVA — BLOQUE ÚNICO PARA MOBILE (≤768px)
    ═══════════════════════════════════════════════════════════
@@ -1376,9 +1596,39 @@ body::before {
    ═══════════════════════════════════════════════════════════ */
 @media (max-width: 768px) {
 
-  /* ── Header centrado en pantallas angostas ── */
-  .pub-header-inner { justify-content: center; text-align: center; }
-  .header-right { width: 100%; justify-content: center; }
+  /* ── Header: 2 filas explícitas en mobile ──
+     FIX: antes header-right se centraba con flex-wrap implícito,
+     lo que provocaba que "Mi pedido" cayera a una fila propia de
+     forma impredecible según el ancho exacto del email mostrado.
+     Ahora el layout es explícito: el logo siempre arriba, los 3
+     botones (usuario/puntos/carrito) siempre juntos abajo en una
+     sola fila, comprimiéndose proporcionalmente si hace falta. */
+  .pub-header-inner {
+    flex-direction: column;
+    justify-content: center;
+    text-align: center;
+    gap: var(--sp-xs);
+  }
+  .header-right {
+    width: 100%;
+    justify-content: center;
+    flex-wrap: nowrap;
+  }
+  /* En pantallas muy angostas, los 3 botones se comprimen en vez
+     de desbordar o saltar de fila */
+  .btn-user-header, .btn-carrito-header {
+    flex: 1 1 0;
+    min-width: 0;
+    justify-content: center;
+    padding-left: 0.7em;
+    padding-right: 0.7em;
+  }
+  .btn-user-header span,
+  .btn-carrito-header span,
+  #btnUserLabel {
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    min-width: 0;
+  }
   .admin-bar-email { max-width: 140px; }
 
   /* ══════════════════════════════════════════
@@ -1427,7 +1677,11 @@ body::before {
     left: 0; right: 0;
     width: auto; /* anulamos el width:240px de desktop */
     z-index: 240;
-    transform: translateX(-100%);
+    /* FIX: mismo criterio que el carrito — translateX(-100%) es
+       relativo al ancho propio, que cambia entre desktop (240px)
+       y mobile (pantalla completa). calc(-100vw - 20px) garantiza
+       sacarlo de pantalla sin redondeos de subpíxel. */
+    transform: translateX(calc(-100vw - 20px));
     transition: transform 0.3s ease;
   }
   .admin-sidebar.open { transform: translateX(0); }
@@ -1478,6 +1732,22 @@ body::before {
   }
   .promociones-grid { grid-template-columns: 1fr; }
   .recompensas-grid { grid-template-columns: 1fr; }
+
+  /* FIX: en mobile con una sola columna, una imagen 4:3 a lo
+     ancho de toda la pantalla resulta muy alta en términos
+     absolutos — eso era lo que hacía que la card "tapara" la
+     pantalla antes de llegar al precio. Se comprime la
+     proporción para que la imagen ocupe menos alto relativo,
+     dejando título/precio/botón visibles sin tanto scroll. */
+  .prod-thumb { aspect-ratio: 16 / 9; }
+  .prod-desc { -webkit-line-clamp: 2; }
+
+  /* ══════════════════════════════════════════
+     CATEGORÍAS — espacio reservado para las
+     flechas de scroll, así no tapan el texto
+     del primer/último botón
+     ══════════════════════════════════════════ */
+  .cats-inner { padding-left: calc(var(--sp-md) + 28px); padding-right: calc(var(--sp-md) + 28px); }
 
   /* ══════════════════════════════════════════
      ADMIN — stats en 2 columnas, mejor uso del
@@ -1534,4 +1804,295 @@ body::before {
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
+}
+
+
+/* ═══════════════════════════════════════════════════════════
+   MEJORAS — bloque 100% aditivo, no toca nada existente
+   ═══════════════════════════════════════════════════════════ */
+
+/* ── 1. SKELETON LOADERS ──
+   Reemplaza el "⏳ Cargando..." plano por placeholders con
+   forma de card que dan la sensación de carga instantánea.
+   Se inyectan vía JS (ver index.html) sin tocar menu.js —
+   conviven con el .estado-menu original como fallback. */
+.skeleton-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(260px, 100%), 1fr));
+  gap: var(--sp-md);
+}
+.skeleton-card {
+  background: rgba(18,18,18,.7);
+  border: 1px solid rgba(0, 229, 255, 0.15);
+  border-radius: 18px;
+  overflow: hidden;
+}
+.skeleton-shimmer {
+  background: linear-gradient(
+    90deg,
+    var(--grafito) 25%,
+    var(--humo) 50%,
+    var(--grafito) 75%
+  );
+  background-size: 200% 100%;
+  animation: skeletonShimmer 1.4s infinite;
+}
+@keyframes skeletonShimmer { to { background-position: -200% 0; } }
+.skeleton-img { aspect-ratio: 4/3; }
+.skeleton-body { padding: var(--sp-md); display: flex; flex-direction: column; gap: var(--sp-xs); }
+.skeleton-line { height: 14px; border-radius: 4px; }
+.skeleton-line.w-40 { width: 40%; }
+.skeleton-line.w-80 { width: 80%; }
+.skeleton-line.w-60 { width: 60%; }
+.skeleton-line.h-big { height: 28px; width: 45%; margin-top: 6px; }
+
+/* ── 2. BARRA DE PROGRESO DE PUNTOS ──
+   Se agrega dentro de la barra colapsable existente, sin
+   reemplazar nada del JS de puntos — solo decora visualmente
+   el número que ya se calcula. */
+.puntos-progreso-track {
+  width: 100%;
+  height: 6px;
+  background: var(--grafito);
+  border-radius: 99px;
+  overflow: hidden;
+  margin-top: 6px;
+}
+.puntos-progreso-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--neon-pink), var(--neon-blue));
+  border-radius: 99px;
+  transition: width .6s cubic-bezier(.4,0,.2,1);
+  box-shadow: 0 0 8px rgba(0, 229, 255, 0.5);
+}
+
+/* ── 3. JERARQUÍA MEJORADA EN CARDS DE PRODUCTO ──
+   El badge de categoría pasa de texto plano a un chip con
+   fondo, y el precio gana más presencia visual. Se sobreescribe
+   lo existente con reglas más específicas, sin romper el resto
+   (oferta, descuento, etc. siguen funcionando igual). */
+.prod-cat-label {
+  display: inline-block;
+  background: rgba(0, 229, 255, 0.1);
+  border: 1px solid rgba(0, 229, 255, 0.25);
+  border-radius: 99px;
+  padding: 3px 10px;
+  margin-bottom: 4px;
+}
+.prod-precio-final {
+  position: relative;
+}
+.prod-footer {
+  align-items: center;
+}
+/* Línea de separación sutil antes del footer, ancla visualmente
+   el precio respecto a la descripción */
+.producto-body::after {
+  content: '';
+  display: block;
+  height: 1px;
+  background: linear-gradient(90deg, rgba(0,229,255,0.15), transparent);
+  margin: 2px 0 4px;
+  order: 3;
+}
+
+/* ── 4. MICROANIMACIÓN AL AGREGAR AL CARRITO ──
+   El botón "+ Agregar" hace un pulso de confirmación al
+   tocarlo, además del efecto de vuelo que ya existe en JS.
+   Pura animación CSS — no requiere cambios en menu.js. */
+@keyframes btnAgregarPulso {
+  0%   { transform: scale(1); }
+  40%  { transform: scale(0.92); }
+  70%  { transform: scale(1.06); }
+  100% { transform: scale(1); }
+}
+.btn-agregar.pulso { animation: btnAgregarPulso .4s ease; }
+
+/* Destello breve en el ícono del carrito del header cuando se
+   agrega un producto */
+@keyframes carritoDestello {
+  0%   { box-shadow: 0 0 0 0 rgba(255, 195, 0, 0.6); }
+  100% { box-shadow: 0 0 0 14px rgba(255, 195, 0, 0); }
+}
+.btn-carrito-header.destello { animation: carritoDestello .5s ease-out; }
+
+/* ── 5. HEADER COMPACTO EN SCROLL ──
+   Al scrollear hacia abajo, el header reduce su altura y
+   blur para ocupar menos espacio en pantalla, sin desaparecer
+   ni romper el sticky existente. Se activa con una clase que
+   el JS agrega/quita según scrollY, sin tocar la lógica de
+   con-admin que ya existe (ambas clases son compatibles). */
+.pub-header {
+  transition: top .2s, min-height .25s, padding .25s;
+}
+.pub-header.compacto .pub-header-inner {
+  min-height: 48px;
+  padding-top: calc(var(--sp-xs) * 0.6);
+  padding-bottom: calc(var(--sp-xs) * 0.6);
+}
+.pub-header.compacto .pub-logo { font-size: var(--fs-md); }
+.pub-header.compacto .pub-logo small { display: none; }
+.pub-header.compacto .btn-user-header span,
+.pub-header.compacto .btn-carrito-header span:not(.carrito-badge) {
+  display: none; /* en compacto los botones quedan solo con ícono */
+}
+.pub-header.compacto .btn-user-header,
+.pub-header.compacto .btn-carrito-header {
+  padding: 0.5em 0.7em;
+}
+@media (prefers-reduced-motion: reduce) {
+  .pub-header { transition: none; }
+}
+
+
+/* ═══════════════════════════════════════════════════════════
+   MODAL: SELECCIÓN DE PRESENTACIÓN Y CANTIDAD
+   ═══════════════════════════════════════════════════════════
+   Bloque 100% aditivo — no modifica ningún selector existente.
+   ═══════════════════════════════════════════════════════════ */
+.modal-overlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.8);
+  z-index: 400;
+  display: flex; align-items: center; justify-content: center;
+  padding: var(--sp-md);
+  visibility: hidden; opacity: 0;
+  transition: visibility .2s, opacity .2s;
+}
+.modal-overlay.abierto { visibility: visible; opacity: 1; }
+
+.modal-presentacion-card {
+  background: var(--carbon);
+  border: 1px solid var(--neon-blue);
+  border-radius: var(--radio-lg);
+  padding: var(--sp-lg);
+  width: 100%;
+  max-width: 420px;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+  box-shadow: 0 0 30px rgba(0, 229, 255, 0.25);
+}
+
+.modal-presentacion-header {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-sm);
+  margin-bottom: var(--sp-md);
+  padding-right: 36px; /* deja lugar a la "✕" */
+}
+.modal-presentacion-thumb {
+  width: 56px; height: 56px;
+  border-radius: 12px;
+  background: var(--grafito);
+  display: flex; align-items: center; justify-content: center;
+  font-size: var(--fs-lg);
+  flex-shrink: 0;
+  overflow: hidden;
+}
+.modal-presentacion-header h3 {
+  font-family: 'Orbitron', sans-serif;
+  font-size: var(--fs-md);
+  color: var(--crema);
+  line-height: 1.3;
+}
+
+.modal-presentacion-opciones {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-xs);
+  margin-bottom: var(--sp-md);
+}
+.modal-presentacion-opcion {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--grafito);
+  border: 1px solid var(--humo);
+  border-radius: var(--radio);
+  padding: 0.8em 1em;
+  cursor: pointer;
+  min-height: var(--tap-min);
+  transition: border-color .15s, background .15s;
+  text-align: left;
+}
+.modal-presentacion-opcion:hover { border-color: rgba(0, 229, 255, 0.4); }
+.modal-presentacion-opcion.activa {
+  border-color: var(--neon-blue);
+  background: rgba(0, 229, 255, 0.08);
+  box-shadow: 0 0 0 1px var(--neon-blue) inset;
+}
+.modal-presentacion-opcion-etiqueta {
+  font-weight: 600;
+  font-size: var(--fs-base);
+  color: var(--crema);
+}
+.modal-presentacion-opcion-precio {
+  font-family: 'Orbitron', sans-serif;
+  font-size: var(--fs-base);
+  color: var(--neon-yellow);
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.modal-presentacion-opcion-original {
+  font-family: 'Inter', sans-serif;
+  font-size: var(--fs-xs);
+  color: var(--gris);
+  text-decoration: line-through;
+  font-weight: 400;
+}
+
+.modal-presentacion-cantidad {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--sp-md);
+  padding: var(--sp-sm) 0;
+  border-top: 1px solid var(--grafito);
+  border-bottom: 1px solid var(--grafito);
+}
+.modal-presentacion-cantidad-label {
+  font-size: var(--fs-base);
+  color: var(--gris-l);
+  font-weight: 600;
+}
+.modal-presentacion-cantidad-controles {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-sm);
+}
+.modal-presentacion-cantidad-controles span {
+  font-family: 'Orbitron', sans-serif;
+  font-size: var(--fs-lg);
+  min-width: 28px;
+  text-align: center;
+}
+
+.modal-presentacion-confirmar {
+  font-size: var(--fs-base);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+.modal-presentacion-confirmar span {
+  font-family: 'Orbitron', sans-serif;
+}
+
+/* ── Etiqueta de presentación dentro del carrito ── */
+.item-presentacion {
+  font-size: var(--fs-xs);
+  color: var(--neon-blue);
+  background: rgba(0, 229, 255, 0.1);
+  border-radius: 4px;
+  padding: 1px 6px;
+  display: inline-block;
+  margin: 2px 0;
+  width: fit-content;
+}
+
+@media (max-width: 480px) {
+  .modal-presentacion-card { padding: var(--sp-md); }
 }

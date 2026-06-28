@@ -21,21 +21,66 @@ function guardar() {
   if (typeof window.sincBadge === 'function') window.sincBadge();
 }
 
+function limpiarDescuentoSiVacio() {
+  if (carrito.length === 0 && window.codigoDescuento) {
+    window.codigoDescuento = null;
+    const inputCodigo = document.getElementById('codigoDescuentoInput');
+    const mensajeEl   = document.getElementById('codigoDescuentoMensaje');
+    const infoEl      = document.getElementById('codigoDescuentoInfo');
+    if (inputCodigo) inputCodigo.value = '';
+    if (mensajeEl)   mensajeEl.textContent = '';
+    if (infoEl)      infoEl.style.display = 'none';
+  }
+}
+
 window._renderCarritoExterno = () => {
   carrito = loadStorage('carrito', []);
   render();
   if (typeof window.sincBadge === 'function') window.sincBadge();
 };
 
-window.agregarAlCarrito = (producto) => {
+/**
+ * Clave única de ítem dentro del carrito.
+ * FIX: antes la clave era solo `nombre`, así que si el cliente
+ * agregaba el mismo producto en dos presentaciones distintas
+ * (ej: 1 unidad suelta Y 1 pack x3), ambas se mezclaban en la
+ * misma línea, sumando cantidades de cosas que en realidad
+ * cuestan distinto. Ahora la clave combina nombre + etiqueta de
+ * presentación, así "Sánguche de jamón (Unidad)" y "Sánguche de
+ * jamón (Pack x3)" son líneas completamente separadas.
+ */
+function claveItem(nombre, presentacionEtiqueta) {
+  return `${nombre}__${presentacionEtiqueta || 'unico'}`;
+}
+
+/**
+ * Agrega un producto al carrito. Acepta tanto el formato simple
+ * de antes (producto sin presentación explícita, para no romper
+ * compatibilidad si algún llamador externo lo sigue usando) como
+ * el nuevo formato con presentación y cantidad inicial, que es el
+ * que ahora usa el modal de selección en menu.js / index.html.
+ *
+ * @param {Object} producto
+ * @param {string} producto.nombre
+ * @param {number} producto.precio           Precio unitario de ESA presentación
+ * @param {string} [producto.imagen]
+ * @param {string} [producto.id]
+ * @param {string} [producto.presentacionEtiqueta]  Ej: "Unidad", "Pack x3"
+ * @param {number} [producto.presentacionUnidades]  Ej: 1, 3, 6, 12
+ * @param {number} [cantidadInicial]  Cuántas veces agregar de una — default 1
+ */
+window.agregarAlCarrito = (producto, cantidadInicial = 1) => {
   if (!producto || typeof producto !== 'object') {
     console.error('agregarAlCarrito: esperaba un objeto, recibió:', producto);
     showToast('Error al agregar producto', 'error');
     return;
   }
-  const nombre = String(producto.nombre || '').trim();
-  const precio = Number(producto.precio);
-  const imagen = producto.imagen || '';
+  const nombre   = String(producto.nombre || '').trim();
+  const precio   = Number(producto.precio);
+  const imagen   = producto.imagen || '';
+  const etiqueta = producto.presentacionEtiqueta || null;
+  const unidadesPorPresentacion = Number(producto.presentacionUnidades) || 1;
+  const cantidad = Math.max(1, Math.floor(Number(cantidadInicial) || 1));
 
   if (!nombre) return;
   if (isNaN(precio) || precio <= 0) {
@@ -43,26 +88,42 @@ window.agregarAlCarrito = (producto) => {
     return;
   }
 
-  const itemExistente = carrito.find(i => i.nombre === nombre);
+  const clave = claveItem(nombre, etiqueta);
+  const itemExistente = carrito.find(i => i.clave === clave);
+
   if (itemExistente) {
-    itemExistente.cantidad++;
+    itemExistente.cantidad += cantidad;
+    itemExistente.precio = precio;
   } else {
-    carrito.push({ id: producto.id || '', nombre, precio, cantidad: 1, imagen });
+    carrito.push({
+      clave,
+      id: producto.id || '',
+      nombre,
+      precio,
+      cantidad,
+      imagen,
+      presentacionEtiqueta: etiqueta,
+      presentacionUnidades: unidadesPorPresentacion,
+    });
   }
   guardar();
-  showToast(`✓ ${nombre} agregado al pedido`);
+
+  const detalle = etiqueta ? ` (${etiqueta})` : '';
+  showToast(`✓ ${nombre}${detalle} agregado al pedido`);
 };
 
-window.cambiarCantidad = (nombre, delta) => {
-  const item = carrito.find(i => i.nombre === nombre);
+window.cambiarCantidad = (clave, delta) => {
+  const item = carrito.find(i => i.clave === clave);
   if (!item) return;
   item.cantidad += delta;
-  if (item.cantidad <= 0) carrito = carrito.filter(i => i.nombre !== nombre);
+  if (item.cantidad <= 0) carrito = carrito.filter(i => i.clave !== clave);
+  limpiarDescuentoSiVacio();
   guardar();
 };
 
-window.eliminarDelCarrito = (nombre) => {
-  carrito = carrito.filter(i => i.nombre !== nombre);
+window.eliminarDelCarrito = (clave) => {
+  carrito = carrito.filter(i => i.clave !== clave);
+  limpiarDescuentoSiVacio();
   guardar();
 };
 
@@ -75,10 +136,12 @@ window.pedirPorWhatsApp = async () => {
   const telefono      = $id('clienteTelefono')?.value.trim()      || '';
   const direccion     = $id('clienteDireccion')?.value.trim()     || '';
   const observaciones = $id('clienteObservaciones')?.value.trim() || '';
-  let total = carrito.reduce((suma, item) => suma + item.precio * item.cantidad, 0);
+
+  const subtotal = carrito.reduce((suma, item) => suma + item.precio * item.cantidad, 0);
+  let total = subtotal;
   let descuentoAplicado = 0;
   if (window.codigoDescuento && window.codigoDescuento.porcentaje) {
-    descuentoAplicado = Math.round(total * window.codigoDescuento.porcentaje / 100);
+    descuentoAplicado = Math.round(subtotal * window.codigoDescuento.porcentaje / 100);
     total -= descuentoAplicado;
   }
 
@@ -89,11 +152,12 @@ window.pedirPorWhatsApp = async () => {
       clienteDireccion: direccion,
       clienteObservaciones: observaciones,
       productos: carrito,
+      subtotal,
+      descuentoAplicado,
       total,
       fecha: new Date().toISOString(),
       estado: 'pendiente',
       codigoDescuento: window.codigoDescuento || null,
-      totalConDescuento: total
     });
   } catch (err) {
     console.error('Error al guardar pedido:', err);
@@ -101,7 +165,16 @@ window.pedirPorWhatsApp = async () => {
     return;
   }
 
-  const lineas = carrito.map(item => `• ${item.cantidad}x ${item.nombre} — $${formatPrice(item.precio * item.cantidad)}`);
+  // FIX: cada línea del mensaje de WhatsApp ahora incluye la
+  // presentación cuando corresponde, para que el local sepa
+  // exactamente qué armar (ej: "2x Sánguche de jamón (Pack x3)"
+  // en vez de un genérico "2x Sánguche de jamón" que podía
+  // confundirse con 2 unidades sueltas).
+  const lineas = carrito.map(item => {
+    const detalle = item.presentacionEtiqueta ? ` (${item.presentacionEtiqueta})` : '';
+    return `• ${item.cantidad}x ${item.nombre}${detalle} — $${formatPrice(item.precio * item.cantidad)}`;
+  });
+
   const partes = [
     '🥖 *Nuevo pedido — Salvador Sanguchería*',
     '',
@@ -115,13 +188,16 @@ window.pedirPorWhatsApp = async () => {
 
   if (window.codigoDescuento) {
     partes.push(`🏷️ Código: ${window.codigoDescuento.codigo} (-${window.codigoDescuento.porcentaje}%)`);
+    partes.push(`💰 Subtotal: $${formatPrice(subtotal)}`);
     partes.push(`💰 Total con descuento: $${formatPrice(total)}`);
   } else {
     partes.push(`*Total: $${formatPrice(total)}*`);
   }
 
   window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(partes.join('\n'))}`, '_blank');
+
   carrito = [];
+  window.codigoDescuento = null;
   guardar();
   showToast('¡Pedido enviado! 🚀');
 };
@@ -138,20 +214,28 @@ function render() {
     const cantidad = Number(item.cantidad) || 1;
     const subtotal = precio * cantidad;
     const thumbHTML = item.imagen ? `<img src="${item.imagen}" alt="${esc(item.nombre)}" style="width:100%;height:100%;object-fit:cover;">` : '🥖';
+
+    // Muestra la presentación debajo del nombre cuando existe,
+    // para que el cliente vea con claridad qué eligió.
+    const presentacionHTML = item.presentacionEtiqueta
+      ? `<div class="item-presentacion">${esc(item.presentacionEtiqueta)}</div>`
+      : '';
+
     return `
       <div class="item-carrito">
         <div class="item-thumb">${thumbHTML}</div>
         <div class="item-info">
           <div class="item-nombre">${esc(item.nombre)}</div>
+          ${presentacionHTML}
           <div class="item-precio-unit">$${formatPrice(precio)} c/u</div>
         </div>
         <div class="item-controles">
-          <button class="ctrl-btn" onclick="cambiarCantidad('${esc(item.nombre)}', -1)">−</button>
+          <button class="ctrl-btn" onclick="cambiarCantidad('${esc(item.clave)}', -1)">−</button>
           <span class="ctrl-cantidad">${cantidad}</span>
-          <button class="ctrl-btn" onclick="cambiarCantidad('${esc(item.nombre)}', 1)">+</button>
+          <button class="ctrl-btn" onclick="cambiarCantidad('${esc(item.clave)}', 1)">+</button>
         </div>
         <div class="item-subtotal">$${formatPrice(subtotal)}</div>
-        <button class="btn-quitar-item" onclick="eliminarDelCarrito('${esc(item.nombre)}')" title="Quitar">✕</button>
+        <button class="btn-quitar-item" onclick="eliminarDelCarrito('${esc(item.clave)}')" title="Quitar">✕</button>
       </div>`;
   }).join('');
 }
@@ -162,12 +246,16 @@ function esc(str) {
 
 // ═══ APLICAR CÓDIGO DE DESCUENTO ═══
 async function aplicarCodigoDescuento() {
-  const input = document.getElementById('codigoDescuentoInput');
+  const input     = document.getElementById('codigoDescuentoInput');
   const mensajeEl = document.getElementById('codigoDescuentoMensaje');
-  const codigo = input?.value.trim().toUpperCase();
+  const codigo    = input?.value.trim().toUpperCase();
 
   if (!codigo) {
     mensajeEl.textContent = 'Ingresá un código válido';
+    return;
+  }
+  if (carrito.length === 0) {
+    mensajeEl.textContent = 'Agregá productos antes de aplicar un código';
     return;
   }
 

@@ -5,209 +5,284 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Admin — Salvador Sanguchería</title>
   <link rel="stylesheet" href="./css/styles.css">
+  <style>
+    /* ── Pantalla de verificación de acceso ──
+       Tapa todo el contenido del panel mientras Firebase
+       confirma si el usuario es admin. Antes el panel completo
+       se veía brevemente (con datos sensibles) antes de redirigir
+       si no tenía permiso. */
+    #authGate {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      background: var(--negro);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: var(--sp-md);
+    }
+    #authGate.oculto { display: none; }
+    .authgate-spinner {
+      width: 36px; height: 36px;
+      border: 3px solid var(--grafito);
+      border-top-color: var(--neon-pink);
+      border-radius: 50%;
+      animation: authgateSpin .8s linear infinite;
+    }
+    @keyframes authgateSpin { to { transform: rotate(360deg); } }
+    .authgate-texto {
+      color: var(--gris-l);
+      font-family: 'Inter', sans-serif;
+      font-size: var(--fs-sm);
+    }
+    .authgate-error {
+      color: var(--rojo);
+      font-size: var(--fs-sm);
+      text-align: center;
+      max-width: 320px;
+      padding: 0 var(--sp-md);
+      display: none;
+    }
+    /* El contenido real del panel arranca oculto y se muestra
+       recién cuando authGate confirma acceso — evita cualquier
+       parpadeo de datos antes de la verificación. */
+    #panelReal { display: none; }
+    #panelReal.visible { display: block; }
+  </style>
 </head>
 <body>
-  <button class="mobile-menu-btn" id="mobileMenuBtn">☰ Menú</button>
-  <div class="sidebar-overlay" id="sidebarOverlay"></div>
-  <div class="admin-layout">
-    <aside class="admin-sidebar">
-      <div class="sidebar-brand">
-        <div class="sidebar-brand-logo">Salvador</div>
-        <small>Panel Admin</small>
-      <button class="btn-cerrar-sidebar" id="btnCerrarSidebar" aria-label="Cerrar menú">✕</button>
-      </div>
-      <nav class="admin-nav">
-        <span class="nav-section-label">General</span>
-        <a class="activo" onclick="irA('dashboard', this)"><span class="nav-icon">📊</span> Dashboard</a>
-        <a onclick="irA('pedidos', this)"><span class="nav-icon">📦</span> Pedidos</a>
-        <span class="nav-section-label">Sitio</span>
-        <a onclick="irA('config', this)"><span class="nav-icon">⚙️</span> Configuración</a>
-        <a onclick="irA('recompensas', this)"><span class="nav-icon">🎁</span> Recompensas</a>
-        <a onclick="irA('descuentos', this)"><span class="nav-icon">🏷️</span> Descuentos</a>
-        <span class="nav-section-label">Catálogo</span>
-        <a onclick="irA('productos', this)"><span class="nav-icon">🥖</span> Productos</a>
-        <span class="nav-section-label">Clientes</span>
-        <a onclick="irA('clientes', this)"><span class="nav-icon">👥</span> Clientes</a>
-      </nav>
-      <div class="sidebar-footer">
-        <a href="index.html" target="_blank" class="btn-ver-sitio"><span>🌐</span> Ver el sitio</a>
-        <button class="btn-logout" onclick="logout()">Cerrar sesión</button>
-      </div>
-    </aside>
-    <div class="admin-main">
-      <div class="admin-topbar">
-        <h1 id="topbar-titulo">Dashboard</h1>
-        <div class="topbar-user">
-          <span class="user-dot"></span>
-          <span id="topbar-email">—</span>
+
+  <!-- ═══ PANTALLA DE VERIFICACIÓN DE ACCESO ═══ -->
+  <div id="authGate">
+    <div class="authgate-spinner"></div>
+    <p class="authgate-texto" id="authGateTexto">Verificando acceso...</p>
+    <p class="authgate-error" id="authGateError">
+      No se pudo conectar con el servidor. Revisá tu conexión a internet y volvé a intentar.
+    </p>
+  </div>
+
+  <!-- ═══ PANEL REAL — oculto hasta confirmar acceso ═══ -->
+  <div id="panelReal">
+
+    <button class="mobile-menu-btn" id="mobileMenuBtn">☰ Menú</button>
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <div class="admin-layout">
+      <aside class="admin-sidebar">
+        <div class="sidebar-brand">
+          <div>
+            <div class="sidebar-brand-logo">Salvador</div>
+            <small>Panel Admin</small>
+          </div>
+          <button class="btn-cerrar-sidebar" id="btnCerrarSidebar" aria-label="Cerrar menú">✕</button>
         </div>
-      </div>
-      <div class="admin-content">
-        <!-- Dashboard -->
-        <div id="sec-dashboard" class="admin-seccion activa">
-          <div class="welcome-card">
-            <h2>Bienvenido al panel 👋</h2>
-            <p>Desde acá podés gestionar <strong>productos, pedidos y clientes</strong> sin tocar código. Los cambios se reflejan en el sitio al instante.</p>
-          </div>
-          <div class="stats-grid">
-            <div class="stat-card"><div class="stat-label">Pedidos totales</div><div class="stat-val" id="total-pedidos">0</div></div>
-            <div class="stat-card"><div class="stat-label">Ventas totales</div><div class="stat-val">$<span id="ventas-totales">0</span></div></div>
-            <div class="stat-card"><div class="stat-label">Pedidos hoy</div><div class="stat-val" id="pedidos-hoy">0</div></div>
-            <div class="stat-card"><div class="stat-label">Ventas hoy</div><div class="stat-val">$<span id="ventas-hoy">0</span></div></div>
-            <div class="stat-card"><div class="stat-label">Ventas este mes</div><div class="stat-val">$<span id="ventas-mes">0</span></div></div>
-            <div class="stat-card"><div class="stat-label">Ticket promedio</div><div class="stat-val">$<span id="ticket-promedio">0</span></div></div>
-            <div class="stat-card"><div class="stat-label">Pendientes</div><div class="stat-val" id="pedidos-pendientes">0</div></div>
-            <div class="stat-card"><div class="stat-label">Entregados</div><div class="stat-val" id="pedidos-entregados">0</div></div>
-          </div>
-          <div class="admin-card">
-            <div class="admin-card-header"><span class="admin-card-title">🏆 Más vendidos</span></div>
-            <div id="productos-mas-vendidos"><p style="color:var(--gris); font-size:.85rem;">Cargando estadísticas...</p></div>
+        <nav class="admin-nav">
+          <span class="nav-section-label">General</span>
+          <a class="activo" data-sec="dashboard"><span class="nav-icon">📊</span> Dashboard</a>
+          <a data-sec="pedidos"><span class="nav-icon">📦</span> Pedidos</a>
+          <span class="nav-section-label">Sitio</span>
+          <a data-sec="config"><span class="nav-icon">⚙️</span> Configuración</a>
+          <a data-sec="recompensas"><span class="nav-icon">🎁</span> Recompensas</a>
+          <a data-sec="descuentos"><span class="nav-icon">🏷️</span> Descuentos</a>
+          <span class="nav-section-label">Catálogo</span>
+          <a data-sec="productos"><span class="nav-icon">🥖</span> Productos</a>
+          <span class="nav-section-label">Clientes</span>
+          <a data-sec="clientes"><span class="nav-icon">👥</span> Clientes</a>
+        </nav>
+        <div class="sidebar-footer">
+          <a href="index.html" target="_blank" class="btn-ver-sitio"><span>🌐</span> Ver el sitio</a>
+          <button class="btn-logout" onclick="logout()">Cerrar sesión</button>
+        </div>
+      </aside>
+
+      <div class="admin-main">
+        <div class="admin-topbar">
+          <h1 id="topbar-titulo">Dashboard</h1>
+          <div class="topbar-user">
+            <span class="user-dot"></span>
+            <span id="topbar-email">—</span>
           </div>
         </div>
 
-        <!-- Pedidos -->
-        <div id="sec-pedidos" class="admin-seccion">
-          <div class="admin-card">
-            <div class="admin-card-header"><span class="admin-card-title">Pedidos recibidos</span></div>
-            <div id="lista-pedidos"><p style="color:var(--gris); font-size:.85rem; text-align:center; padding:40px 0;">Cargando pedidos...</p></div>
-          </div>
-        </div>
+        <div class="admin-content">
 
-        <!-- Configuración -->
-        <div id="sec-config" class="admin-seccion">
-          <div class="admin-card">
-            <div class="admin-card-header"><span class="admin-card-title">Configuración del sitio</span></div>
-            <div class="form-productos">
-              <div class="form-campo form-full"><label>Título del hero</label><input type="text" id="cfg-heroTitle" placeholder="Sánguches de verdad..."></div>
-              <div class="form-campo form-full"><label>Subtítulo del hero</label><input type="text" id="cfg-heroSubtitle" placeholder="Elegí lo que querés..."></div>
-              <div class="form-campo form-full"><label>Texto del chip</label><input type="text" id="cfg-heroChipText" placeholder="🥖 Pedidos online..."></div>
-              <div class="form-campo form-full"><label>Imagen de fondo del hero (URL)</label><input type="url" id="cfg-heroImageURL" placeholder="https://..."></div>
-              <div class="form-campo form-full"><label>Texto del banner de ofertas</label><input type="text" id="cfg-promoBannerText" placeholder="🔥 Hay productos en oferta..."></div>
-              <div class="form-campo form-full"><label>Descripción del footer</label><textarea id="cfg-footerDesc" rows="2"></textarea></div>
-              <div class="form-campo"><label>WhatsApp</label><input type="text" id="cfg-contactPhone" placeholder="5492215376246"></div>
-              <div class="form-campo"><label>Instagram (usuario)</label><input type="text" id="cfg-contactInstagram" placeholder="salvadorsangucheria"></div>
-              <div class="form-campo"><label>Horarios L-V</label><input type="text" id="cfg-horariosLunesViernes" placeholder="11:00 — 15:00 hs..."></div>
-              <div class="form-campo"><label>Horarios Sábados</label><input type="text" id="cfg-horariosSabados" placeholder="11:00 — 23:00 hs"></div>
+          <!-- Dashboard -->
+          <div id="sec-dashboard" class="admin-seccion activa">
+            <div class="welcome-card">
+              <h2>Bienvenido al panel 👋</h2>
+              <p>Desde acá podés gestionar <strong>productos, pedidos y clientes</strong> sin tocar código. Los cambios se reflejan en el sitio al instante.</p>
             </div>
-            <div style="margin-top:16px;">
-              <button class="btn btn-primary" onclick="guardarConfiguracion()">💾 Guardar cambios</button>
-              <span id="cfg-status" style="margin-left:12px; font-size:.82rem; color:var(--mostaza);"></span>
+            <div class="stats-grid">
+              <div class="stat-card"><div class="stat-label">Pedidos totales</div><div class="stat-val" id="total-pedidos">0</div></div>
+              <div class="stat-card"><div class="stat-label">Ventas totales</div><div class="stat-val">$<span id="ventas-totales">0</span></div></div>
+              <div class="stat-card"><div class="stat-label">Pedidos hoy</div><div class="stat-val" id="pedidos-hoy">0</div></div>
+              <div class="stat-card"><div class="stat-label">Ventas hoy</div><div class="stat-val">$<span id="ventas-hoy">0</span></div></div>
+              <div class="stat-card"><div class="stat-label">Ventas este mes</div><div class="stat-val">$<span id="ventas-mes">0</span></div></div>
+              <div class="stat-card"><div class="stat-label">Ticket promedio</div><div class="stat-val">$<span id="ticket-promedio">0</span></div></div>
+              <div class="stat-card"><div class="stat-label">Pendientes</div><div class="stat-val" id="pedidos-pendientes">0</div></div>
+              <div class="stat-card"><div class="stat-label">Entregados</div><div class="stat-val" id="pedidos-entregados">0</div></div>
+            </div>
+            <div class="admin-card">
+              <div class="admin-card-header"><span class="admin-card-title">🏆 Más vendidos</span></div>
+              <div id="productos-mas-vendidos"><p style="color:var(--gris); font-size:.85rem;">Cargando estadísticas...</p></div>
             </div>
           </div>
-        </div>
 
-        <!-- Productos -->
-        <div id="sec-productos" class="admin-seccion">
-          <div class="admin-card">
-            <div class="admin-card-header"><span class="admin-card-title">Agregar producto</span></div>
-            <div class="form-productos">
-              <div class="form-campo"><label>Nombre *</label><input type="text" id="nombre" placeholder="Ej: Sánguche de milanesa"></div>
-              <div class="form-campo"><label>Categoría *</label><input type="text" id="categoria" placeholder="Ej: Sánguches, Lomitos..."></div>
-              <div class="form-campo form-full"><label>Descripción</label><input type="text" id="descripcion" placeholder="Ingredientes, tamaño, extras..."></div>
-              <div class="form-campo"><label>Precio *</label><input type="number" id="precio" placeholder="0" min="0"></div>
-              <div class="form-campo">
-                <label>Precio por 3 unidades ($) <small style="color:var(--gris); font-weight:400;">(opcional)</small></label>
-                <input type="number" id="precio3unidades" placeholder="0" min="0">
+          <!-- Pedidos -->
+          <div id="sec-pedidos" class="admin-seccion">
+            <div class="admin-card">
+              <div class="admin-card-header"><span class="admin-card-title">Pedidos recibidos</span></div>
+              <div id="lista-pedidos"><p style="color:var(--gris); font-size:.85rem; text-align:center; padding:40px 0;">Cargando pedidos...</p></div>
+            </div>
+          </div>
+
+          <!-- Configuración -->
+          <div id="sec-config" class="admin-seccion">
+            <div class="admin-card">
+              <div class="admin-card-header"><span class="admin-card-title">Configuración del sitio</span></div>
+              <div class="form-productos">
+                <div class="form-campo form-full"><label>Título del hero</label><input type="text" id="cfg-heroTitle" placeholder="Sánguches de verdad..."></div>
+                <div class="form-campo form-full"><label>Subtítulo del hero</label><input type="text" id="cfg-heroSubtitle" placeholder="Elegí lo que querés..."></div>
+                <div class="form-campo form-full"><label>Texto del chip</label><input type="text" id="cfg-heroChipText" placeholder="🥖 Pedidos online..."></div>
+                <div class="form-campo form-full"><label>Imagen de fondo del hero (URL)</label><input type="url" id="cfg-heroImageURL" placeholder="https://..."></div>
+                <div class="form-campo form-full"><label>Texto del banner de ofertas</label><input type="text" id="cfg-promoBannerText" placeholder="🔥 Hay productos en oferta..."></div>
+                <div class="form-campo form-full"><label>Descripción del footer</label><textarea id="cfg-footerDesc" rows="2"></textarea></div>
+                <div class="form-campo"><label>WhatsApp</label><input type="text" id="cfg-contactPhone" placeholder="5492215376246"></div>
+                <div class="form-campo"><label>Instagram (usuario)</label><input type="text" id="cfg-contactInstagram" placeholder="salvadorsangucheria"></div>
+                <div class="form-campo"><label>Horarios L-V</label><input type="text" id="cfg-horariosLunesViernes" placeholder="11:00 — 15:00 hs..."></div>
+                <div class="form-campo"><label>Horarios Sábados</label><input type="text" id="cfg-horariosSabados" placeholder="11:00 — 23:00 hs"></div>
               </div>
-              <div class="form-campo">
-  <label>Precio por 6 unidades ($) <small style="color:var(--gris); font-weight:400;">(opcional)</small></label>
-  <input type="number" id="precio6unidades" placeholder="0" min="0">
-</div>
-              <div class="form-campo"><label>Precio por docena ($) <small style="color:var(--gris); font-weight:400;">(opcional)</small></label><input type="number" id="precioDocena" placeholder="0" min="0"></div>
-              <div class="form-campo"><label>Descuento (%)</label><input type="number" id="descuento" placeholder="0" min="0" max="99"></div>
-              <div class="form-campo form-full">
-                <label>Imagen del producto</label>
-                <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
-                  <input type="file" id="imagenFile" accept="image/*" style="display:none;" onchange="previsualizarImagen(event)">
-                  <button type="button" class="btn btn-ghost btn-sm" onclick="document.getElementById('imagenFile').click()">📁 Elegir foto</button>
-                  <span id="nombreArchivo" style="color:var(--gris); font-size:.8rem;"></span>
+              <div style="margin-top:16px;">
+                <button class="btn btn-primary" onclick="guardarConfiguracion()">💾 Guardar cambios</button>
+                <span id="cfg-status" style="margin-left:12px; font-size:.82rem; color:var(--mostaza);"></span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Productos -->
+          <div id="sec-productos" class="admin-seccion">
+            <div class="admin-card">
+              <div class="admin-card-header"><span class="admin-card-title">Agregar producto</span></div>
+              <div class="form-productos">
+                <div class="form-campo"><label>Nombre *</label><input type="text" id="nombre" placeholder="Ej: Sánguche de milanesa"></div>
+                <div class="form-campo"><label>Categoría *</label><input type="text" id="categoria" placeholder="Ej: Sánguches, Lomitos..."></div>
+                <div class="form-campo form-full"><label>Descripción</label><input type="text" id="descripcion" placeholder="Ingredientes, tamaño, extras..."></div>
+                <div class="form-campo"><label>Precio *</label><input type="number" id="precio" placeholder="0" min="0"></div>
+                <div class="form-campo">
+                  <label>Precio por 3 unidades ($) <small style="color:var(--gris); font-weight:400;">(opcional)</small></label>
+                  <input type="number" id="precio3unidades" placeholder="0" min="0">
                 </div>
-                <img id="previewImagen" src="" style="max-width:120px; max-height:80px; margin-top:8px; border-radius:8px; display:none; object-fit:cover;">
-                <small style="color:var(--gris); margin-top:4px;">O pegá una URL:</small>
-                <input type="url" id="imagenURL" placeholder="https://... (opcional)">
+                <div class="form-campo">
+                  <label>Precio por 6 unidades ($) <small style="color:var(--gris); font-weight:400;">(opcional)</small></label>
+                  <input type="number" id="precio6unidades" placeholder="0" min="0">
+                </div>
+                <div class="form-campo"><label>Precio por docena ($) <small style="color:var(--gris); font-weight:400;">(opcional)</small></label><input type="number" id="precioDocena" placeholder="0" min="0"></div>
+                <div class="form-campo"><label>Descuento (%)</label><input type="number" id="descuento" placeholder="0" min="0" max="99"></div>
+                <div class="form-campo form-full">
+                  <label>Imagen del producto</label>
+                  <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+                    <input type="file" id="imagenFile" accept="image/*" style="display:none;" onchange="previsualizarImagen(event)">
+                    <button type="button" class="btn btn-ghost btn-sm" onclick="document.getElementById('imagenFile').click()">📁 Elegir foto</button>
+                    <span id="nombreArchivo" style="color:var(--gris); font-size:.8rem;"></span>
+                  </div>
+                  <img id="previewImagen" src="" style="max-width:120px; max-height:80px; margin-top:8px; border-radius:8px; display:none; object-fit:cover;">
+                  <small style="color:var(--gris); margin-top:4px;">O pegá una URL:</small>
+                  <input type="url" id="imagenURL" placeholder="https://... (opcional)">
+                </div>
+                <div class="form-campo form-full"><div class="oferta-check-row"><label><input type="checkbox" id="oferta"> Marcar como oferta (activa el descuento)</label></div></div>
               </div>
-              <div class="form-campo form-full"><div class="oferta-check-row"><label><input type="checkbox" id="oferta"> Marcar como oferta (activa el descuento)</label></div></div>
+              <div style="margin-top:16px;"><button class="btn btn-primary" onclick="agregarProducto()">+ Agregar producto</button></div>
             </div>
-            <div style="margin-top:16px;"><button class="btn btn-primary" onclick="agregarProducto()">+ Agregar producto</button></div>
+            <div class="admin-card">
+              <div class="admin-card-header"><span class="admin-card-title">Productos cargados</span></div>
+              <div id="lista-productos"><p style="color:var(--gris); font-size:.85rem; text-align:center; padding:40px 0;">Cargando productos...</p></div>
+            </div>
           </div>
-          <div class="admin-card">
-            <div class="admin-card-header"><span class="admin-card-title">Productos cargados</span></div>
-            <div id="lista-productos"><p style="color:var(--gris); font-size:.85rem; text-align:center; padding:40px 0;">Cargando productos...</p></div>
-          </div>
-        </div>
 
-        <!-- Descuentos -->
-        <div id="sec-descuentos" class="admin-seccion">
-          <div class="admin-card">
-            <div class="admin-card-header">
-              <span class="admin-card-title">Códigos de descuento</span>
-            </div>
-            <div class="form-productos">
-              <div class="form-campo">
-                <label>Código</label>
-                <input type="text" id="dc-codigo" placeholder="Ej: SALVAMIGA">
+          <!-- Descuentos -->
+          <div id="sec-descuentos" class="admin-seccion">
+            <div class="admin-card">
+              <div class="admin-card-header">
+                <span class="admin-card-title">Códigos de descuento</span>
               </div>
-              <div class="form-campo">
-                <label>Porcentaje (%)</label>
-                <input type="number" id="dc-porcentaje" placeholder="15" min="1" max="100">
+              <div class="form-productos">
+                <div class="form-campo">
+                  <label>Código</label>
+                  <input type="text" id="dc-codigo" placeholder="Ej: SALVAMIGA">
+                </div>
+                <div class="form-campo">
+                  <label>Porcentaje (%)</label>
+                  <input type="number" id="dc-porcentaje" placeholder="15" min="1" max="100">
+                </div>
+                <div class="form-campo form-full" style="display:flex;align-items:center;gap:10px;">
+                  <input type="checkbox" id="dc-activo" checked>
+                  <label for="dc-activo" style="font-size:.84rem; color:var(--gris-l); cursor:pointer;">Activo</label>
+                </div>
               </div>
-              <div class="form-campo form-full" style="display:flex;align-items:center;gap:10px;">
-                <input type="checkbox" id="dc-activo" checked>
-                <label for="dc-activo" style="font-size:.84rem; color:var(--gris-l); cursor:pointer;">Activo</label>
+              <div style="margin-top:16px;">
+                <button class="btn btn-primary" onclick="agregarCodigoDescuento()">+ Agregar código</button>
               </div>
             </div>
-            <div style="margin-top:16px;">
-              <button class="btn btn-primary" onclick="agregarCodigoDescuento()">+ Agregar código</button>
+
+            <div class="admin-card">
+              <div class="admin-card-header">
+                <span class="admin-card-title">Códigos activos</span>
+              </div>
+              <div id="lista-descuentos">
+                <p style="color:var(--gris); font-size:.85rem;">Cargando...</p>
+              </div>
             </div>
           </div>
 
-          <div class="admin-card">
-            <div class="admin-card-header">
-              <span class="admin-card-title">Códigos activos</span>
+          <!-- Clientes -->
+          <div id="sec-clientes" class="admin-seccion">
+            <div class="admin-card">
+              <div class="admin-card-header"><span class="admin-card-title">Agregar cliente</span></div>
+              <div class="clientes-form">
+                <input type="text" id="cliente-nombre" placeholder="Nombre del cliente">
+                <input type="text" id="cliente-telefono" placeholder="Teléfono (ej: 5491112345678)">
+                <button class="btn btn-primary" onclick="agregarCliente()">+ Agregar</button>
+              </div>
             </div>
-            <div id="lista-descuentos">
-              <p style="color:var(--gris); font-size:.85rem;">Cargando...</p>
+            <div class="admin-card">
+              <div class="admin-card-header"><span class="admin-card-title">Lista de clientes</span></div>
+              <div class="search-cliente-wrap">
+                <svg viewBox="0 0 24 24" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                <input type="text" id="buscar-cliente" placeholder="Buscar cliente...">
+              </div>
+              <div id="lista-clientes"><p style="color:var(--gris); font-size:.85rem; text-align:center; padding:40px 0;">Sin clientes aún</p></div>
             </div>
           </div>
-        </div>
 
-        <!-- Clientes -->
-        <div id="sec-clientes" class="admin-seccion">
-          <div class="admin-card">
-            <div class="admin-card-header"><span class="admin-card-title">Agregar cliente</span></div>
-            <div class="clientes-form">
-              <input type="text" id="cliente-nombre" placeholder="Nombre del cliente">
-              <input type="text" id="cliente-telefono" placeholder="Teléfono (ej: 5491112345678)">
-              <button class="btn btn-primary" onclick="agregarCliente()">+ Agregar</button>
+          <!-- Recompensas -->
+          <div id="sec-recompensas" class="admin-seccion">
+            <div class="admin-card">
+              <div class="admin-card-header"><span class="admin-card-title">Gestión de Recompensas</span></div>
+              <div class="form-productos">
+                <div class="form-campo"><label>Umbral (puntos)</label><input type="number" id="rec-umbralPuntos" placeholder="300" min="0"></div>
+                <div class="form-campo"><label>Descripción del premio</label><input type="text" id="rec-descripcion" placeholder="Ej: 2 sánguches de miga"></div>
+                <div class="form-campo form-full"><label>Mensaje para WhatsApp</label><input type="text" id="rec-mensaje" placeholder="Quiero canjear mi premio: 2 sánguches"></div>
+              </div>
+              <button class="btn btn-primary" onclick="agregarRecompensa()">+ Agregar premio</button>
+              <div id="lista-recompensas" style="margin-top:20px;"></div>
             </div>
           </div>
-          <div class="admin-card">
-            <div class="admin-card-header"><span class="admin-card-title">Lista de clientes</span></div>
-            <div class="search-cliente-wrap">
-              <svg viewBox="0 0 24 24" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-              <input type="text" id="buscar-cliente" placeholder="Buscar cliente...">
-            </div>
-            <div id="lista-clientes"><p style="color:var(--gris); font-size:.85rem; text-align:center; padding:40px 0;">Sin clientes aún</p></div>
-          </div>
-        </div>
 
-        <!-- Recompensas -->
-        <div id="sec-recompensas" class="admin-seccion">
-          <div class="admin-card">
-            <div class="admin-card-header"><span class="admin-card-title">Gestión de Recompensas</span></div>
-            <div class="form-productos">
-              <div class="form-campo"><label>Umbral (puntos)</label><input type="number" id="rec-umbralPuntos" placeholder="300" min="0"></div>
-              <div class="form-campo"><label>Descripción del premio</label><input type="text" id="rec-descripcion" placeholder="Ej: 2 sánguches de miga"></div>
-              <div class="form-campo form-full"><label>Mensaje para WhatsApp</label><input type="text" id="rec-mensaje" placeholder="Quiero canjear mi premio: 2 sánguches"></div>
-            </div>
-            <button class="btn btn-primary" onclick="agregarRecompensa()">+ Agregar premio</button>
-            <div id="lista-recompensas" style="margin-top:20px;"></div>
-          </div>
-        </div>
-      </div><!-- /admin-content -->
-    </div><!-- /admin-main -->
-  </div><!-- /admin-layout -->
+        </div><!-- /admin-content -->
+      </div><!-- /admin-main -->
+    </div><!-- /admin-layout -->
 
+  </div><!-- /panelReal -->
+
+  <!-- ═══════════════════════════════════════
+       NAVEGACIÓN ENTRE SECCIONES
+       FIX: antes cada link usaba onclick="irA('sec', this)"
+       inline. Ahora se usa data-sec + un solo listener
+       delegado, lo que además permite cerrar el sidebar
+       automáticamente al navegar en mobile (antes había que
+       tocar la "✕" aparte después de elegir una sección).
+  ═══════════════════════════════════════ -->
   <script>
     const titulos = {
       dashboard: 'Dashboard',
@@ -218,28 +293,63 @@
       recompensas: 'Recompensas',
       descuentos: 'Descuentos'
     };
+
     function irA(sec, el) {
       document.querySelectorAll('.admin-seccion').forEach(s => s.classList.remove('activa'));
       document.querySelectorAll('.admin-nav a').forEach(a => a.classList.remove('activo'));
-      document.getElementById('sec-' + sec).classList.add('activa');
+      const seccion = document.getElementById('sec-' + sec);
+      if (seccion) seccion.classList.add('activa');
       if (el) el.classList.add('activo');
       document.getElementById('topbar-titulo').textContent = titulos[sec] || sec;
+
+      // Cerrar el sidebar automáticamente al navegar en mobile
+      document.querySelector('.admin-sidebar')?.classList.remove('open');
+      document.getElementById('sidebarOverlay')?.classList.remove('show');
     }
+
+    document.querySelectorAll('.admin-nav a[data-sec]').forEach(link => {
+      link.addEventListener('click', () => irA(link.dataset.sec, link));
+    });
   </script>
+
+  <!-- ═══════════════════════════════════════
+       AUTH GATE — verificación de acceso
+       FIX: antes el panel completo se mostraba brevemente
+       antes de confirmar si el usuario tenía permiso de admin.
+       Ahora #panelReal arranca oculto y solo se muestra cuando
+       onAuthStateChanged confirma el email correcto. También
+       se maneja el caso de que Firebase no cargue (sin red).
+  ═══════════════════════════════════════ -->
   <script type="module">
     import { auth, onAuthStateChanged, signOut } from './js/firebase.js';
     import './js/admin.js';
 
     const ADMIN_EMAIL = 'agustinsalvador@gmail.com';
 
+    const authGate      = document.getElementById('authGate');
+    const authGateTexto = document.getElementById('authGateTexto');
+    const authGateError = document.getElementById('authGateError');
+    const panelReal      = document.getElementById('panelReal');
+
     onAuthStateChanged(auth, (user) => {
       if (!user || user.email !== ADMIN_EMAIL) {
-        signOut(auth).then(() => {
+        authGateTexto.textContent = 'Acceso no autorizado, redirigiendo...';
+        signOut(auth).finally(() => {
           window.location.href = 'login.html';
         });
         return;
       }
+      // Acceso confirmado: recién ahora se muestra el panel real
       document.getElementById('topbar-email').textContent = user.email;
+      authGate.classList.add('oculto');
+      panelReal.classList.add('visible');
+    }, (error) => {
+      // Error de conexión con Firebase Auth — antes esto dejaba
+      // la página en blanco sin ningún mensaje
+      console.error('Error verificando autenticación:', error);
+      authGateTexto.style.display = 'none';
+      document.querySelector('.authgate-spinner').style.display = 'none';
+      authGateError.style.display = 'block';
     });
 
     window.logout = async () => {
@@ -249,28 +359,31 @@
       }
     };
   </script>
+
+  <!-- ═══════════════════════════════════════
+       SIDEBAR MOBILE — abrir/cerrar
+  ═══════════════════════════════════════ -->
   <script>
     (function() {
-      const btn = document.getElementById('mobileMenuBtn');
+      const btn     = document.getElementById('mobileMenuBtn');
       const sidebar = document.querySelector('.admin-sidebar');
       const overlay = document.getElementById('sidebarOverlay');
-      if (btn && sidebar && overlay) {
-        btn.addEventListener('click', () => {
-          sidebar.classList.toggle('open');
-          overlay.classList.toggle('show');
-        });
-        overlay.addEventListener('click', () => {
-          sidebar.classList.remove('open');
-          overlay.classList.remove('show');
-        });
+      const btnCerrar = document.getElementById('btnCerrarSidebar');
+
+      function abrirSidebar() {
+        sidebar.classList.add('open');
+        overlay.classList.add('show');
       }
+      function cerrarSidebar() {
+        sidebar.classList.remove('open');
+        overlay.classList.remove('show');
+      }
+
+      btn?.addEventListener('click', abrirSidebar);
+      overlay?.addEventListener('click', cerrarSidebar);
+      btnCerrar?.addEventListener('click', cerrarSidebar);
     })();
   </script>
-<script>
-  document.getElementById('btnCerrarSidebar').addEventListener('click', () => {
-    document.querySelector('.admin-sidebar').classList.remove('open');
-    document.getElementById('sidebarOverlay').classList.remove('show');
-  });
-</script>
+
 </body>
 </html>

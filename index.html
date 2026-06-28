@@ -23,24 +23,19 @@
   <!-- ═══ SAFE AREA (notch) ═══ -->
   <style>
     @supports (padding-top: env(safe-area-inset-top)) {
-      body {
-        padding-top: env(safe-area-inset-top);
-      }
-      .pub-header {
-        padding-top: calc(env(safe-area-inset-top) + 8px);
-      }
+      body { padding-top: env(safe-area-inset-top); }
+      .pub-header { padding-top: calc(env(safe-area-inset-top) + 8px); }
     }
   </style>
 </head>
 <body>
+
 <!-- ═══ PARTÍCULAS NEÓN ═══ -->
 <div class="bg-particles">
-  <span></span>
-  <span></span>
-  <span></span>
-  <span></span>
-  <span></span>
+  <span></span><span></span><span></span><span></span><span></span>
 </div>
+
+<!-- ═══ CURSOR PERSONALIZADO ═══ -->
 <!-- ═══ PANTALLA DE LOGIN OBLIGATORIO ═══ -->
 <div class="welcome-overlay" id="welcomeOverlay">
   <div class="welcome-card-overlay">
@@ -54,6 +49,7 @@
     </button>
   </div>
 </div>
+
 <!-- ═══ ADMIN BAR ═══ -->
 <div class="admin-bar" id="adminBar">
   <div class="admin-bar-inner">
@@ -73,9 +69,9 @@
 <header class="pub-header" id="pubHeader">
   <div class="pub-header-inner">
     <a href="index.html" class="pub-logo neon-logo">
-  SALVADOR
-  <small>FOOD EXPERIENCE</small>
-</a>
+      SALVADOR
+      <small>FOOD EXPERIENCE</small>
+    </a>
     <div class="header-right">
       <button class="btn-user-header" id="btnUserHeader">
         <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" fill="none" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
@@ -86,7 +82,7 @@
       </button>
       <button class="btn-carrito-header" id="btnAbrirCarrito">
         <svg viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
-        Mi pedido
+        <span>Mi pedido</span>
         <span class="carrito-badge" id="badge-cantidad">0</span>
       </button>
     </div>
@@ -98,11 +94,11 @@
   <div class="hero-inner">
     <div class="hero-text">
       <div class="hero-chip" data-config="heroChipText">🥖 Pedidos online · Retiro y delivery</div>
-     <h1 data-config="heroTitle">
-  <span class="hero-color-blue">SABOR</span><br>
-  <span class="hero-color-yellow">URBANO</span><br>
-  <span class="hero-color-pink">SIN LÍMITES</span>
-</h1>
+      <h1 data-config="heroTitle">
+        <span class="hero-color-blue">SABOR</span><br>
+        <span class="hero-color-yellow">URBANO</span><br>
+        <span class="hero-color-pink">SIN LÍMITES</span>
+      </h1>
       <p class="hero-sub" data-config="heroSubtitle">Elegí lo que querés, armá tu pedido y lo coordinamos por WhatsApp.</p>
       <div class="hero-pills">
         <span class="hero-pill">🛵 Delivery disponible</span>
@@ -110,33 +106,6 @@
         <span class="hero-pill">💬 Pedido por WhatsApp</span>
       </div>
       <div class="hero-stats" id="heroDeco"></div>
-    </div>
-  </div>
-</section>
-
-<!-- ═══ SECCIÓN PUNTOS ═══ -->
-<section class="puntos-section" id="puntosSection" style="display: none;">
-  <div class="puntos-inner">
-    <h2 class="puntos-title">🎁 Canjea tus puntos</h2>
-    <div class="puntos-bloqueado" id="puntosBloqueado">
-      <div class="puntos-candado">🔒</div>
-      <p>Registrate o iniciá sesión para acumular puntos y acceder a beneficios exclusivos.</p>
-      <button class="btn btn-primary" id="btnIrLogin">Ingresar / Registrarme</button>
-    </div>
-    <div class="puntos-logeado" id="puntosLogeado" style="display:none;">
-      <div class="puntos-resumen">
-        <div class="puntos-stat">
-          <span class="puntos-stat-num" id="puntosTotalGastado">$0</span>
-          <span class="puntos-stat-label">Total gastado</span>
-        </div>
-        <div class="puntos-stat">
-          <span class="puntos-stat-num" id="puntosPuntos">0</span>
-          <span class="puntos-stat-label">Puntos</span>
-        </div>
-      </div>
-      <h3>Línea de recompensas</h3>
-      <div class="timeline" id="timelineRecompensas"></div>
-      <p class="puntos-info">Al alcanzar un premio, podés canjear tu recompensa. Se abrirá WhatsApp con el mensaje listo.</p>
     </div>
   </div>
 </section>
@@ -154,6 +123,58 @@
   </div>
 </section>
 
+<!-- ═══ SECCIÓN PUNTOS — AHORA COLAPSABLE ═══
+     FIX: antes esta sección se mostraba siempre desplegada
+     por completo cuando había sesión, empujando el menú de
+     productos fuera de la pantalla inicial. Ahora arranca
+     SIEMPRE colapsada (solo la barra compacta de resumen) y
+     se expande al tocarla. El menú queda visible de entrada
+     incluso para usuarios logueados. -->
+<section class="puntos-section" id="puntosSection" style="display: none;">
+  <div class="puntos-resumen-bar" id="puntosResumenBar">
+    <div class="puntos-resumen-bar-left">
+      <span class="puntos-resumen-bar-icon">🎁</span>
+      <div class="puntos-resumen-bar-texto">
+        <span class="puntos-resumen-bar-titulo" id="puntosResumenBarTitulo">Tus puntos</span>
+        <span class="puntos-resumen-bar-sub" id="puntosResumenBarSub">Tocá para ver tus recompensas</span>
+        <!-- Barra de progreso visual hacia la próxima recompensa.
+             Puramente decorativa — se actualiza vía JS leyendo los
+             mismos datos que ya carga cargarDatosPuntos(), sin
+             modificar esa función. -->
+        <div class="puntos-progreso-track">
+          <div class="puntos-progreso-fill" id="puntosProgresoFill" style="width: 0%;"></div>
+        </div>
+      </div>
+    </div>
+    <span class="puntos-resumen-bar-chevron">▾</span>
+  </div>
+
+  <div class="puntos-contenido">
+    <div class="puntos-contenido-inner">
+      <div class="puntos-bloqueado" id="puntosBloqueado">
+        <div class="puntos-candado">🔒</div>
+        <p>Registrate o iniciá sesión para acumular puntos y acceder a beneficios exclusivos.</p>
+        <button class="btn btn-primary" id="btnIrLogin">Ingresar / Registrarme</button>
+      </div>
+      <div class="puntos-logeado" id="puntosLogeado" style="display:none;">
+        <div class="puntos-resumen">
+          <div class="puntos-stat">
+            <span class="puntos-stat-num" id="puntosTotalGastado">$0</span>
+            <span class="puntos-stat-label">Total gastado</span>
+          </div>
+          <div class="puntos-stat">
+            <span class="puntos-stat-num" id="puntosPuntos">0</span>
+            <span class="puntos-stat-label">Puntos</span>
+          </div>
+        </div>
+        <h3>Línea de recompensas</h3>
+        <div class="timeline" id="timelineRecompensas"></div>
+        <p class="puntos-info">Al alcanzar un premio, podés canjear tu recompensa. Se abrirá WhatsApp con el mensaje listo.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- ═══ CATEGORÍAS ═══ -->
 <div class="cats-section" id="catsSection">
   <div class="cats-inner">
@@ -168,9 +189,38 @@
     <span class="menu-count" id="menuCount"></span>
   </div>
   <div id="menu-container">
-    <div class="estado-menu">
-      <div class="estado-icono">⏳</div>
-      <p>Cargando el menú...</p>
+    <!-- Skeleton loader: menu.js sobreescribe este innerHTML
+         apenas Firestore responde, así que esto es solo el
+         estado visual mientras carga — no requiere cambios
+         en la lógica de menu.js. -->
+    <div class="skeleton-grid">
+      <div class="skeleton-card">
+        <div class="skeleton-img skeleton-shimmer"></div>
+        <div class="skeleton-body">
+          <div class="skeleton-line skeleton-shimmer w-40"></div>
+          <div class="skeleton-line skeleton-shimmer w-80"></div>
+          <div class="skeleton-line skeleton-shimmer w-60"></div>
+          <div class="skeleton-line skeleton-shimmer h-big"></div>
+        </div>
+      </div>
+      <div class="skeleton-card">
+        <div class="skeleton-img skeleton-shimmer"></div>
+        <div class="skeleton-body">
+          <div class="skeleton-line skeleton-shimmer w-40"></div>
+          <div class="skeleton-line skeleton-shimmer w-80"></div>
+          <div class="skeleton-line skeleton-shimmer w-60"></div>
+          <div class="skeleton-line skeleton-shimmer h-big"></div>
+        </div>
+      </div>
+      <div class="skeleton-card">
+        <div class="skeleton-img skeleton-shimmer"></div>
+        <div class="skeleton-body">
+          <div class="skeleton-line skeleton-shimmer w-40"></div>
+          <div class="skeleton-line skeleton-shimmer w-80"></div>
+          <div class="skeleton-line skeleton-shimmer w-60"></div>
+          <div class="skeleton-line skeleton-shimmer h-big"></div>
+        </div>
+      </div>
     </div>
   </div>
 </div>
@@ -212,15 +262,15 @@
 <div class="carrito-overlay" id="carritoOverlay"></div>
 <aside class="carrito-drawer" id="carritoDrawer" aria-label="Carrito de compras">
   <div class="drawer-head">
+    <button class="btn-volver-mobile" id="btnVolverCarrito">
+      <svg viewBox="0 0 24 24" width="22" height="22" stroke="var(--neon-blue)" fill="none" stroke-width="2.5">
+        <path d="M15 18l-6-6 6-6"/>
+      </svg>
+      Volver
+    </button>
     <div class="drawer-head-left">
       <h2>Tu pedido</h2>
       <span class="drawer-items-count" id="drawer-count">0 items</span>
-   <button class="btn-volver-mobile" onclick="cerrarCarrito()">
-  <svg viewBox="0 0 24 24" width="22" height="22" stroke="var(--neon-blue)" fill="none" stroke-width="2.5">
-    <path d="M15 18l-6-6 6-6"/>
-  </svg>
-  Volver
-</button>
     </div>
     <button class="btn-cerrar-drawer" id="btnCerrarCarrito">✕</button>
   </div>
@@ -251,7 +301,7 @@
     <div class="codigo-descuento" style="margin-bottom:14px;">
       <div style="display:flex; gap:8px; margin-bottom:6px;">
         <input type="text" id="codigoDescuentoInput" placeholder="Código de descuento" style="flex:1; background:var(--grafito); border:1px solid var(--humo); border-radius:var(--radio-sm); padding:8px 12px; color:var(--crema); font-family:'Inter', sans-serif; font-size:.82rem; outline:none; transition:border-color .15s;">
-        <button id="aplicarCodigoBtn" style="background:var(--accent); color:#fff; border:none; border-radius:var(--radio-sm); padding:8px 14px; font-weight:700; cursor:pointer;">Aplicar</button>
+        <button id="aplicarCodigoBtn" style="background:var(--neon-pink); color:#fff; border:none; border-radius:var(--radio-sm); padding:8px 14px; font-weight:700; cursor:pointer;">Aplicar</button>
       </div>
       <div id="codigoDescuentoMensaje" style="font-size:.75rem; color:var(--gris);"></div>
       <div id="codigoDescuentoInfo" style="display:none; margin-top:8px;">
@@ -275,256 +325,40 @@
 <!-- ═══ ANIMACIÓN DE VUELO ═══ -->
 <div class="flying-product" id="flyingProduct"></div>
 
-<!-- ═══ SCRIPTS INLINE (drawer, toast, badge, auth) ═══ -->
-<script>
-  (function() {
-    const overlay = document.getElementById('carritoOverlay');
-    const drawer  = document.getElementById('carritoDrawer');
+<!-- ═══ MODAL: ELEGIR PRESENTACIÓN Y CANTIDAD ═══
+     FIX: antes el botón "Agregar" decidía solo qué presentación
+     cargar (x3→x6→x12→unidad, sin preguntar). Ahora abre este
+     modal donde el cliente elige la presentación disponible
+     (Unidad / Pack x3 / x6 / Docena) y la cantidad, antes de
+     confirmar. Cada presentación elegida queda como línea
+     independiente en el carrito. -->
+<div class="modal-overlay" id="modalPresentacionOverlay">
+  <div class="modal-presentacion-card">
+    <button class="modal-auth-close" id="modalPresentacionClose">✕</button>
 
-    function abrirCarrito() {
-      overlay.classList.add('abierto');
-      drawer.classList.add('abierto');
-      document.body.style.overflow = 'hidden';
-    }
-    function cerrarCarrito() {
-      overlay.classList.remove('abierto');
-      drawer.classList.remove('abierto');
-      document.body.style.overflow = '';
-    }
+    <div class="modal-presentacion-header">
+      <div class="modal-presentacion-thumb" id="modalPresentacionThumb">🥖</div>
+      <h3 id="modalPresentacionNombre">Producto</h3>
+    </div>
 
-    document.getElementById('btnAbrirCarrito').addEventListener('click', abrirCarrito);
-    document.getElementById('btnCerrarCarrito').addEventListener('click', cerrarCarrito);
-    overlay.addEventListener('click', cerrarCarrito);
-    document.addEventListener('keydown', e => { if (e.key === 'Escape') cerrarCarrito(); });
+    <div class="modal-presentacion-opciones" id="modalPresentacionOpciones">
+      <!-- Se llenan dinámicamente con las presentaciones disponibles -->
+    </div>
 
-    window.vaciarCarrito = function() {
-      if (!confirm('¿Vaciar el carrito?')) return;
-      localStorage.setItem('carrito', '[]');
-      window.codigoDescuento = null;
-      document.getElementById('codigoDescuentoInput').value = '';
-      document.getElementById('codigoDescuentoMensaje').textContent = '';
-      document.getElementById('codigoDescuentoInfo').style.display = 'none';
-      if (typeof window._renderCarritoExterno === 'function') window._renderCarritoExterno();
-    };
+    <div class="modal-presentacion-cantidad">
+      <span class="modal-presentacion-cantidad-label">Cantidad</span>
+      <div class="modal-presentacion-cantidad-controles">
+        <button class="ctrl-btn" id="modalPresentacionMenos">−</button>
+        <span id="modalPresentacionCantidadVal">1</span>
+        <button class="ctrl-btn" id="modalPresentacionMas">+</button>
+      </div>
+    </div>
 
-    window.mostrarToast = function(msg, tipo) {
-      const t = document.getElementById('toast');
-      t.textContent = msg;
-      t.className = 'toast visible' + (tipo === 'error' ? ' toast-error' : '');
-      clearTimeout(t._tt);
-      t._tt = setTimeout(() => { t.className = 'toast'; }, 2500);
-    };
-
-    window.sincBadge = function() {
-      const carrito  = JSON.parse(localStorage.getItem('carrito') || '[]');
-      const cantidad = carrito.reduce((s, i) => s + (Number(i.cantidad) || 0), 0);
-      const subtotal = carrito.reduce((s, i) => s + (Number(i.precio) || 0) * (Number(i.cantidad) || 0), 0);
-      let descuento = 0;
-      if (window.codigoDescuento && window.codigoDescuento.porcentaje) {
-        descuento = Math.round(subtotal * window.codigoDescuento.porcentaje / 100);
-      }
-      const total = subtotal - descuento;
-      const fmt = v => '$' + v.toLocaleString('es-AR');
-
-      document.getElementById('badge-cantidad').textContent = cantidad;
-      document.getElementById('drawer-count').textContent   = cantidad + (cantidad === 1 ? ' item' : ' items');
-      document.getElementById('resumen-subtotal').textContent = fmt(subtotal);
-      document.getElementById('total-display').textContent    = fmt(total);
-
-      if (window.codigoDescuento) {
-        document.getElementById('codigoMonto').textContent = '-$' + descuento.toLocaleString('es-AR');
-        document.getElementById('codigoDescuentoInfo').style.display = 'block';
-      }
-    };
-
-    // Llamada inicial que faltaba
-    window.sincBadge();
-  })();
-</script>
-
-<!-- ═══ FIREBASE AUTH ═══ -->
-<script type="module">
-  import { auth, onAuthStateChanged, signOut } from './js/firebase.js';
-
-  const ADMIN_EMAIL = 'agustinsalvador@gmail.com'; 
-
-  onAuthStateChanged(auth, user => {
-    const bar    = document.getElementById('adminBar');
-    const header = document.getElementById('pubHeader');
-    const cats   = document.getElementById('catsSection');
-
-    if (user && user.email === ADMIN_EMAIL) {
-      bar.classList.add('visible');
-      document.getElementById('adminBarEmail').textContent = user.email || '';
-      header.classList.add('con-admin');
-      cats.classList.add('con-admin');
-    } else {
-      bar.classList.remove('visible');
-      header.classList.remove('con-admin');
-      cats.classList.remove('con-admin');
-    }
-  });
-
-  window.cerrarSesionAdmin = async () => {
-    await signOut(auth);
-  };
-</script>
-
-<!-- ═══ MÓDULOS ═══ -->
-<script type="module" src="./js/menu.js"></script>
-<script type="module" src="./js/carrito.js"></script>
-
-<!-- ═══ ANIMACIONES DE ENTRADA ═══ -->
-<script>
-  (function() {
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('visible');
-        }
-      });
-    }, { threshold: 0.1 });
-
-    document.querySelectorAll('.producto, .promo-card, .hero-stat').forEach(el => {
-      observer.observe(el);
-    });
-  })();
-</script>
-
-<!-- ═══ CMS: carga de configuración desde Firestore ═══ -->
-<script type="module">
-  import { db, collection, getDocs } from './js/firebase.js';
-
-  async function aplicarConfiguracion() {
-    try {
-      const snap = await getDocs(collection(db, 'config'));
-      let config = {};
-      snap.forEach(doc => {
-        if (doc.id === 'siteConfig') config = doc.data();
-      });
-
-      if (document.readyState === 'loading') {
-        await new Promise(resolve => document.addEventListener('DOMContentLoaded', resolve));
-      }
-
-      const elementos = document.querySelectorAll('[data-config]');
-      elementos.forEach(el => {
-        const key = el.dataset.config;
-        if (config[key]) {
-          if (key === 'heroTitle') {
-            el.innerHTML = config[key];
-          } else {
-            el.textContent = config[key];
-          }
-        }
-      });
-
-      if (config.heroImageURL) {
-        const hero = document.querySelector('.hero');
-        if (hero) {
-          hero.style.setProperty('--hero-bg', `url('${config.heroImageURL}')`);
-          hero.classList.add('loaded'); // 👈 Activa la transición de opacidad
-        }
-      }
-
-      if (config.contactPhone) {
-        document.querySelectorAll('a[href*="wa.me"]').forEach(link => {
-          link.href = `https://wa.me/${config.contactPhone}`;
-        });
-      }
-
-      if (config.contactInstagram) {
-        document.querySelectorAll('a[href*="instagram.com"]').forEach(link => {
-          link.href = `https://instagram.com/${config.contactInstagram}`;
-        });
-      }
-
-    } catch (err) {
-      console.error('Error cargando configuración del sitio:', err);
-    }
-  }
-
-  aplicarConfiguracion();
-</script>
-
-<!-- ═══════════════════════════════════════
-     MEJORAS: cursor, swipe, vuelo
-═══════════════════════════════════════ -->
-<script type="module">
-  import { db, collection, getDocs } from './js/firebase.js';
-
-  // ── Utilidades locales (evita errores de import en PWA) ──
-  function formatPrice(value) {
-    const num = Number(value);
-    if (isNaN(num)) return '0';
-    return num.toLocaleString('es-AR');
-  }
-
-  function escapeHTML(str) {
-    if (str === null || str === undefined) return '';
-    return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
-  }
-  // ───────────────────────────────────────────
-
-  // ── CURSOR PERSONALIZADO ──
-  const cursor = document.getElementById('customCursor');
-  if (cursor && window.innerWidth > 768) {
-    document.body.style.cursor = 'none';
-    document.addEventListener('mousemove', e => {
-      cursor.style.transform = `translate(${e.clientX - 10}px, ${e.clientY - 10}px)`;
-    });
-    document.querySelectorAll('a, button, .btn-agregar, .ctrl-btn, .btn-carrito-header').forEach(el => {
-      el.addEventListener('mouseenter', () => cursor.classList.add('hover'));
-      el.addEventListener('mouseleave', () => cursor.classList.remove('hover'));
-    });
-  }
-
-  // ── SWIPE PARA CERRAR DRAWER ──
-  const drawer = document.getElementById('carritoDrawer');
-  if (drawer) {
-    let startX = 0, started = false;
-    drawer.addEventListener('touchstart', e => {
-      startX = e.touches[0].clientX;
-      started = true;
-    });
-    drawer.addEventListener('touchmove', e => {
-      if (!started) return;
-      const diff = e.touches[0].clientX - startX;
-      if (diff > 50) {
-        document.getElementById('carritoOverlay').classList.remove('abierto');
-        drawer.classList.remove('abierto');
-        document.body.style.overflow = '';
-        started = false;
-      }
-    });
-    drawer.addEventListener('touchend', () => { started = false; });
-  }
-
-  // ── VUELO AL AGREGAR AL CARRITO ──
-  const originalAgregar = window.agregarAlCarrito;
-  window.agregarAlCarrito = function(producto) {
-    originalAgregar(producto);
-    const card = document.querySelector(`.producto button[data-id="${producto.id}"]`)?.closest('.producto');
-    if (!card) return;
-    const imgEl = card.querySelector('.prod-thumb img, .prod-thumb-emoji');
-    const cartBtn = document.getElementById('btnAbrirCarrito');
-    if (!imgEl || !cartBtn) return;
-    const flying = document.getElementById('flyingProduct');
-    const clone = imgEl.cloneNode(true);
-    clone.style.cssText = 'position:absolute;width:60px;height:60px;border-radius:12px;object-fit:cover;transition:transform 0.6s cubic-bezier(0.25,0.8,0.25,1),opacity 0.6s;z-index:9999;pointer-events:none;';
-    const rectImg = imgEl.getBoundingClientRect();
-    const rectCart = cartBtn.getBoundingClientRect();
-    clone.style.left = rectImg.left + rectImg.width/2 - 30 + 'px';
-    clone.style.top = rectImg.top + rectImg.height/2 - 30 + 'px';
-    clone.style.opacity = '1';
-    flying.appendChild(clone);
-    requestAnimationFrame(() => {
-      clone.style.transform = `translate(${rectCart.left + rectCart.width/2 - rectImg.left - rectImg.width/2}px, ${rectCart.top + rectCart.height/2 - rectImg.top - rectImg.height/2}px) scale(0.2)`;
-      clone.style.opacity = '0';
-    });
-    setTimeout(() => clone.remove(), 700);
-  };
-</script>
+    <button class="btn btn-primary modal-presentacion-confirmar" id="modalPresentacionConfirmar" style="width:100%;">
+      Agregar al pedido — <span id="modalPresentacionTotal">$0</span>
+    </button>
+  </div>
+</div>
 
 <!-- ═══ MODAL LOGIN / REGISTRO ═══ -->
 <div class="modal-auth-overlay" id="modalAuthOverlay">
@@ -539,31 +373,167 @@
   </div>
 </div>
 
-<!-- ═══ SCRIPT DE AUTENTICACIÓN, PUNTOS E HISTORIAL ═══ -->
-<script type="module">
-  import { auth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut, db, collection, getDocs, updateDoc, doc, setDoc } from './js/firebase.js';
 
-  const btnUser = document.getElementById('btnUserHeader');
-  const btnUserLabel = document.getElementById('btnUserLabel');
-  const modalOverlay = document.getElementById('modalAuthOverlay');
-  const modalClose = document.getElementById('modalAuthClose');
+<!-- ═══════════════════════════════════════
+     SCRIPTS INLINE — drawer, toast, badge
+═══════════════════════════════════════ -->
+<script>
+(function() {
+  const overlay = document.getElementById('carritoOverlay');
+  const drawer  = document.getElementById('carritoDrawer');
+
+  function abrirCarrito() {
+    overlay.classList.add('abierto');
+    drawer.classList.add('abierto');
+    document.body.style.overflow = 'hidden';
+  }
+  function cerrarCarrito() {
+    overlay.classList.remove('abierto');
+    drawer.classList.remove('abierto');
+    document.body.style.overflow = '';
+  }
+
+  document.getElementById('btnAbrirCarrito').addEventListener('click', abrirCarrito);
+  document.getElementById('btnCerrarCarrito').addEventListener('click', cerrarCarrito);
+  document.getElementById('btnVolverCarrito')?.addEventListener('click', cerrarCarrito);
+  overlay.addEventListener('click', cerrarCarrito);
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') cerrarCarrito(); });
+
+  window._cerrarCarritoDrawer = cerrarCarrito;
+  window._abrirCarritoDrawer  = abrirCarrito;
+
+  window.vaciarCarrito = function() {
+    if (!confirm('¿Vaciar el carrito?')) return;
+    localStorage.setItem('carrito', '[]');
+    window.codigoDescuento = null;
+    document.getElementById('codigoDescuentoInput').value = '';
+    document.getElementById('codigoDescuentoMensaje').textContent = '';
+    document.getElementById('codigoDescuentoInfo').style.display = 'none';
+    if (typeof window._renderCarritoExterno === 'function') window._renderCarritoExterno();
+  };
+
+  window.mostrarToast = function(msg, tipo) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.className = 'toast visible' + (tipo === 'error' ? ' toast-error' : '');
+    clearTimeout(t._tt);
+    t._tt = setTimeout(() => { t.className = 'toast'; }, 2500);
+  };
+
+  window.sincBadge = function() {
+    const carrito  = JSON.parse(localStorage.getItem('carrito') || '[]');
+    const cantidad = carrito.reduce((s, i) => s + (Number(i.cantidad) || 0), 0);
+    const subtotal = carrito.reduce((s, i) => s + (Number(i.precio) || 0) * (Number(i.cantidad) || 0), 0);
+    let descuento = 0;
+    if (window.codigoDescuento && window.codigoDescuento.porcentaje) {
+      descuento = Math.round(subtotal * window.codigoDescuento.porcentaje / 100);
+    }
+    const total = subtotal - descuento;
+    const fmt = v => '$' + v.toLocaleString('es-AR');
+
+    const badge = document.getElementById('badge-cantidad');
+    const count = document.getElementById('drawer-count');
+    const sub   = document.getElementById('resumen-subtotal');
+    const tot   = document.getElementById('total-display');
+
+    if (badge) badge.textContent = cantidad;
+    if (count) count.textContent = cantidad + (cantidad === 1 ? ' item' : ' items');
+    if (sub)   sub.textContent   = fmt(subtotal);
+    if (tot)   tot.textContent   = fmt(total);
+
+    if (window.codigoDescuento) {
+      const montoEl = document.getElementById('codigoMonto');
+      const infoEl  = document.getElementById('codigoDescuentoInfo');
+      if (montoEl) montoEl.textContent = '-$' + descuento.toLocaleString('es-AR');
+      if (infoEl)  infoEl.style.display = 'block';
+    }
+  };
+
+  window.sincBadge();
+
+  // ── PUNTOS: toggle de la barra colapsable ──
+  const puntosBar = document.getElementById('puntosResumenBar');
+  const puntosSec = document.getElementById('puntosSection');
+  puntosBar?.addEventListener('click', () => {
+    puntosSec.classList.toggle('expandido');
+  });
+
+  // ── RED DE SEGURIDAD: mostrar el hero aunque Firebase falle ──
+  // El hero arranca con opacity:0 y se hace visible recién cuando
+  // revelarHero() (en el módulo de Firebase más abajo) le agrega
+  // la clase "loaded" — eso ahora pasa DESPUÉS de aplicar todo el
+  // texto real y, si hay imagen de fondo, después de que esa
+  // imagen termine de descargar. Este timeout es el último
+  // recurso: si por lo que sea ese flujo nunca llega a correr
+  // (módulo roto, sin red, etc.), el hero igual se muestra con el
+  // texto default del HTML en vez de quedar invisible para
+  // siempre. Se estiró a 6s — tiempo de sobra para que la carga
+  // normal de Firestore + una imagen de fondo real terminen antes,
+  // así este timeout casi nunca llega a disparar en la práctica.
+  setTimeout(() => {
+    document.querySelector('.hero')?.classList.add('loaded');
+  }, 6000);
+})();
+</script>
+
+<!-- ═══ FIREBASE: AUTH ADMIN + LOGIN/PUNTOS + CMS — un solo módulo ═══ -->
+<script type="module">
+  import {
+    db, collection, getDocs, getDoc, updateDoc, doc, setDoc,
+    auth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut
+  } from './js/firebase.js';
+
+  const ADMIN_EMAIL = 'agustinsalvador@gmail.com';
+
+  function actualizarBarraAdmin(user) {
+    const bar    = document.getElementById('adminBar');
+    const header = document.getElementById('pubHeader');
+    const cats   = document.getElementById('catsSection');
+
+    if (user && user.email === ADMIN_EMAIL) {
+      bar.classList.add('visible');
+      document.getElementById('adminBarEmail').textContent = user.email || '';
+      header.classList.add('con-admin');
+      cats.classList.add('con-admin');
+    } else {
+      bar.classList.remove('visible');
+      header.classList.remove('con-admin');
+      cats.classList.remove('con-admin');
+    }
+  }
+  window.cerrarSesionAdmin = async () => { await signOut(auth); };
+
+  const btnUser         = document.getElementById('btnUserHeader');
+  const btnUserLabel    = document.getElementById('btnUserLabel');
+  const btnPuntos       = document.getElementById('btnPuntosHeader');
+  const modalOverlay    = document.getElementById('modalAuthOverlay');
+  const modalClose      = document.getElementById('modalAuthClose');
   const puntosBloqueado = document.getElementById('puntosBloqueado');
-  const puntosLogeado = document.getElementById('puntosLogeado');
+  const puntosLogeado   = document.getElementById('puntosLogeado');
+  const puntosSection   = document.getElementById('puntosSection');
+  const puntosBarTitulo = document.getElementById('puntosResumenBarTitulo');
+  const puntosBarSub    = document.getElementById('puntosResumenBarSub');
   let usuarioActual = null;
 
-  // Abrir/cerrar modal
   btnUser.addEventListener('click', () => modalOverlay.classList.add('show'));
   modalClose.addEventListener('click', () => modalOverlay.classList.remove('show'));
 
-  // Login con Google
+  btnPuntos.addEventListener('click', () => {
+    if (usuarioActual) {
+      puntosSection.classList.add('expandido');
+      puntosSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    } else {
+      modalOverlay.classList.add('show');
+    }
+  });
+
   window.loginWithGoogle = async () => {
     const provider = new GoogleAuthProvider();
     try {
       await signInWithPopup(auth, provider);
-      modalOverlay.classList.remove('show'); // Cerrar modal también
+      modalOverlay.classList.remove('show');
     } catch (error) {
       console.error('Error al ingresar con Google:', error);
-      // Mostrar feedback en el modal
       const msg = document.createElement('p');
       msg.style.color = 'var(--neon-pink)';
       msg.style.fontSize = '0.9rem';
@@ -574,19 +544,21 @@
     }
   };
 
-  // ── Mostrar el overlay SOLO en PWA y sin sesión ──
   const isPWA = window.matchMedia('(display-mode: standalone)').matches;
   const welcomeOverlay = document.getElementById('welcomeOverlay');
 
   onAuthStateChanged(auth, async (user) => {
     usuarioActual = user;
+    actualizarBarraAdmin(user);
+
     if (user) {
       welcomeOverlay?.classList.remove('mostrar');
       btnUserLabel.textContent = user.email;
       puntosBloqueado.style.display = 'none';
       puntosLogeado.style.display = 'block';
+      puntosSection.style.display = 'block';
+      puntosSection.classList.remove('expandido');
       cargarDatosPuntos(user.uid);
-      document.getElementById('puntosSection').style.display = 'block';
     } else {
       if (isPWA) {
         welcomeOverlay?.classList.add('mostrar');
@@ -596,22 +568,27 @@
       btnUserLabel.textContent = 'Ingresar';
       puntosBloqueado.style.display = 'block';
       puntosLogeado.style.display = 'none';
-      document.getElementById('puntosSection').style.display = 'none';
+      puntosSection.style.display = 'none';
+      puntosSection.classList.remove('expandido');
     }
   });
 
   async function cargarDatosPuntos(uid) {
     const userDocRef = doc(db, 'usuarios', uid);
     let userData;
-    const snap = await getDocs(collection(db, 'usuarios'));
-    snap.forEach(d => { if (d.id === uid) userData = d.data(); });
-    if (!userData) {
+    const userSnap = await getDoc(userDocRef);
+    if (userSnap.exists()) {
+      userData = userSnap.data();
+    } else {
       userData = { dineroAcumulado: 0, puntos: 0 };
       await setDoc(userDocRef, userData);
     }
 
     document.getElementById('puntosTotalGastado').textContent = '$' + (userData.dineroAcumulado || 0).toLocaleString('es-AR');
     document.getElementById('puntosPuntos').textContent = userData.puntos || 0;
+
+    if (puntosBarTitulo) puntosBarTitulo.textContent = (userData.puntos || 0) + ' puntos acumulados';
+    if (puntosBarSub)    puntosBarSub.textContent    = 'Tocá para ver tus recompensas';
 
     const recSnap = await getDocs(collection(db, 'recompensas'));
     const recompensas = [];
@@ -622,6 +599,27 @@
     if (!timeline) return;
 
     const puntosUsuario = userData.puntos || 0;
+
+    // ── Barra de progreso visual hacia la próxima recompensa ──
+    // Puramente decorativa: lee los mismos `recompensas` y
+    // `puntosUsuario` ya calculados arriba, no cambia ninguna
+    // lógica de negocio existente.
+    const progresoFill = document.getElementById('puntosProgresoFill');
+    if (progresoFill) {
+      const siguienteRecompensa = recompensas.find(r => r.umbralPuntos > puntosUsuario);
+      if (siguienteRecompensa) {
+        const anteriorUmbral = recompensas
+          .filter(r => r.umbralPuntos <= puntosUsuario)
+          .reduce((max, r) => Math.max(max, r.umbralPuntos), 0);
+        const rango = siguienteRecompensa.umbralPuntos - anteriorUmbral;
+        const avance = puntosUsuario - anteriorUmbral;
+        const porcentaje = rango > 0 ? Math.min(100, Math.round((avance / rango) * 100)) : 0;
+        progresoFill.style.width = porcentaje + '%';
+      } else if (recompensas.length > 0) {
+        // Ya alcanzó la recompensa más alta disponible
+        progresoFill.style.width = '100%';
+      }
+    }
 
     timeline.innerHTML = recompensas.map(r => {
       const alcanzada = puntosUsuario >= r.umbralPuntos;
@@ -634,7 +632,8 @@
     }).join('');
 
     timeline.querySelectorAll('.recompensa-btn').forEach((btn, i) => {
-      btn.addEventListener('click', async () => {
+      btn.addEventListener('click', async (e) => {
+        e.stopPropagation();
         const r = recompensas[i];
         if (!confirm(`¿Canjear "${r.descripcion}"?`)) return;
         const nuevosPuntos = puntosUsuario - r.umbralPuntos;
@@ -645,27 +644,23 @@
     });
   }
 
-  // Actualizar acumulado al hacer pedido
   const originalPedir = window.pedirPorWhatsApp;
   window.pedirPorWhatsApp = async function() {
-    if (!usuarioActual) {
-      return originalPedir();
-    }
+    if (!usuarioActual) return originalPedir();
     await originalPedir();
     const carrito = JSON.parse(localStorage.getItem('carrito') || '[]');
     const total = carrito.reduce((s, i) => s + i.precio * i.cantidad, 0);
     const puntos = Math.floor(total / 10000) * 100;
     const userDocRef = doc(db, 'usuarios', usuarioActual.uid);
-    const snap = await getDocs(collection(db, 'usuarios'));
+    const userSnap = await getDoc(userDocRef);
     let userData = { dineroAcumulado: 0, puntos: 0 };
-    snap.forEach(d => { if (d.id === usuarioActual.uid) userData = d.data(); });
+    if (userSnap.exists()) userData = userSnap.data();
     await setDoc(userDocRef, {
       dineroAcumulado: (userData.dineroAcumulado || 0) + total,
       puntos: (userData.puntos || 0) + puntos
     }, { merge: true });
   };
 
-  // Historial de pedidos
   document.getElementById('btnVerHistorial').addEventListener('click', async () => {
     const lista = document.getElementById('historialLista');
     lista.style.display = lista.style.display === 'none' ? 'block' : 'none';
@@ -691,21 +686,270 @@
       });
     }
   });
-</script>
 
-<script>
-  document.addEventListener('DOMContentLoaded', function() {
-    const btnPuntos = document.getElementById('btnPuntosHeader');
-    if (btnPuntos) {
-      btnPuntos.addEventListener('click', () => {
-        const sec = document.getElementById('puntosSection');
-        if (sec) {
-          sec.style.display = 'block';
-          sec.scrollIntoView({ behavior: 'smooth' });
+  async function aplicarConfiguracion() {
+    try {
+      const snap = await getDocs(collection(db, 'config'));
+      let config = {};
+      snap.forEach(d => { if (d.id === 'siteConfig') config = d.data(); });
+
+      // ── 1. Aplicar todo el texto PRIMERO, sin revelar nada todavía ──
+      // FIX: antes el texto se reemplazaba y el hero se revelaba
+      // casi en el mismo instante, sin garantía de que el navegador
+      // ya hubiera pintado el cambio. Eso causaba que se viera un
+      // frame con el texto default ("SABOR URBANO SIN LÍMITES")
+      // antes de saltar al texto real de Firestore ("Sánguches de
+      // verdad..."). Ahora todo el texto se actualiza con el hero
+      // TODAVÍA invisible (opacity:0), así nunca hay nada que ver
+      // hasta que el contenido final esté 100% listo.
+      const elementos = document.querySelectorAll('[data-config]');
+      elementos.forEach(el => {
+        const key = el.dataset.config;
+        if (config[key]) {
+          if (key === 'heroTitle') el.innerHTML = config[key];
+          else el.textContent = config[key];
         }
       });
+
+      if (config.contactPhone) {
+        document.querySelectorAll('a[href*="wa.me"]').forEach(link => {
+          link.href = `https://wa.me/${config.contactPhone}`;
+        });
+      }
+      if (config.contactInstagram) {
+        document.querySelectorAll('a[href*="instagram.com"]').forEach(link => {
+          link.href = `https://instagram.com/${config.contactInstagram}`;
+        });
+      }
+
+      // ── 2. Recién ahora revelar el hero, esperando la imagen real ──
+      // FIX: si hay imagen de fondo configurada, antes se agregaba
+      // --hero-bg y .loaded en el mismo instante, sin esperar a que
+      // el navegador terminara de descargar esa imagen — el hero
+      // aparecía con fondo en blanco/transparente por un instante
+      // hasta que la imagen terminaba de cargar. Ahora se usa un
+      // Image() auxiliar para esperar la carga real antes de revelar.
+      await revelarHero(config.heroImageURL);
+
+    } catch (err) {
+      console.error('Error cargando configuración del sitio:', err);
+      // Si Firestore falla, igual hay que revelar el hero con el
+      // texto default que ya trae el HTML — sin imagen de fondo.
+      await revelarHero(null);
+    }
+  }
+
+  function revelarHero(imageURL) {
+    return new Promise((resolve) => {
+      const hero = document.querySelector('.hero');
+      if (!hero) return resolve();
+
+      if (!imageURL) {
+        hero.classList.add('loaded');
+        return resolve();
+      }
+
+      const img = new Image();
+      img.onload = () => {
+        hero.style.setProperty('--hero-bg', `url('${imageURL}')`);
+        hero.classList.add('loaded');
+        resolve();
+      };
+      img.onerror = () => {
+        // La URL de la imagen está rota — se revela igual el hero
+        // sin imagen de fondo, en vez de quedarse esperando para
+        // siempre una imagen que nunca va a cargar.
+        hero.classList.add('loaded');
+        resolve();
+      };
+      img.src = imageURL;
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', aplicarConfiguracion);
+  } else {
+    aplicarConfiguracion();
+  }
+</script>
+
+<!-- ═══════════════════════════════════════
+     MODAL: SELECCIÓN DE PRESENTACIÓN Y CANTIDAD
+     Define window.abrirModalPresentacion(), que menu.js llama
+     al tocar "+ Agregar" en cualquier card o promo. No depende
+     de Firebase — solo de carrito.js (window.agregarAlCarrito),
+     que ya está cargado como módulo más abajo y expone esa
+     función en window apenas se ejecuta.
+═══════════════════════════════════════ -->
+<script>
+(function() {
+  const overlay      = document.getElementById('modalPresentacionOverlay');
+  const btnClose      = document.getElementById('modalPresentacionClose');
+  const thumbEl        = document.getElementById('modalPresentacionThumb');
+  const nombreEl       = document.getElementById('modalPresentacionNombre');
+  const opcionesEl     = document.getElementById('modalPresentacionOpciones');
+  const cantidadValEl  = document.getElementById('modalPresentacionCantidadVal');
+  const btnMenos       = document.getElementById('modalPresentacionMenos');
+  const btnMas         = document.getElementById('modalPresentacionMas');
+  const totalEl        = document.getElementById('modalPresentacionTotal');
+  const btnConfirmar   = document.getElementById('modalPresentacionConfirmar');
+
+  let productoActual    = null;
+  let presentacionActual = null;
+  let cantidadActual     = 1;
+
+  function formatPrice(value) {
+    const num = Number(value);
+    if (isNaN(num)) return '0';
+    return num.toLocaleString('es-AR');
+  }
+
+  function actualizarTotal() {
+    if (!presentacionActual) return;
+    const total = presentacionActual.precioFinal * cantidadActual;
+    totalEl.textContent = '$' + formatPrice(total);
+    cantidadValEl.textContent = cantidadActual;
+  }
+
+  function seleccionarPresentacion(pres, botonEl) {
+    presentacionActual = pres;
+    opcionesEl.querySelectorAll('.modal-presentacion-opcion').forEach(b => b.classList.remove('activa'));
+    botonEl.classList.add('activa');
+    actualizarTotal();
+  }
+
+  window.abrirModalPresentacion = function(producto) {
+    productoActual    = producto;
+    cantidadActual     = 1;
+    presentacionActual = producto.presentaciones[0];
+
+    nombreEl.textContent = producto.nombre;
+    thumbEl.innerHTML = producto.imagen
+      ? `<img src="${producto.imagen}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:inherit;">`
+      : '🥖';
+
+    opcionesEl.innerHTML = '';
+    producto.presentaciones.forEach((pres, i) => {
+      const btn = document.createElement('button');
+      btn.className = 'modal-presentacion-opcion' + (i === 0 ? ' activa' : '');
+      btn.innerHTML = `
+        <span class="modal-presentacion-opcion-etiqueta">${pres.etiqueta}</span>
+        <span class="modal-presentacion-opcion-precio">
+          ${pres.tieneOferta ? `<span class="modal-presentacion-opcion-original">$${formatPrice(pres.precioOriginal)}</span>` : ''}
+          $${formatPrice(pres.precioFinal)}
+        </span>`;
+      btn.addEventListener('click', () => seleccionarPresentacion(pres, btn));
+      opcionesEl.appendChild(btn);
+    });
+
+    actualizarTotal();
+    overlay.classList.add('abierto');
+    document.body.style.overflow = 'hidden';
+  };
+
+  function cerrarModal() {
+    overlay.classList.remove('abierto');
+    document.body.style.overflow = '';
+  }
+
+  btnClose.addEventListener('click', cerrarModal);
+  overlay.addEventListener('click', (e) => { if (e.target === overlay) cerrarModal(); });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && overlay.classList.contains('abierto')) cerrarModal();
+  });
+
+  btnMenos.addEventListener('click', () => {
+    if (cantidadActual > 1) {
+      cantidadActual--;
+      actualizarTotal();
     }
   });
+  btnMas.addEventListener('click', () => {
+    cantidadActual++;
+    actualizarTotal();
+  });
+
+  btnConfirmar.addEventListener('click', () => {
+    if (!productoActual || !presentacionActual) return;
+    if (typeof window.agregarAlCarrito !== 'function') {
+      console.error('agregarAlCarrito no está disponible todavía');
+      return;
+    }
+    window.agregarAlCarrito({
+      id:                    productoActual.id,
+      nombre:                productoActual.nombre,
+      precio:                presentacionActual.precioFinal,
+      imagen:                productoActual.imagen,
+      presentacionEtiqueta: presentacionActual.etiqueta,
+      presentacionUnidades: presentacionActual.unidades,
+    }, cantidadActual);
+    cerrarModal();
+  });
+})();
+</script>
+
+<!-- ═══ MÓDULOS DEL MENÚ Y CARRITO ═══ -->
+<script type="module" src="./js/menu.js"></script>
+<script type="module" src="./js/carrito.js"></script>
+
+<!-- ═══════════════════════════════════════
+     ANIMACIONES DE ENTRADA + CURSOR + SWIPE + VUELO
+═══════════════════════════════════════ -->
+<script>
+(function() {
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) entry.target.classList.add('visible');
+    });
+  }, { threshold: 0.1 });
+
+  function observarNuevasCards() {
+    document.querySelectorAll('.producto, .promo-card, .hero-stat').forEach(el => observer.observe(el));
+  }
+  const menuContainer = document.getElementById('menu-container');
+  if (menuContainer) {
+    new MutationObserver(observarNuevasCards).observe(menuContainer, { childList: true });
+  }
+  observarNuevasCards();
+
+  const drawer = document.getElementById('carritoDrawer');
+  if (drawer) {
+    let startX = 0, started = false;
+    drawer.addEventListener('touchstart', e => { startX = e.touches[0].clientX; started = true; });
+    drawer.addEventListener('touchmove', e => {
+      if (!started) return;
+      const diff = e.touches[0].clientX - startX;
+      if (diff > 50) { window._cerrarCarritoDrawer?.(); started = false; }
+    });
+    drawer.addEventListener('touchend', () => { started = false; });
+  }
+
+  document.addEventListener('click', (e) => {
+    const btn = e.target.closest('.btn-agregar');
+    if (!btn) return;
+    const card = btn.closest('.producto');
+    const cartBtn = document.getElementById('btnAbrirCarrito');
+    if (!card || !cartBtn) return;
+    const imgEl = card.querySelector('.prod-thumb img, .prod-thumb-emoji');
+    if (!imgEl) return;
+
+    const flying = document.getElementById('flyingProduct');
+    const clone = imgEl.cloneNode(true);
+    clone.style.cssText = 'position:absolute;width:60px;height:60px;border-radius:12px;object-fit:cover;transition:transform 0.6s cubic-bezier(0.25,0.8,0.25,1),opacity 0.6s;z-index:9999;pointer-events:none;';
+    const rectImg = imgEl.getBoundingClientRect();
+    const rectCart = cartBtn.getBoundingClientRect();
+    clone.style.left = rectImg.left + rectImg.width / 2 - 30 + 'px';
+    clone.style.top  = rectImg.top + rectImg.height / 2 - 30 + 'px';
+    clone.style.opacity = '1';
+    flying.appendChild(clone);
+
+    requestAnimationFrame(() => {
+      clone.style.transform = `translate(${rectCart.left + rectCart.width/2 - rectImg.left - rectImg.width/2}px, ${rectCart.top + rectCart.height/2 - rectImg.top - rectImg.height/2}px) scale(0.2)`;
+      clone.style.opacity = '0';
+    });
+    setTimeout(() => clone.remove(), 700);
+  });
+})();
 </script>
 
 <!-- ═══ PWA: Service Worker ═══ -->
@@ -717,7 +961,7 @@
           const newWorker = registration.installing;
           newWorker.addEventListener('statechange', () => {
             if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-              window.location.reload(); // Recarga automática
+              window.location.reload();
             }
           });
         });
@@ -726,13 +970,14 @@
   }
 </script>
 
+<!-- ═══ BOTÓN INSTALAR PWA ═══ -->
 <script>
   window.addEventListener('beforeinstallprompt', (e) => {
     e.preventDefault();
     window.deferredPrompt = e;
     const installBtn = document.createElement('button');
     installBtn.textContent = '📲 Instalar App';
-    installBtn.style.cssText = 'position:fixed; bottom:20px; right:20px; z-index:9999; background:var(--neon-pink); color:#fff; border:none; padding:12px 18px; border-radius:99px; font-weight:700; box-shadow:0 0 20px var(--neon-pink);';
+    installBtn.style.cssText = 'position:fixed; bottom:90px; right:20px; z-index:9999; background:var(--neon-pink); color:#fff; border:none; padding:12px 18px; border-radius:99px; font-weight:700; box-shadow:0 0 20px var(--neon-pink);';
     document.body.appendChild(installBtn);
     installBtn.addEventListener('click', () => {
       window.deferredPrompt.prompt();
@@ -740,71 +985,135 @@
     });
   });
 </script>
+
+<!-- ═══════════════════════════════════════
+     FLECHAS DE SCROLL EN CATEGORÍAS
+═══════════════════════════════════════ -->
 <script>
-  (function() {
-    function crearFlechas() {
-      const categoriasContainer = document.getElementById('categorias');
-      const catsInner = categoriasContainer?.parentElement;
-      if (!catsInner) return;
+(function() {
+  function crearFlechas() {
+    const categoriasContainer = document.getElementById('categorias');
+    const catsInner = categoriasContainer?.parentElement;
+    if (!catsInner || document.getElementById('scrollCategoriasLeft')) return;
 
-      // Si ya existen, no duplicamos
-      if (document.getElementById('scrollCategoriasLeft')) return;
+    catsInner.style.position = 'relative';
 
-      // Asegurar posición relativa en el contenedor
-      catsInner.style.position = 'relative';
+    function crearBoton(id, innerHTML, left) {
+      const btn = document.createElement('button');
+      btn.id = id;
+      btn.innerHTML = innerHTML;
+      btn.style.cssText = `
+        display: flex; align-items: center; justify-content: center;
+        position: absolute; top: 50%; transform: translateY(-50%);
+        width: 32px; height: 32px;
+        background: #1e1e1e; color: #00e5ff;
+        border: 1px solid #00e5ff; border-radius: 50%;
+        font-size: 1.4rem; font-weight: bold; cursor: pointer;
+        z-index: 999; box-shadow: 0 0 12px #00e5ff;
+        padding: 0; line-height: 1; opacity: 0; pointer-events: none;
+        transition: opacity .2s;
+        ${left ? 'left: 4px;' : 'right: 4px;'}
+      `;
+      return btn;
+    }
 
-      // Función para crear un botón
-      function crearBoton(id, innerHTML, left) {
-        const btn = document.createElement('button');
-        btn.id = id;
-        btn.innerHTML = innerHTML;
-        btn.style.cssText = `
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          position: absolute;
-          top: 50%;
-          transform: translateY(-50%);
-          width: 32px;
-          height: 32px;
-          background: #1e1e1e;
-          color: #00e5ff;
-          border: 1px solid #00e5ff;
-          border-radius: 50%;
-          font-size: 1.4rem;
-          font-weight: bold;
-          cursor: pointer;
-          z-index: 999;
-          box-shadow: 0 0 12px #00e5ff;
-          padding: 0;
-          line-height: 1;
-          ${left ? 'left: 10px;' : 'right: 10px;'}
-        `;
-        return btn;
+    const btnLeft  = crearBoton('scrollCategoriasLeft', '‹', true);
+    const btnRight = crearBoton('scrollCategoriasRight', '›', false);
+
+    btnLeft.addEventListener('click', () => categoriasContainer.scrollBy({ left: -200, behavior: 'smooth' }));
+    btnRight.addEventListener('click', () => categoriasContainer.scrollBy({ left: 200, behavior: 'smooth' }));
+
+    catsInner.appendChild(btnLeft);
+    catsInner.appendChild(btnRight);
+
+    function actualizarVisibilidad() {
+      const hayOverflow = categoriasContainer.scrollWidth > categoriasContainer.clientWidth + 4;
+      const enInicio = categoriasContainer.scrollLeft <= 4;
+      const enFinal  = categoriasContainer.scrollLeft + categoriasContainer.clientWidth >= categoriasContainer.scrollWidth - 4;
+
+      [btnLeft, btnRight].forEach(b => {
+        b.style.opacity = hayOverflow ? '1' : '0';
+        b.style.pointerEvents = hayOverflow ? 'auto' : 'none';
+      });
+      if (hayOverflow) {
+        btnLeft.style.opacity  = enInicio ? '0.25' : '1';
+        btnRight.style.opacity = enFinal  ? '0.25' : '1';
       }
-
-      // Botón izquierdo (volver)
-      const btnLeft = crearBoton('scrollCategoriasLeft', '‹', true);
-      btnLeft.addEventListener('click', () => {
-        categoriasContainer.scrollBy({ left: -200, behavior: 'smooth' });
-      });
-
-      // Botón derecho (avanzar)
-      const btnRight = crearBoton('scrollCategoriasRight', '›', false);
-      btnRight.addEventListener('click', () => {
-        categoriasContainer.scrollBy({ left: 200, behavior: 'smooth' });
-      });
-
-      catsInner.appendChild(btnLeft);
-      catsInner.appendChild(btnRight);
     }
 
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', crearFlechas);
+    categoriasContainer.addEventListener('scroll', actualizarVisibilidad);
+    window.addEventListener('resize', actualizarVisibilidad);
+    new MutationObserver(actualizarVisibilidad).observe(categoriasContainer, { childList: true });
+    actualizarVisibilidad();
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', crearFlechas);
+  } else {
+    crearFlechas();
+  }
+})();
+</script>
+
+<!-- ═══════════════════════════════════════
+     MEJORAS ADITIVAS: header compacto en scroll
+     + microanimación al agregar al carrito
+     No toca menu.js ni carrito.js — usa delegación
+     de eventos y observación de scroll/DOM existentes.
+═══════════════════════════════════════ -->
+<script>
+(function() {
+  // ── Header compacto al scrollear hacia abajo ──
+  const header = document.getElementById('pubHeader');
+  let lastScrollY = window.scrollY;
+  let ticking = false;
+
+  function actualizarHeaderScroll() {
+    const scrollY = window.scrollY;
+    // Compacto apenas se baja un poco, vuelve a tamaño normal
+    // cerca del tope — no interfiere con la clase "con-admin"
+    // que ya existe, ambas conviven sin conflicto.
+    if (scrollY > 40) {
+      header.classList.add('compacto');
     } else {
-      crearFlechas();
+      header.classList.remove('compacto');
     }
-  })();
+    lastScrollY = scrollY;
+    ticking = false;
+  }
+
+  window.addEventListener('scroll', () => {
+    if (!ticking) {
+      requestAnimationFrame(actualizarHeaderScroll);
+      ticking = true;
+    }
+  }, { passive: true });
+
+  // ── Microanimación al agregar al carrito ──
+  // Se suma al efecto de "vuelo" que ya existe (no lo reemplaza):
+  // pulso en el botón tocado + destello breve en el ícono del
+  // carrito del header, usando delegación de eventos sobre el
+  // mismo click que ya dispara el flujo de agregarAlCarrito.
+  document.addEventListener('click', (e) => {
+    const btn = e.target.closest('.btn-agregar');
+    if (!btn) return;
+
+    btn.classList.remove('pulso');
+    // Forzar reflow para poder re-disparar la animación si se
+    // toca el mismo botón varias veces seguidas
+    void btn.offsetWidth;
+    btn.classList.add('pulso');
+    setTimeout(() => btn.classList.remove('pulso'), 450);
+
+    const cartBtn = document.getElementById('btnAbrirCarrito');
+    if (cartBtn) {
+      cartBtn.classList.remove('destello');
+      void cartBtn.offsetWidth;
+      cartBtn.classList.add('destello');
+      setTimeout(() => cartBtn.classList.remove('destello'), 550);
+    }
+  });
+})();
 </script>
 </body>
 </html>
