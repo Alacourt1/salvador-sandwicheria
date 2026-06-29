@@ -1034,11 +1034,30 @@ body::before {
   grid-template-columns: repeat(auto-fill, minmax(min(170px, 100%), 1fr));
   gap: var(--sp-sm); margin-bottom: var(--sp-lg);
 }
-.stat-card { background: var(--carbon); border: 1px solid var(--grafito); border-radius: var(--radio); padding: var(--sp-md); }
+.stat-card {
+  background: var(--carbon); border: 1px solid var(--grafito);
+  border-radius: var(--radio); padding: var(--sp-md);
+  min-width: 0; /* permite que el contenido se achique en vez de desbordar */
+  overflow: hidden;
+}
 .stat-label { font-size: var(--fs-xs); font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: var(--neon-blue); margin-bottom: var(--sp-xs); }
+/* FIX: el tamaño anterior (--fs-2xl, hasta 2.8rem) hacía que
+   números largos como "$125.430" desbordaran el ancho de la
+   card en pantallas chicas o con varias stat-cards por fila.
+   Se bajó a --fs-xl (hasta 2rem) y se agregó clamp() propio más
+   conservador, además de permitir que el texto se reduzca solo
+   si aun así no entra, en vez de desbordar visualmente. */
 .stat-val {
-  font-family: 'Orbitron', sans-serif; font-size: var(--fs-2xl); color: var(--neon-yellow);
-  line-height: 1; text-shadow: var(--shadow-yellow);
+  font-family: 'Orbitron', sans-serif;
+  font-size: clamp(1.3rem, 1.1rem + 1vw, 1.8rem);
+  color: var(--neon-yellow);
+  line-height: 1.15;
+  text-shadow: var(--shadow-yellow);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block;
+  max-width: 100%;
 }
 
 .admin-card { background: var(--carbon); border: 1px solid var(--grafito); border-radius: var(--radio-lg); padding: var(--sp-md) var(--sp-lg); margin-bottom: var(--sp-md); }

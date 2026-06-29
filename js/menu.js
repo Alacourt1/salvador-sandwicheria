@@ -104,26 +104,53 @@ function obtenerPresentaciones(producto) {
   const docena = producto.precioDocena    || 0;
   const tieneOferta = producto.oferta && producto.descuento > 0;
 
+  // FIX: confirmado como regla de negocio — el % de descuento
+  // configurado en el admin se aplica por igual a TODAS las
+  // presentaciones que el producto tenga, no solo a la unidad.
+  // Antes los packs (x3/x6/x12) siempre mostraban su precio de
+  // lista sin ningún descuento, aunque el producto estuviera
+  // marcado como oferta.
+  function aplicarDescuento(precio) {
+    return tieneOferta ? Math.round(precio * (1 - producto.descuento / 100)) : precio;
+  }
+
   const presentaciones = [];
 
   if (unit > 0) {
-    const final = tieneOferta ? Math.round(unit * (1 - producto.descuento / 100)) : unit;
     presentaciones.push({
       unidades: 1,
       etiqueta: 'Unidad',
       precioOriginal: unit,
-      precioFinal: final,
+      precioFinal: aplicarDescuento(unit),
       tieneOferta,
     });
   }
   if (trio > 0) {
-    presentaciones.push({ unidades: 3, etiqueta: 'Pack x3', precioOriginal: trio, precioFinal: trio, tieneOferta: false });
+    presentaciones.push({
+      unidades: 3,
+      etiqueta: 'Pack x3',
+      precioOriginal: trio,
+      precioFinal: aplicarDescuento(trio),
+      tieneOferta,
+    });
   }
   if (seis > 0) {
-    presentaciones.push({ unidades: 6, etiqueta: 'Pack x6', precioOriginal: seis, precioFinal: seis, tieneOferta: false });
+    presentaciones.push({
+      unidades: 6,
+      etiqueta: 'Pack x6',
+      precioOriginal: seis,
+      precioFinal: aplicarDescuento(seis),
+      tieneOferta,
+    });
   }
   if (docena > 0) {
-    presentaciones.push({ unidades: 12, etiqueta: 'Docena (x12)', precioOriginal: docena, precioFinal: docena, tieneOferta: false });
+    presentaciones.push({
+      unidades: 12,
+      etiqueta: 'Docena (x12)',
+      precioOriginal: docena,
+      precioFinal: aplicarDescuento(docena),
+      tieneOferta,
+    });
   }
 
   return presentaciones;
@@ -143,31 +170,35 @@ function renderProductos(lista) {
     const categoria   = escapeHTML(producto.categoria);
     const imagenSrc   = producto.imagenURL || '';
 
-    const unit   = producto.precio          || 0;
-    const trio   = producto.precio3unidades || 0;
-    const seis   = producto.precio6unidades || 0;
-    const docena = producto.precioDocena    || 0;
-    const tieneOfertaUnit = producto.oferta && producto.descuento > 0 && unit > 0;
+    // FIX: se centraliza todo el cálculo de precios/descuentos en
+    // obtenerPresentaciones(), la misma función que usa el modal
+    // y las promociones. Antes este bloque recalculaba todo a
+    // mano y nunca aplicaba el descuento a los packs (x3/x6/x12),
+    // y el chip de oferta en la imagen solo aparecía si había
+    // precio unitario configurado.
+    const presentaciones = obtenerPresentaciones(producto);
+    const hayOferta = producto.oferta && producto.descuento > 0 && presentaciones.length > 0;
 
     let lineasPrecio = '';
-    if (unit > 0) {
-      const precioFinal = tieneOfertaUnit ? Math.round(unit * (1 - producto.descuento / 100)) : unit;
-      lineasPrecio += `
-        <div class="prod-precio-final">$${formatPrice(precioFinal)} <small>/un.</small></div>
-        ${tieneOfertaUnit ? `<div class="prod-precio-original">$${formatPrice(unit)}</div>` : ''}
-      `;
-    }
-    if (trio > 0 && trio !== unit) {
-      lineasPrecio += `<div class="prod-precio-docena">🛒 x3 un. $${formatPrice(trio)}</div>`;
-    }
-    if (seis > 0 && seis !== unit) {
-      lineasPrecio += `<div class="prod-precio-docena">🛒 x6 un. $${formatPrice(seis)}</div>`;
-    }
-    if (docena > 0) {
-      lineasPrecio += `<div class="prod-precio-promo">🔥 x12 un. $${formatPrice(docena)}</div>`;
-    }
-    if (!unit && !trio && !seis && !docena) {
+    if (presentaciones.length === 0) {
       lineasPrecio = `<div class="prod-precio-final" style="font-size:.9rem; color:var(--gris);">Consultar precio</div>`;
+    } else {
+      presentaciones.forEach(pres => {
+        if (pres.unidades === 1) {
+          lineasPrecio += `
+            <div class="prod-precio-final">$${formatPrice(pres.precioFinal)} <small>/un.</small></div>
+            ${pres.tieneOferta ? `<div class="prod-precio-original">$${formatPrice(pres.precioOriginal)}</div>` : ''}
+          `;
+        } else {
+          const claseLinea = pres.unidades === 12 ? 'prod-precio-promo' : 'prod-precio-docena';
+          const iconoLinea = pres.unidades === 12 ? '🔥' : '🛒';
+          lineasPrecio += `
+            <div class="${claseLinea}">
+              ${iconoLinea} ${pres.etiqueta}. $${formatPrice(pres.precioFinal)}
+              ${pres.tieneOferta ? `<span style="text-decoration:line-through; color:var(--gris); margin-left:4px;">$${formatPrice(pres.precioOriginal)}</span>` : ''}
+            </div>`;
+        }
+      });
     }
 
     const card = document.createElement('div');
@@ -175,7 +206,7 @@ function renderProductos(lista) {
     card.innerHTML = `
       <div class="prod-thumb">
         ${imagenSrc ? `<img src="${imagenSrc}" alt="${nombre}" loading="lazy">` : `<div class="prod-thumb-emoji">🥖</div>`}
-        ${producto.oferta && producto.descuento > 0 && unit > 0 ? `<div class="prod-oferta-chip">−${producto.descuento}%</div>` : ''}
+        ${hayOferta ? `<div class="prod-oferta-chip">−${producto.descuento}%</div>` : ''}
       </div>
       <div class="producto-body">
         <div class="prod-cat-label">${categoria}</div>
@@ -192,16 +223,25 @@ function renderProductos(lista) {
     // lo que confundía al cliente que quería comprar solo 1
     // unidad). Ahora siempre abre el modal de selección, donde el
     // cliente elige presentación y cantidad antes de confirmar.
-    card.querySelector('.btn-agregar').addEventListener('click', () => {
-      const presentaciones = obtenerPresentaciones(producto);
-      if (presentaciones.length === 0) return; // sin precio configurado, no hace nada
-      window.abrirModalPresentacion({
-        id:        producto.id,
-        nombre:    producto.nombre,
-        imagen:    producto.imagenURL || '',
-        presentaciones,
+    // Reutiliza `presentaciones`, ya calculado arriba para mostrar
+    // los precios en la card — evita recalcular lo mismo dos veces.
+    if (presentaciones.length > 0) {
+      card.querySelector('.btn-agregar').addEventListener('click', () => {
+        window.abrirModalPresentacion({
+          id:     producto.id,
+          nombre: producto.nombre,
+          imagen: producto.imagenURL || '',
+          presentaciones,
+        });
       });
-    });
+    } else {
+      // Sin precio configurado: el botón queda deshabilitado en
+      // vez de quedar clickeable sin hacer nada.
+      const btn = card.querySelector('.btn-agregar');
+      btn.disabled = true;
+      btn.style.opacity = '0.5';
+      btn.style.cursor = 'not-allowed';
+    }
 
     fragment.appendChild(card);
   });
@@ -209,7 +249,21 @@ function renderProductos(lista) {
 }
 
 function actualizarPromociones() {
-  const ofertas     = productos.filter(p => p.oferta && p.descuento > 0 && p.precio > 0);
+  // FIX: antes solo se consideraba oferta si el producto tenía
+  // precio unitario (p.precio > 0). Si un producto SOLO tenía
+  // configurado precio por pack (x3/x6/x12) y se marcaba como
+  // oferta en el admin, nunca aparecía en el banner ni en la
+  // grilla de promociones. Ahora se considera oferta si tiene
+  // CUALQUIER precio configurado, sin importar la presentación.
+  const ofertas = productos.filter(p => {
+    if (!p.oferta || !(p.descuento > 0)) return false;
+    const tieneAlgunPrecio = (p.precio || 0) > 0
+      || (p.precio3unidades || 0) > 0
+      || (p.precio6unidades || 0) > 0
+      || (p.precioDocena    || 0) > 0;
+    return tieneAlgunPrecio;
+  });
+
   const seccion     = $id('promociones');
   const contenedor  = $id('promociones-container');
   const banner      = $id('ofertaBanner');
@@ -222,8 +276,21 @@ function actualizarPromociones() {
     const fragment = document.createDocumentFragment();
 
     ofertas.forEach(p => {
-      const precioFinal = Math.round(p.precio * (1 - p.descuento / 100));
       const nombreSeguro = escapeHTML(p.nombre);
+
+      // FIX: el descuento se aplica por igual a TODAS las
+      // presentaciones que el producto tenga (confirmado como
+      // criterio de negocio), usando la misma función
+      // obtenerPresentaciones() que ya calcula esto para las
+      // cards normales — así ambos lugares quedan sincronizados.
+      const presentaciones = obtenerPresentaciones(p);
+      if (presentaciones.length === 0) return; // por seguridad, no debería pasar acá
+
+      // Se muestra en la card de promo la presentación más barata
+      // disponible como referencia visual — el cliente elige la
+      // presentación exacta en el modal, igual que en las cards
+      // normales del menú.
+      const masBarata = presentaciones.reduce((min, p) => p.precioFinal < min.precioFinal ? p : min, presentaciones[0]);
 
       const card = document.createElement('div');
       card.className = 'promo-card';
@@ -233,17 +300,13 @@ function actualizarPromociones() {
           <div class="promo-card-badge">-${p.descuento}%</div>
           <div class="promo-card-nombre">${nombreSeguro}</div>
           <div class="promo-card-precios">
-            <span class="promo-card-original">$${formatPrice(p.precio)}</span>
-            <span class="promo-card-final">$${formatPrice(precioFinal)}</span>
+            ${masBarata.tieneOferta ? `<span class="promo-card-original">$${formatPrice(masBarata.precioOriginal)}</span>` : ''}
+            <span class="promo-card-final">$${formatPrice(masBarata.precioFinal)}</span>
           </div>
           <button class="promo-card-btn">+ Agregar</button>
         </div>`;
 
-      // Mismo criterio que las cards normales: abre el modal de
-      // presentación en vez de agregar directo.
       card.querySelector('.promo-card-btn').addEventListener('click', () => {
-        const presentaciones = obtenerPresentaciones(p);
-        if (presentaciones.length === 0) return;
         window.abrirModalPresentacion({
           id:     p.id,
           nombre: p.nombre,

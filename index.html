@@ -976,13 +976,38 @@
     e.preventDefault();
     window.deferredPrompt = e;
     const installBtn = document.createElement('button');
+    installBtn.id = 'btnInstalarPWA';
     installBtn.textContent = '📲 Instalar App';
-    installBtn.style.cssText = 'position:fixed; bottom:90px; right:20px; z-index:9999; background:var(--neon-pink); color:#fff; border:none; padding:12px 18px; border-radius:99px; font-weight:700; box-shadow:0 0 20px var(--neon-pink);';
+    // FIX: antes este botón tenía z-index:9999, muy por encima
+    // del carrito (z-index:301), así que al abrir el carrito para
+    // pagar el botón "Instalar App" quedaba flotando encima de
+    // todo, tapando el botón de confirmar pedido. Se bajó el
+    // z-index a 140 (por debajo del carrito y de la admin-bar) y
+    // además se oculta explícitamente mientras el carrito está
+    // abierto, usando los mismos hooks que ya togglean la clase
+    // "abierto" del drawer.
+    installBtn.style.cssText = 'position:fixed; bottom:90px; right:20px; z-index:140; background:var(--neon-pink); color:#fff; border:none; padding:12px 18px; border-radius:99px; font-weight:700; box-shadow:0 0 20px var(--neon-pink); transition:opacity .2s, visibility .2s;';
     document.body.appendChild(installBtn);
     installBtn.addEventListener('click', () => {
       window.deferredPrompt.prompt();
       window.deferredPrompt.userChoice.then(() => installBtn.remove());
     });
+
+    // Ocultar/mostrar según el estado del carrito
+    function sincronizarVisibilidadInstallBtn() {
+      const drawer = document.getElementById('carritoDrawer');
+      const abierto = drawer?.classList.contains('abierto');
+      installBtn.style.opacity    = abierto ? '0' : '1';
+      installBtn.style.visibility = abierto ? 'hidden' : 'visible';
+    }
+    // El drawer cambia de clase al abrir/cerrar — se observa con
+    // MutationObserver en vez de duplicar los listeners de
+    // apertura/cierre que ya existen en otro bloque de script.
+    const drawerEl = document.getElementById('carritoDrawer');
+    if (drawerEl) {
+      new MutationObserver(sincronizarVisibilidadInstallBtn).observe(drawerEl, { attributes: true, attributeFilter: ['class'] });
+    }
+    sincronizarVisibilidadInstallBtn();
   });
 </script>
 
