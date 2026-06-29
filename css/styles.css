@@ -712,14 +712,48 @@ body::before {
   flex-shrink: 0;
 }
 
-.drawer-cliente {
-  padding: var(--sp-md); flex-shrink: 0;
+/* ── Barra compacta "Tus datos" — siempre visible ── */
+.drawer-cliente-bar {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: var(--sp-sm) var(--sp-md);
   border-bottom: 1px solid rgba(0,229,255,0.3);
-  display: flex; flex-direction: column; gap: var(--sp-xs);
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background .15s;
 }
-.drawer-cliente-titulo {
-  font-size: var(--fs-xs); font-weight: 700; text-transform: uppercase;
-  letter-spacing: .08em; color: var(--neon-blue); margin-bottom: 2px;
+.drawer-cliente-bar:hover { background: rgba(255,255,255,.03); }
+.drawer-cliente-bar-texto { display: flex; flex-direction: column; gap: 2px; }
+.drawer-cliente-bar-titulo {
+  font-size: var(--fs-sm); font-weight: 700; color: var(--neon-blue);
+}
+.drawer-cliente-bar-sub { font-size: var(--fs-xs); color: var(--gris); }
+.drawer-cliente-bar-chevron {
+  font-size: var(--fs-md); color: var(--neon-blue);
+  transition: transform .25s;
+  flex-shrink: 0;
+}
+.drawer-cliente-bar.expandido .drawer-cliente-bar-chevron { transform: rotate(180deg); }
+
+/* ── Formulario colapsable — oculto por defecto ──
+   FIX: antes este formulario estaba siempre expandido y ocupaba
+   espacio fijo permanente en el carrito. Ahora arranca colapsado
+   (max-height:0) y se expande solo cuando el cliente toca la
+   barra de arriba, liberando todo ese espacio para ver mejor la
+   lista de productos agregados. */
+.drawer-cliente {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height .35s ease;
+  flex-shrink: 0;
+}
+.drawer-cliente.expandido {
+  max-height: 420px; /* suficiente para los 4 campos + historial */
+  overflow-y: auto;
+}
+.drawer-cliente-inner {
+  padding: var(--sp-md);
+  display: flex; flex-direction: column; gap: var(--sp-xs);
+  border-bottom: 1px solid rgba(0,229,255,0.3);
 }
 .drawer-cliente input, .drawer-cliente textarea {
   width: 100%; background: rgba(255,255,255,.05);
@@ -1742,24 +1776,61 @@ body:has(.carrito-drawer.abierto) .fab-whatsapp { opacity: 0; pointer-events: no
   .hero-pills { display: flex; }
 
   /* ══════════════════════════════════════════
-     MENÚ — una columna ancha en vez de varias
-     angostas, mismo criterio de "se siente app"
+     MENÚ — 2 columnas compactas, como apps de
+     delivery reales (Rappi/PedidosYa). Antes era
+     1 columna ancha, lo que hacía que cada
+     producto ocupara casi media pantalla y el
+     scroll para ver el catálogo completo fuera
+     excesivo.
      ══════════════════════════════════════════ */
   #menu-container {
-    grid-template-columns: 1fr;
-    gap: var(--sp-sm);
+    grid-template-columns: 1fr 1fr;
+    gap: var(--sp-xs);
   }
-  .promociones-grid { grid-template-columns: 1fr; }
+  .promociones-grid { grid-template-columns: 1fr 1fr; gap: var(--sp-xs); }
   .recompensas-grid { grid-template-columns: 1fr; }
 
-  /* FIX: en mobile con una sola columna, una imagen 4:3 a lo
-     ancho de toda la pantalla resulta muy alta en términos
-     absolutos — eso era lo que hacía que la card "tapara" la
-     pantalla antes de llegar al precio. Se comprime la
-     proporción para que la imagen ocupe menos alto relativo,
-     dejando título/precio/botón visibles sin tanto scroll. */
-  .prod-thumb { aspect-ratio: 16 / 9; }
-  .prod-desc { -webkit-line-clamp: 2; }
+  /* Imagen más baja en proporción — con 2 columnas angostas,
+     una imagen alta sigue ocupando demasiado espacio vertical. */
+  .prod-thumb { aspect-ratio: 4 / 3; }
+  .prod-desc { -webkit-line-clamp: 2; font-size: var(--fs-xs); }
+
+  /* Padding y tipografía más compactos dentro de cada card —
+     con 2 columnas hay menos ancho disponible, así que el texto
+     y los espacios internos se ajustan para no verse apretados
+     ni desbordar. */
+  .producto-body { padding: var(--sp-xs) var(--sp-sm) var(--sp-sm); gap: 4px; }
+  .prod-cat-label { font-size: 0.62rem; padding: 2px 7px; }
+  .producto h2 { font-size: var(--fs-sm); line-height: 1.25; }
+  .prod-precio-final { font-size: var(--fs-md); }
+  .prod-precio-docena, .prod-precio-promo { font-size: 0.66rem; }
+  .btn-agregar {
+    font-size: 0.72rem;
+    padding: 0.55em 0.9em;
+    min-height: 38px; /* más chico que el --tap-min general,
+                          pero todavía cómodo para el dedo */
+  }
+  .prod-footer { flex-direction: column; align-items: stretch; gap: 6px; }
+  .prod-footer .btn-agregar { width: 100%; justify-content: center; }
+
+  /* En promociones, mismo criterio compacto */
+  .promo-card-img { width: 64px; }
+  .promo-card-nombre { font-size: var(--fs-sm); }
+  .promo-card-final { font-size: var(--fs-base); }
+
+  /* ══════════════════════════════════════════
+     CARRITO — footer más compacto en mobile
+     FIX: con el formulario de datos ahora
+     colapsado, la lista de productos ya recupera
+     espacio por sí sola. Acá además se achica un
+     poco el resumen y el padding del footer para
+     que el botón de WhatsApp quede mejor
+     encuadrado, sin tanto aire de sobra debajo
+     del total.
+     ══════════════════════════════════════════ */
+  .drawer-resumen { padding: var(--sp-sm) var(--sp-md); margin-bottom: var(--sp-sm); }
+  .drawer-footer { padding-top: var(--sp-sm); }
+  .resumen-row.total span:last-child { font-size: var(--fs-lg); }
 
   /* ══════════════════════════════════════════
      CATEGORÍAS — espacio reservado para las

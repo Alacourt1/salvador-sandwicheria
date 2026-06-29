@@ -27,6 +27,47 @@
       .pub-header { padding-top: calc(env(safe-area-inset-top) + 8px); }
     }
   </style>
+
+  <!-- ═══════════════════════════════════════
+       GATE DE LOGIN PWA — decisión instantánea
+       ═══════════════════════════════════════
+       FIX: antes la pantalla de login obligatorio (welcome-
+       overlay) solo se mostraba dentro de onAuthStateChanged,
+       que vive en un módulo de Firebase que tarda en cargar y
+       ejecutar. Mientras tanto, el index completo (header, hero,
+       menú) ya se pintaba en pantalla sin restricción — recién
+       después aparecía el overlay tapando todo, dando la
+       sensación de "primero el index, después el login".
+
+       Este script corre de forma SINCRÓNICA en el <head>, antes
+       de que el navegador pinte un solo píxel del <body>. No
+       depende de ningún import ni de Firebase: solo decide si
+       hay que ocultar el contenido principal mientras se espera
+       la confirmación real de sesión, basándose en si el modo es
+       PWA standalone. La clase que agrega acá la consume el CSS
+       de abajo para tapar el body con un fondo negro instantáneo
+       — el mismo color de fondo de welcome-overlay, así no hay
+       ningún parpadeo de color entre uno y otro.
+  ═══════════════════════════════════════ -->
+  <script>
+    (function() {
+      var esPWA = window.matchMedia('(display-mode: standalone)').matches
+        || window.navigator.standalone === true; // iOS Safari añadido a home
+      if (esPWA) {
+        document.documentElement.classList.add('pwa-gate-pendiente');
+      }
+    })();
+  </script>
+  <style>
+    /* Mientras se espera la confirmación real de Firebase Auth,
+       el contenido principal queda invisible (no display:none,
+       para no romper cálculos de layout que algún script pueda
+       necesitar) y el overlay de bienvenida se muestra ya. Las
+       clases "pwa-gate-listo" y la que agrega onAuthStateChanged
+       en el body controlan cuándo se revela cada lado. */
+    html.pwa-gate-pendiente #panelPublico { opacity: 0; }
+    html.pwa-gate-pendiente .welcome-overlay { display: flex !important; }
+  </style>
 </head>
 <body>
 
@@ -49,6 +90,15 @@
     </button>
   </div>
 </div>
+
+<!-- ═══════════════════════════════════════
+     Contenido público — se oculta con opacity:0 mientras
+     se espera la confirmación de sesión en PWA (ver gate
+     en el <head>). En navegador normal (no instalado como
+     PWA) esto nunca se oculta, así que no afecta esa
+     experiencia en absoluto.
+═══════════════════════════════════════ -->
+<div id="panelPublico" style="transition: opacity .25s;">
 
 <!-- ═══ ADMIN BAR ═══ -->
 <div class="admin-bar" id="adminBar">
@@ -258,6 +308,8 @@
   </div>
 </footer>
 
+</div><!-- /panelPublico -->
+
 <!-- ═══ CARRITO OVERLAY + DRAWER ═══ -->
 <div class="carrito-overlay" id="carritoOverlay"></div>
 <aside class="carrito-drawer" id="carritoDrawer" aria-label="Carrito de compras">
@@ -274,15 +326,31 @@
     </div>
     <button class="btn-cerrar-drawer" id="btnCerrarCarrito">✕</button>
   </div>
-  <div class="drawer-cliente">
-    <div class="drawer-cliente-titulo">Tus datos</div>
-    <input type="text" id="clienteNombre" placeholder="Tu nombre *">
-    <input type="tel" id="clienteTelefono" placeholder="Tu teléfono">
-    <input type="text" id="clienteDireccion" placeholder="Dirección (solo si pedís delivery)">
-    <textarea id="clienteObservaciones" placeholder="Observaciones o aclaraciones..."></textarea>
-    <div class="historial-pedidos">
-      <button class="btn-historial" id="btnVerHistorial">📋 Ver mis pedidos</button>
-      <div class="historial-lista" id="historialLista" style="display:none;"></div>
+  <!-- ═══ DATOS DEL CLIENTE — colapsable ═══
+       FIX: antes este formulario estaba siempre expandido,
+       ocupando una porción fija y grande del carrito (4 campos +
+       botón de historial), lo que dejaba muy poco alto disponible
+       para ver los productos agregados. Ahora arranca colapsado
+       en una barra compacta ("Tus datos · Completá antes de
+       confirmar ▾") y se expande al tocarla — mismo patrón que la
+       barra de Puntos en la página principal. -->
+  <div class="drawer-cliente-bar" id="drawerClienteBar">
+    <div class="drawer-cliente-bar-texto">
+      <span class="drawer-cliente-bar-titulo">📝 Tus datos</span>
+      <span class="drawer-cliente-bar-sub" id="drawerClienteBarSub">Completá antes de confirmar</span>
+    </div>
+    <span class="drawer-cliente-bar-chevron">▾</span>
+  </div>
+  <div class="drawer-cliente" id="drawerCliente">
+    <div class="drawer-cliente-inner">
+      <input type="text" id="clienteNombre" placeholder="Tu nombre *">
+      <input type="tel" id="clienteTelefono" placeholder="Tu teléfono">
+      <input type="text" id="clienteDireccion" placeholder="Dirección (solo si pedís delivery)">
+      <textarea id="clienteObservaciones" placeholder="Observaciones o aclaraciones..."></textarea>
+      <div class="historial-pedidos">
+        <button class="btn-historial" id="btnVerHistorial">📋 Ver mis pedidos</button>
+        <div class="historial-lista" id="historialLista" style="display:none;"></div>
+      </div>
     </div>
   </div>
   <div class="drawer-items" id="carrito">
@@ -458,6 +526,35 @@
     puntosSec.classList.toggle('expandido');
   });
 
+  // ── CARRITO: toggle del formulario de datos del cliente ──
+  // Mismo patrón que la barra de Puntos: arranca colapsado y se
+  // expande al tocar la barra. Vive en este bloque de script
+  // porque no depende de Firebase ni de ningún módulo — el
+  // formulario es puro HTML/CSS local.
+  const drawerClienteBar = document.getElementById('drawerClienteBar');
+  const drawerCliente    = document.getElementById('drawerCliente');
+  drawerClienteBar?.addEventListener('click', () => {
+    drawerClienteBar.classList.toggle('expandido');
+    drawerCliente.classList.toggle('expandido');
+  });
+
+  // Si el cliente ya empezó a escribir su nombre en una sesión
+  // anterior (el campo persiste porque no se borra entre
+  // recargas, solo se limpia al confirmar el pedido), la barra
+  // resumen lo refleja para dar contexto sin tener que expandir.
+  const inputNombreCliente = document.getElementById('clienteNombre');
+  const drawerClienteSub   = document.getElementById('drawerClienteBarSub');
+  function actualizarResumenCliente() {
+    const nombre = inputNombreCliente?.value.trim();
+    if (drawerClienteSub) {
+      drawerClienteSub.textContent = nombre
+        ? `${nombre} · Tocá para editar`
+        : 'Completá antes de confirmar';
+    }
+  }
+  inputNombreCliente?.addEventListener('input', actualizarResumenCliente);
+  actualizarResumenCliente();
+
   // ── RED DE SEGURIDAD: mostrar el hero aunque Firebase falle ──
   // El hero arranca con opacity:0 y se hace visible recién cuando
   // revelarHero() (en el módulo de Firebase más abajo) le agrega
@@ -546,6 +643,33 @@
 
   const isPWA = window.matchMedia('(display-mode: standalone)').matches;
   const welcomeOverlay = document.getElementById('welcomeOverlay');
+  const panelPublico   = document.getElementById('panelPublico');
+
+  // FIX: revela el contenido público y quita el gate temprano del
+  // <html> (puesto en el <head> antes de que Firebase cargara)
+  // recién cuando ya sabemos con certeza si hay que mostrar el
+  // login o el contenido. Antes de esto, en PWA, el panel público
+  // ya se había pintado sin restricción mientras se esperaba a
+  // Firebase — esta función es la que efectivamente cierra esa
+  // ventana de tiempo.
+  function resolverGatePWA(mostrarContenido) {
+    document.documentElement.classList.remove('pwa-gate-pendiente');
+    if (panelPublico) {
+      panelPublico.style.opacity = mostrarContenido ? '1' : '0';
+    }
+  }
+
+  // Red de seguridad: si por cualquier motivo onAuthStateChanged
+  // nunca llega a disparar (sin red, Firebase caído, etc.), no
+  // dejamos el panel público invisible para siempre en PWA — se
+  // muestra el login igual después de un tiempo razonable de
+  // espera, dándole al usuario la chance de reintentar.
+  setTimeout(() => {
+    if (document.documentElement.classList.contains('pwa-gate-pendiente')) {
+      welcomeOverlay?.classList.add('mostrar');
+      resolverGatePWA(false);
+    }
+  }, 6000);
 
   onAuthStateChanged(auth, async (user) => {
     usuarioActual = user;
@@ -559,11 +683,14 @@
       puntosSection.style.display = 'block';
       puntosSection.classList.remove('expandido');
       cargarDatosPuntos(user.uid);
+      resolverGatePWA(true); // hay sesión: se muestra el contenido
     } else {
       if (isPWA) {
         welcomeOverlay?.classList.add('mostrar');
+        resolverGatePWA(false); // PWA sin sesión: se queda en el login
       } else {
         welcomeOverlay?.classList.remove('mostrar');
+        resolverGatePWA(true); // navegador normal: siempre se muestra
       }
       btnUserLabel.textContent = 'Ingresar';
       puntosBloqueado.style.display = 'block';
