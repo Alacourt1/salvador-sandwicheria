@@ -514,14 +514,19 @@ body::before {
   border: 1px solid rgba(0, 229, 255, 0.2);
   border-radius: 18px;
   overflow: hidden;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3), 0 0 16px rgba(0, 229, 255, 0.06);
   display: flex; flex-direction: column;
   position: relative;
   transition: transform .25s ease, border-color .25s, box-shadow .25s;
   animation: fadeInUp 0.5s ease-out;
 }
 @keyframes fadeInUp { 0% { opacity: 0; transform: translateY(16px); } 100% { opacity: 1; transform: translateY(0); } }
-.producto:hover { transform: translateY(-5px); border-color: var(--neon-pink); box-shadow: 0 16px 40px rgba(0,0,0,0.5), var(--shadow-pink); }
+
+.producto:hover {
+  transform: translateY(-5px);
+  border-color: var(--neon-pink);
+  box-shadow: 0 16px 40px rgba(0,0,0,0.5), var(--shadow-pink), 0 0 30px rgba(255, 0, 136, 0.12);
+}
 
 .prod-thumb {
   position: relative;
@@ -543,6 +548,7 @@ body::before {
   width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;
   font-size: var(--fs-2xl); background: var(--grafito);
 }
+
 .prod-oferta-chip {
   position: absolute; top: var(--sp-xs); left: var(--sp-xs);
   background: rgba(255, 0, 136, 0.2);
@@ -550,6 +556,7 @@ body::before {
   color: var(--neon-pink); font-size: var(--fs-xs); font-weight: 700;
   letter-spacing: .05em; text-transform: uppercase;
   padding: 3px 9px; border-radius: 4px; z-index: 2;
+  box-shadow: 0 0 10px rgba(255, 0, 136, 0.35);
 }
 .producto-body {
   padding: var(--sp-md);
@@ -1380,6 +1387,12 @@ body::before {
 
 /* ═══════════════════════════════════════
    PANTALLA WELCOME / LOGIN PWA OBLIGATORIO
+   ═══════════════════════════════════════
+   Misma paleta y tipografía que el resto del sitio
+   (Orbitron + Inter, variables --neon-*, --crema, --gris-l).
+   Solo se le agregó vida visual: partículas de comida
+   flotando, brillo recorriendo el logo, ícono con rebote,
+   y un botón de Google con más presencia.
    ═══════════════════════════════════════ */
 .welcome-overlay {
   position: fixed; inset: 0; z-index: 9999;
@@ -1389,10 +1402,69 @@ body::before {
     linear-gradient(135deg, #070b17, #111827, #0f172a);
   display: none; align-items: center; justify-content: center;
   padding: var(--sp-md);
+  overflow: hidden;
 }
 .welcome-overlay.mostrar { display: flex; }
 
+/* Brillo giratorio de fondo, detrás de todo */
+.welcome-overlay::before {
+  content: '';
+  position: absolute;
+  top: 50%; left: 50%;
+  width: 600px; height: 600px;
+  background: conic-gradient(
+    from 0deg,
+    transparent,
+    rgba(255, 0, 136, 0.1),
+    transparent,
+    rgba(0, 229, 255, 0.1),
+    transparent
+  );
+  transform: translate(-50%, -50%);
+  animation: welcomeSpin 12s linear infinite;
+  pointer-events: none;
+}
+@keyframes welcomeSpin {
+  from { transform: translate(-50%, -50%) rotate(0deg); }
+  to   { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+/* ── Partículas flotantes de comida ──
+   Suben lento de abajo hacia arriba con blur leve, dando
+   sensación de movimiento ambiental sin distraer del login. */
+.welcome-particulas {
+  position: absolute; inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+.welcome-particulas span {
+  position: absolute;
+  bottom: -60px;
+  font-size: 1.8rem;
+  opacity: 0;
+  filter: blur(0.5px);
+  animation: welcomeFloat 9s ease-in infinite;
+}
+.welcome-particulas span:nth-child(1) { left: 8%;  animation-delay: 0s;   font-size: 1.6rem; }
+.welcome-particulas span:nth-child(2) { left: 22%; animation-delay: 1.2s; font-size: 1.3rem; }
+.welcome-particulas span:nth-child(3) { left: 38%; animation-delay: 2.4s; font-size: 2rem; }
+.welcome-particulas span:nth-child(4) { left: 55%; animation-delay: 0.6s; font-size: 1.4rem; }
+.welcome-particulas span:nth-child(5) { left: 68%; animation-delay: 3.1s; font-size: 1.7rem; }
+.welcome-particulas span:nth-child(6) { left: 80%; animation-delay: 1.8s; font-size: 1.3rem; }
+.welcome-particulas span:nth-child(7) { left: 14%; animation-delay: 4.2s; font-size: 1.5rem; }
+.welcome-particulas span:nth-child(8) { left: 90%; animation-delay: 2.7s; font-size: 1.8rem; }
+@keyframes welcomeFloat {
+  0%   { transform: translateY(0) rotate(0deg);     opacity: 0; }
+  10%  { opacity: 0.35; }
+  85%  { opacity: 0.35; }
+  100% { transform: translateY(-110vh) rotate(25deg); opacity: 0; }
+}
+
+/* ── Card principal — entra con scale+fade en vez de
+       estar estática desde el primer frame ── */
 .welcome-card-overlay {
+  position: relative;
+  z-index: 1;
   background: rgba(15, 18, 33, 0.95);
   backdrop-filter: blur(30px);
   border: 2px solid var(--neon-blue);
@@ -1401,21 +1473,56 @@ body::before {
   text-align: center;
   max-width: 400px; width: 100%;
   box-shadow: 0 0 60px rgba(0, 229, 255, 0.4), 0 0 120px rgba(255, 0, 136, 0.3);
-  animation: neonPulse 2s infinite alternate;
+  animation: neonPulse 2s infinite alternate, welcomeCardIn .5s cubic-bezier(.34,1.4,.64,1) both;
 }
 @keyframes neonPulse {
   0% { box-shadow: 0 0 40px rgba(0, 229, 255, 0.3), 0 0 80px rgba(255, 0, 136, 0.2); }
   100% { box-shadow: 0 0 80px rgba(0, 229, 255, 0.5), 0 0 140px rgba(255, 0, 136, 0.4); }
 }
+@keyframes welcomeCardIn {
+  from { opacity: 0; transform: scale(.88) translateY(14px); }
+  to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+/* ── Ícono destacado arriba del logo, con rebote sutil ── */
+.welcome-icono {
+  font-size: 2.6rem;
+  margin-bottom: var(--sp-sm);
+  animation: welcomeBounce 2.4s ease-in-out infinite;
+  filter: drop-shadow(0 0 14px rgba(0, 229, 255, 0.5));
+}
+@keyframes welcomeBounce {
+  0%, 100% { transform: translateY(0) rotate(-3deg); }
+  50%      { transform: translateY(-8px) rotate(3deg); }
+}
+
+/* ── Logo con brillo que lo recorre, no solo sombra fija ── */
 .welcome-logo {
   font-family: 'Orbitron', sans-serif;
   font-size: var(--fs-2xl);
-  font-weight: 900; color: #fff;
-  text-shadow: 0 0 20px var(--neon-blue), 0 0 40px var(--neon-blue);
+  font-weight: 900;
   letter-spacing: 0.1em;
   margin-bottom: var(--sp-xs);
   line-height: 1.2; word-break: break-word;
+  background: linear-gradient(
+    100deg,
+    #fff 30%,
+    var(--neon-blue) 45%,
+    #fff 60%
+  );
+  background-size: 250% 100%;
+  background-position: 100% 0;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  text-shadow: 0 0 20px rgba(0, 229, 255, 0.5), 0 0 40px rgba(0, 229, 255, 0.3);
+  animation: welcomeShine 3.5s ease-in-out infinite;
 }
+@keyframes welcomeShine {
+  0%, 20%  { background-position: 100% 0; }
+  60%, 100% { background-position: -50% 0; }
+}
+
 .welcome-sub {
   font-family: 'Inter', sans-serif; font-size: var(--fs-base); font-weight: 700;
   letter-spacing: 0.15em; text-transform: uppercase;
@@ -1425,19 +1532,56 @@ body::before {
   width: 70px; height: 3px;
   background: linear-gradient(90deg, var(--neon-pink), var(--neon-blue), var(--neon-pink));
   margin: 0 auto var(--sp-lg);
+  border-radius: 99px;
 }
 .welcome-message {
   font-size: var(--fs-base); color: var(--gris-l); line-height: 1.6;
   margin-bottom: var(--sp-lg);
 }
+
+/* ── Botón de Google con más presencia: brillo que lo
+       recorre al pasar el mouse, en vez de solo cambiar color ── */
 .welcome-google-btn {
+  position: relative;
+  overflow: hidden;
   width: 100%; padding: var(--sp-md); font-size: var(--fs-md);
   border-radius: 12px; font-weight: 700;
   background: #fff; color: #333;
   min-height: 52px;
   transition: all 0.3s ease;
 }
-.welcome-google-btn:hover { background: var(--neon-blue); color: #000; box-shadow: 0 0 30px var(--neon-blue); }
+.welcome-google-btn::before {
+  content: '';
+  position: absolute;
+  top: 0; left: -120%;
+  width: 60%; height: 100%;
+  background: linear-gradient(120deg, transparent, rgba(0,229,255,.35), transparent);
+  transform: skewX(-20deg);
+  transition: left .6s ease;
+}
+.welcome-google-btn:hover::before { left: 130%; }
+.welcome-google-btn:hover {
+  background: var(--neon-blue); color: #000;
+  box-shadow: 0 0 30px var(--neon-blue);
+  transform: translateY(-2px);
+}
+
+.welcome-footer-nota {
+  margin-top: var(--sp-md);
+  font-size: var(--fs-xs);
+  color: var(--gris);
+  letter-spacing: 0.03em;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .welcome-overlay::before,
+  .welcome-particulas span,
+  .welcome-card-overlay,
+  .welcome-icono,
+  .welcome-logo {
+    animation: none !important;
+  }
+}
 
 /* ═══════════════════════════════════════
    CÓDIGO DE DESCUENTO
@@ -1524,30 +1668,10 @@ body::before {
   box-shadow: 0 0 12px rgba(0, 229, 255, 0.4);
 }
 
-/* ── 2. Glow sutil permanente en cards de producto ──
-   Antes el glow solo aparecía al hover. Ahora hay un brillo
-   tenue constante (mucho más débil que el de hover) para que
-   las cards "respiren" mientras el usuario solo está mirando
-   el menú, sin tener que tocar nada. El hover sigue
-   intensificándolo igual que antes. */
-.producto {
-  box-shadow:
-    0 4px 12px rgba(0,0,0,0.3),
-    0 0 16px rgba(0, 229, 255, 0.06);
-}
-.producto:hover {
-  /* Se mantiene el comportamiento original y se suma un
-     toque extra de profundidad */
-  box-shadow:
-    0 16px 40px rgba(0,0,0,0.5),
-    var(--shadow-pink),
-    0 0 30px rgba(255, 0, 136, 0.12);
-}
-/* Borde con gradiente sutil en vez de un solo color plano —
-   pequeño detalle que distingue las cards del resto de la UI */
-.prod-oferta-chip {
-  box-shadow: 0 0 10px rgba(255, 0, 136, 0.35);
-}
+/* ── 2. Glow permanente en cards de producto ──
+   Ya integrado en el bloque principal de .producto más arriba
+   (junto con el borde animado y el glitch al hover), para no
+   tener dos reglas separadas tocando el mismo selector. */
 
 /* ── 3. Botón flotante de WhatsApp — siempre visible al navegar ──
    No reemplaza el botón del header ni el del footer (esos
@@ -1589,41 +1713,6 @@ body:has(.carrito-drawer.abierto) .fab-whatsapp { opacity: 0; pointer-events: no
     right: var(--sp-md);
   }
   .fab-whatsapp svg { width: 26px; height: 26px; }
-}
-
-/* ── 4. Más vida visual en la pantalla de bienvenida (PWA) ──
-   Se agrega un brillo giratorio de fondo detrás de la card,
-   sutil, para que la primera pantalla que ve el dueño cada
-   vez que abre la app tenga más presencia premium. No toca
-   el contenido ni la lógica, solo el fondo detrás de la card
-   ya existente. */
-.welcome-overlay {
-  position: relative;
-  overflow: hidden;
-}
-.welcome-overlay::before {
-  content: '';
-  position: absolute;
-  top: 50%; left: 50%;
-  width: 600px; height: 600px;
-  background: conic-gradient(
-    from 0deg,
-    transparent,
-    rgba(255, 0, 136, 0.08),
-    transparent,
-    rgba(0, 229, 255, 0.08),
-    transparent
-  );
-  transform: translate(-50%, -50%);
-  animation: welcomeSpin 12s linear infinite;
-  pointer-events: none;
-}
-@keyframes welcomeSpin {
-  from { transform: translate(-50%, -50%) rotate(0deg); }
-  to   { transform: translate(-50%, -50%) rotate(360deg); }
-}
-@media (prefers-reduced-motion: reduce) {
-  .welcome-overlay::before { animation: none; }
 }
 
 /* ═══════════════════════════════════════════════════════════
