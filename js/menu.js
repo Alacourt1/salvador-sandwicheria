@@ -287,10 +287,13 @@ function actualizarPromociones() {
       if (presentaciones.length === 0) return; // por seguridad, no debería pasar acá
 
       // Se muestra en la card de promo la presentación más barata
-      // disponible como referencia visual — el cliente elige la
-      // presentación exacta en el modal, igual que en las cards
-      // normales del menú.
+      // disponible como precio de referencia ("Desde $X" si hay
+      // más de una opción). El cliente elige la presentación
+      // exacta (x1/x3/x6/x12) en el modal al tocar "+ Agregar" —
+      // mismo comportamiento que las cards normales del menú, así
+      // nunca se agrega automáticamente sin que el cliente elija.
       const masBarata = presentaciones.reduce((min, p) => p.precioFinal < min.precioFinal ? p : min, presentaciones[0]);
+      const hayVariasPresentaciones = presentaciones.length > 1;
 
       const card = document.createElement('div');
       card.className = 'promo-card';
@@ -301,11 +304,17 @@ function actualizarPromociones() {
           <div class="promo-card-nombre">${nombreSeguro}</div>
           <div class="promo-card-precios">
             ${masBarata.tieneOferta ? `<span class="promo-card-original">$${formatPrice(masBarata.precioOriginal)}</span>` : ''}
-            <span class="promo-card-final">$${formatPrice(masBarata.precioFinal)}</span>
+            <span class="promo-card-final">${hayVariasPresentaciones ? 'Desde ' : ''}$${formatPrice(masBarata.precioFinal)}</span>
           </div>
           <button class="promo-card-btn">+ Agregar</button>
         </div>`;
 
+      // FIX: confirmado como comportamiento correcto — el botón
+      // SIEMPRE abre el modal de selección de presentación y
+      // cantidad, nunca agrega directo la más barata. Si el
+      // producto solo tiene una presentación disponible, el modal
+      // igual se abre pero con una sola opción ya preseleccionada,
+      // así el flujo es idéntico en todos los casos.
       card.querySelector('.promo-card-btn').addEventListener('click', () => {
         window.abrirModalPresentacion({
           id:     p.id,

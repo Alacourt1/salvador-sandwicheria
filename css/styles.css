@@ -198,6 +198,42 @@ body::before {
   display: flex; align-items: center; justify-content: space-between;
   gap: var(--sp-sm); flex-wrap: wrap;
 }
+/* ── Wrapper del logo + imagen personalizada ──
+   Cuadrado con esquinas redondeadas a la izquierda del texto
+   "SALVADOR FOOD EXPERIENCE". Para poner tu propio logo, editá
+   el src="" del <img class="pub-logo-img"> en el HTML. Si la
+   imagen no carga (URL vacía o rota), se muestra automáticamente
+   el ícono 🥖 de respaldo en su lugar — nunca queda un hueco roto
+   visible para el cliente. */
+.pub-logo-wrap {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-xs);
+  flex-shrink: 0;
+}
+.pub-logo-img {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  object-fit: cover;
+  border: 1px solid rgba(0, 229, 255, 0.3);
+  box-shadow: 0 0 10px rgba(0, 229, 255, 0.2);
+  flex-shrink: 0;
+  background: var(--grafito);
+}
+.pub-logo-img-fallback {
+  display: none; /* solo se activa vía onerror si la imagen falla */
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  border: 1px solid rgba(0, 229, 255, 0.3);
+  box-shadow: 0 0 10px rgba(0, 229, 255, 0.2);
+  background: var(--grafito);
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  flex-shrink: 0;
+}
 .pub-logo {
   font-family: 'Orbitron', sans-serif;
   font-size: var(--fs-lg);
@@ -420,7 +456,7 @@ body::before {
   font-size: var(--fs-2xl); overflow: hidden;
 }
 .promo-card-img img { width: 100%; height: 100%; object-fit: cover; }
-.promo-card-body { padding: var(--sp-sm) var(--sp-md); flex: 1; min-width: 0; }
+.promo-card-body { padding: var(--sp-sm) var(--sp-md); flex: 1; min-width: 0; overflow: hidden; }
 .promo-card-badge {
   display: inline-block; background: rgba(255, 0, 136, 0.2);
   color: var(--neon-pink); border: 1px solid var(--neon-pink);
@@ -428,12 +464,31 @@ body::before {
   text-transform: uppercase; letter-spacing: .08em;
   padding: 2px 8px; margin-bottom: var(--sp-xs);
 }
-.promo-card-nombre { font-weight: 600; font-size: var(--fs-base); margin-bottom: 4px; }
-.promo-card-precios { display: flex; align-items: baseline; gap: var(--sp-xs); margin-bottom: var(--sp-sm); }
-.promo-card-original { font-size: var(--fs-sm); color: var(--gris); text-decoration: line-through; }
+.promo-card-nombre {
+  font-weight: 600; font-size: var(--fs-base); margin-bottom: 4px;
+  overflow-wrap: break-word;
+}
+/* FIX: antes el precio se cortaba contra el borde derecho de la
+   card en pantallas angostas. El flex container no tenía permiso
+   para envolver ni comprimirse (sin flex-wrap ni min-width:0), así
+   que el texto del precio final simplemente se salía del
+   contenedor visible. */
+.promo-card-precios {
+  display: flex; align-items: baseline; gap: 6px;
+  margin-bottom: var(--sp-sm);
+  flex-wrap: wrap;
+  min-width: 0;
+}
+.promo-card-original {
+  font-size: var(--fs-xs); color: var(--gris); text-decoration: line-through;
+  white-space: nowrap;
+}
 .promo-card-final {
-  font-family: 'Orbitron', sans-serif; font-size: var(--fs-lg);
+  font-family: 'Orbitron', sans-serif;
+  font-size: clamp(1rem, 0.9rem + 0.6vw, 1.3rem);
   color: var(--neon-yellow); font-weight: 700;
+  white-space: nowrap;
+  min-width: 0;
 }
 .promo-card-btn {
   background: var(--neon-pink); color: #fff;
@@ -1924,9 +1979,22 @@ body:has(.carrito-drawer.abierto) .fab-whatsapp { opacity: 0; pointer-events: no
   /* ══════════════════════════════════════════
      CATEGORÍAS — espacio reservado para las
      flechas de scroll, así no tapan el texto
-     del primer/último botón
+     del primer/último botón. Además, botones
+     más chicos y compactos: antes usaban el
+     mismo tamaño que en desktop, y en pantallas
+     angostas un solo botón con texto largo
+     ("Especial Salvador") ocupaba casi media
+     pantalla, dejando ver apenas 1-2 categorías
+     por vez.
      ══════════════════════════════════════════ */
   .cats-inner { padding-left: calc(var(--sp-md) + 28px); padding-right: calc(var(--sp-md) + 28px); }
+  #categorias { gap: 6px; padding: 0.5em 0; }
+  #categorias button {
+    padding: 0.45em 0.85em;
+    font-size: 0.74rem;
+    min-height: 34px;
+    letter-spacing: 0.01em;
+  }
 
   /* ══════════════════════════════════════════
      ADMIN — stats en 2 columnas, mejor uso del
@@ -2111,6 +2179,10 @@ body:has(.carrito-drawer.abierto) .fab-whatsapp { opacity: 0; pointer-events: no
 }
 .pub-header.compacto .pub-logo { font-size: var(--fs-md); }
 .pub-header.compacto .pub-logo small { display: none; }
+.pub-header.compacto .pub-logo-img,
+.pub-header.compacto .pub-logo-img-fallback {
+  width: 30px; height: 30px; border-radius: 8px;
+}
 .pub-header.compacto .btn-user-header span,
 .pub-header.compacto .btn-carrito-header span:not(.carrito-badge) {
   display: none; /* en compacto los botones quedan solo con ícono */

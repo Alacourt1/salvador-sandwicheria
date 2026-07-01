@@ -132,10 +132,31 @@ window.pedirPorWhatsApp = async () => {
     showToast('El carrito está vacío', 'error');
     return;
   }
-  const nombre        = $id('clienteNombre')?.value.trim()        || '';
+
+  const inputNombre   = $id('clienteNombre');
+  const nombre        = inputNombre?.value.trim()                  || '';
   const telefono      = $id('clienteTelefono')?.value.trim()      || '';
   const direccion     = $id('clienteDireccion')?.value.trim()     || '';
   const observaciones = $id('clienteObservaciones')?.value.trim() || '';
+
+  // FIX: antes no había ningún bloqueo — se podía confirmar un
+  // pedido por WhatsApp con el formulario de datos completamente
+  // vacío. Ahora el nombre es obligatorio: si falta, se abre el
+  // formulario colapsado (si estaba cerrado) y se enfoca el
+  // campo, para que el cliente vea de inmediato qué falta
+  // completar en vez de solo recibir un mensaje de error genérico.
+  if (!nombre) {
+    const drawerClienteBar = document.getElementById('drawerClienteBar');
+    const drawerCliente    = document.getElementById('drawerCliente');
+    if (drawerCliente && !drawerCliente.classList.contains('expandido')) {
+      drawerClienteBar?.classList.add('expandido');
+      drawerCliente.classList.add('expandido');
+    }
+    inputNombre?.focus();
+    inputNombre?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    showToast('Completá tu nombre antes de confirmar el pedido', 'error');
+    return;
+  }
 
   const subtotal = carrito.reduce((suma, item) => suma + item.precio * item.cantidad, 0);
   let total = subtotal;
