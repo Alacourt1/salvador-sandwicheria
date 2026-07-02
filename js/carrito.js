@@ -153,7 +153,12 @@ window.pedirPorWhatsApp = async () => {
       drawerCliente.classList.add('expandido');
     }
     inputNombre?.focus();
-    inputNombre?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    // FIX: 'center' podía confundirse entre los distintos
+    // contenedores con scroll anidados (drawer-cliente con su
+    // propio scroll interno + drawer-items). 'nearest' mueve lo
+    // mínimo necesario para que el campo sea visible, sin arriesgar
+    // a que el drawer completo se desplace de forma inesperada.
+    inputNombre?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     showToast('Completá tu nombre antes de confirmar el pedido', 'error');
     return;
   }

@@ -809,8 +809,19 @@ body::before {
   flex-shrink: 0;
 }
 .drawer-cliente.expandido {
-  max-height: 420px; /* suficiente para los 4 campos + historial */
+  /* FIX: 420px era demasiado alto — en celulares con menos de
+     ~700px de alto disponible en el drawer, ese formulario solo
+     ya dejaba casi nada de espacio para la lista de productos y
+     el footer, y el botón "Confirmar pedido por WhatsApp"
+     terminaba empujado fuera del área visible sin scroll que lo
+     alcance. Se bajó a 260px con scroll interno propio: el
+     formulario nunca puede "comerse" más espacio que eso, sin
+     importar cuánto contenido tenga (incluido el historial de
+     pedidos desplegado), así siempre queda garantizado el
+     espacio para ver productos + confirmar el pedido debajo. */
+  max-height: 260px;
   overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 }
 .drawer-cliente-inner {
   padding: var(--sp-md);
@@ -1913,9 +1924,18 @@ body:has(.carrito-drawer.abierto) .fab-whatsapp { opacity: 0; pointer-events: no
   .hero {
     padding-left: 0;
     padding-right: 0;
-    min-height: auto;
+    /* FIX: min-height:auto hacía que el hero solo midiera lo que
+       ocupaba el texto — sin altura propia garantizada, la imagen
+       de fondo (background-size:cover) quedaba comprimida a esa
+       altura mínima, viéndose como un degradé sin forma
+       reconocible en vez de una imagen real. Ahora tiene una
+       altura mínima proporcional a la pantalla, con un piso y
+       techo razonables, para que la imagen de fondo siempre tenga
+       un área visible digna donde mostrarse. */
+    min-height: min(52vh, 420px);
     padding-top: calc(var(--sp-lg) + env(safe-area-inset-top));
     padding-bottom: var(--sp-lg);
+    background-position: center center;
   }
   .hero-pills { display: flex; }
 
@@ -1957,10 +1977,44 @@ body:has(.carrito-drawer.abierto) .fab-whatsapp { opacity: 0; pointer-events: no
   .prod-footer { flex-direction: column; align-items: stretch; gap: 6px; }
   .prod-footer .btn-agregar { width: 100%; justify-content: center; }
 
-  /* En promociones, mismo criterio compacto */
-  .promo-card-img { width: 64px; }
-  .promo-card-nombre { font-size: var(--fs-sm); }
-  .promo-card-final { font-size: var(--fs-base); }
+  /* ══════════════════════════════════════════
+     PROMO-CARDS — layout vertical en mobile
+     FIX: antes eran horizontales (imagen al
+     costado, texto al lado). Con 2 columnas por
+     fila, cada card mide ~170-190px de ancho
+     total, y la imagen horizontal se llevaba
+     80-110px de eso — dejando apenas 60-90px
+     reales para nombre + precio + botón. Ahí el
+     precio no podía entrar sin desbordar sin
+     importar cuán chica fuera la fuente. Ahora
+     la imagen va ARRIBA a todo el ancho de la
+     card y el texto/precio ABAJO, mismo criterio
+     que las cards normales del catálogo — el
+     precio tiene todo el ancho disponible.
+     ══════════════════════════════════════════ */
+  .promo-card {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .promo-card-img {
+    width: 100%;
+    aspect-ratio: 4 / 3;
+  }
+  .promo-card-body {
+    padding: var(--sp-xs) var(--sp-sm) var(--sp-sm);
+  }
+  .promo-card-nombre { font-size: var(--fs-xs); line-height: 1.25; }
+  .promo-card-precios { gap: 4px; }
+  .promo-card-final { font-size: var(--fs-sm); }
+  .promo-card-original { font-size: 0.6rem; }
+  .promo-card-badge { font-size: 0.6rem; padding: 2px 6px; }
+  .promo-card-btn {
+    width: 100%;
+    justify-content: center;
+    font-size: 0.7rem;
+    padding: 0.5em 0.8em;
+    min-height: 34px;
+  }
 
   /* ══════════════════════════════════════════
      CARRITO — footer más compacto en mobile
@@ -1988,12 +2042,13 @@ body:has(.carrito-drawer.abierto) .fab-whatsapp { opacity: 0; pointer-events: no
      por vez.
      ══════════════════════════════════════════ */
   .cats-inner { padding-left: calc(var(--sp-md) + 28px); padding-right: calc(var(--sp-md) + 28px); }
-  #categorias { gap: 6px; padding: 0.5em 0; }
+  #categorias { gap: 5px; padding: 0.4em 0; }
   #categorias button {
-    padding: 0.45em 0.85em;
-    font-size: 0.74rem;
-    min-height: 34px;
-    letter-spacing: 0.01em;
+    padding: 0.35em 0.65em;
+    font-size: 0.66rem;
+    min-height: 30px;
+    letter-spacing: 0;
+    border-radius: 14px;
   }
 
   /* ══════════════════════════════════════════
