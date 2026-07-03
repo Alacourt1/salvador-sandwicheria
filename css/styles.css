@@ -2402,3 +2402,29 @@ body:has(.carrito-drawer.abierto) .fab-whatsapp { opacity: 0; pointer-events: no
 @media (max-width: 480px) {
   .modal-presentacion-card { padding: var(--sp-md); }
 }
+
+/* ═══════════════════════════════════════════════════════════
+   HERO — ajuste específico para PWA instalada (standalone)
+   ═══════════════════════════════════════════════════════════
+   FIX: en navegador normal (Chrome/Safari con pestañas) la
+   imagen de fondo del hero se ve correctamente recortada. En la
+   PWA instalada, el navegador reporta un viewport distinto (sin
+   barra de direcciones, la barra de estado del sistema se
+   integra distinto al 100vh/100dvh) — el resultado es que la
+   caja del hero termina más alta en PWA que en navegador normal,
+   y como background-size:cover siempre llena toda la caja
+   recortando lo que sobra, una caja más alta hace que se vea una
+   porción más chica y "acercada" de la imagen (efecto zoom no
+   deseado). Esta regla SOLO aplica en modo standalone — el
+   comportamiento en navegador normal queda exactamente igual. */
+@media (display-mode: standalone) and (max-width: 768px) {
+  .hero {
+    min-height: min(38vh, 320px);
+    /* Se repite el mismo shorthand completo (gradiente + imagen)
+       en vez de solo position/size sueltos, para no depender de
+       sutilezas de cascada con la propiedad compuesta "background"
+       de la regla base — así queda inequívoco qué gana. */
+    background: linear-gradient(135deg, rgba(0,0,0,.8) 0%, rgba(0,0,0,.9) 100%),
+                var(--hero-bg, none) center 35% / cover no-repeat;
+  }
+}
