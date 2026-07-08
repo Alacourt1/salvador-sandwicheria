@@ -18,8 +18,20 @@ import {
   onAuthStateChanged,
   signOut,
   GoogleAuthProvider,
-  signInWithPopup
+  signInWithPopup,
+  sendPasswordResetEmail,
+  fetchSignInMethodsForEmail
 } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-auth.js";
+// FIX CRÍTICO: faltaban sendPasswordResetEmail y
+// fetchSignInMethodsForEmail. index.html las importaba para
+// "olvidé mi contraseña" y para detectar cuentas duplicadas
+// Google/email, pero como no existían acá, ESE import fallaba
+// con SyntaxError y tumbaba TODO el <script type="module">
+// que lo contenía — el mismo módulo que carga el título y la
+// imagen del hero desde Firestore. Por eso lo publicado en el
+// admin nunca se veía reflejado en el sitio: el código que lo
+// aplica (cargarConfiguracion/revelarHero) nunca llegaba a
+// correr.
 
 const firebaseConfig = {
   apiKey: "AIzaSyCkzgIF9DDhpy-W6yi1RFR1qVXlWe5PWSg",
@@ -60,5 +72,7 @@ export {
   onAuthStateChanged,
   signOut,
   GoogleAuthProvider,
-  signInWithPopup
+  signInWithPopup,
+  sendPasswordResetEmail,
+  fetchSignInMethodsForEmail
 };
