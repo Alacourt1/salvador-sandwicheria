@@ -163,9 +163,9 @@ body::before {
   opacity: .5; animation: pulse 2s infinite; flex-shrink: 0;
 }
 @keyframes pulse { 0%,100%{opacity:.45} 50%{opacity:1} }
-.admin-bar-label { letter-spacing: .5px; text-transform: uppercase; font-size: var(--fs-xs); font-weight: 800; flex-shrink: 0; }
+.admin-bar-label { letter-spacing: .5px; text-transform: uppercase; font-size: var(--fs-xs); font-weight: 600; flex-shrink: 0; }
 .admin-bar-email {
-  font-weight: 500; opacity: .75; font-size: var(--fs-xs);
+  font-weight: 400; opacity: .75; font-size: var(--fs-xs);
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
   min-width: 0;
 }
@@ -173,7 +173,7 @@ body::before {
 .admin-bar-btn {
   background: rgba(0,0,0,.15); color: #fff; border: none; border-radius: 6px;
   padding: 6px 14px; font-family: 'Inter', sans-serif;
-  font-size: var(--fs-xs); font-weight: 700; cursor: pointer;
+  font-size: var(--fs-xs); font-weight: 500; cursor: pointer;
   text-decoration: none; display: inline-flex; align-items: center; gap: 5px;
   min-height: 32px; transition: background .15s; white-space: nowrap;
 }
@@ -237,7 +237,7 @@ body::before {
 .pub-logo {
   font-family: 'Orbitron', sans-serif;
   font-size: var(--fs-lg);
-  font-weight: 800;
+  font-weight: 600;
   letter-spacing: 0.15em;
   color: #fff;
   text-shadow: var(--shadow-blue);
@@ -250,7 +250,7 @@ body::before {
   display: block;
   font-family: 'Inter', sans-serif;
   font-size: var(--fs-xs);
-  font-weight: 700;
+  font-weight: 500;
   letter-spacing: 0.2em;
   text-transform: uppercase;
   color: var(--neon-pink);
@@ -288,20 +288,34 @@ body::before {
   border-radius: 99px;
   padding: 0.6em 1.1em 0.6em 0.85em;
   font-family: 'Inter', sans-serif;
-  font-size: var(--fs-sm); font-weight: 700;
+  font-size: var(--fs-sm); font-weight: 500;
   cursor: pointer; flex-shrink: 0;
   min-height: var(--tap-min);
-  transition: transform .1s, box-shadow .2s;
+  transition: transform .1s, box-shadow .2s, background .15s, border-color .15s;
   white-space: nowrap;
 }
 .btn-carrito-header:hover, .btn-user-header:hover {
   transform: translateY(-2px);
   box-shadow: var(--shadow-blue);
 }
+/* Identidad propia de "Ingresar"/"Puntos": borde cian sutil que
+   se intensifica al hover, distinto del botón de carrito — antes
+   esto vivía en una segunda declaración .btn-user-header separada
+   y duplicada más abajo en el archivo, que colisionaba en
+   cascada con esta regla (algunas propiedades de una ganaban,
+   otras de la otra, sin que ninguna fuente fuera la real). Ahora
+   es una sola fuente de verdad, con este ajuste puntual encima. */
+.btn-user-header {
+  border-color: rgba(0, 212, 255, 0.3);
+}
+.btn-user-header:hover {
+  border-color: var(--neon-blue);
+}
+.btn-user-header svg { stroke: currentColor; }
 .btn-carrito-header svg { width: 18px; height: 18px; stroke: #fff; fill: none; stroke-width: 2.5; flex-shrink: 0; }
 .carrito-badge {
   background: var(--neon-yellow); color: var(--negro);
-  border-radius: 99px; font-size: var(--fs-xs); font-weight: 800;
+  border-radius: 99px; font-size: var(--fs-xs); font-weight: 600;
   padding: 2px 8px; min-width: 22px; text-align: center; line-height: 1.5;
 }
 
@@ -343,7 +357,7 @@ body::before {
   background: rgba(255, 0, 136, 0.12);
   border: 1px solid var(--neon-pink);
   border-radius: 99px;
-  font-size: var(--fs-sm); font-weight: 700;
+  font-size: var(--fs-sm); font-weight: 500;
   letter-spacing: 0.12em; text-transform: uppercase;
   padding: 0.5em 1.1em;
   margin-bottom: var(--sp-md);
@@ -354,7 +368,7 @@ body::before {
 .hero h1 {
   font-family: 'Orbitron', sans-serif;
   font-size: var(--fs-hero);
-  font-weight: 900;
+  font-weight: 700;
   text-transform: uppercase;
   line-height: 1.08;
   margin-bottom: var(--sp-sm);
@@ -382,7 +396,7 @@ body::before {
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid rgba(255, 0, 136, 0.3);
   border-radius: 99px;
-  font-size: var(--fs-sm); font-weight: 500;
+  font-size: var(--fs-sm); font-weight: 400;
   color: var(--neon-pink-light);
   padding: 0.5em 1em;
   backdrop-filter: blur(4px);
@@ -398,7 +412,7 @@ body::before {
   border: 1px solid rgba(0, 229, 255, 0.3);
   border-radius: var(--radio-sm);
   padding: 0.5em 1em;
-  font-size: var(--fs-sm); font-weight: 600;
+  font-size: var(--fs-sm); font-weight: 400;
   color: var(--neon-blue);
   backdrop-filter: blur(4px);
 }
@@ -411,7 +425,7 @@ body::before {
   background: linear-gradient(90deg, var(--neon-pink), var(--neon-blue));
   color: #fff; text-align: center;
   padding: var(--sp-sm) var(--sp-md);
-  font-size: var(--fs-base); font-weight: 700;
+  font-size: var(--fs-base); font-weight: 500;
   letter-spacing: .02em;
   box-shadow: var(--shadow-pink);
 }
@@ -460,12 +474,12 @@ body::before {
 .promo-card-badge {
   display: inline-block; background: rgba(255, 0, 136, 0.2);
   color: var(--neon-pink); border: 1px solid var(--neon-pink);
-  border-radius: 4px; font-size: var(--fs-xs); font-weight: 800;
+  border-radius: 4px; font-size: var(--fs-xs); font-weight: 600;
   text-transform: uppercase; letter-spacing: .08em;
   padding: 2px 8px; margin-bottom: var(--sp-xs);
 }
 .promo-card-nombre {
-  font-weight: 600; font-size: var(--fs-base); margin-bottom: 4px;
+  font-weight: 400; font-size: var(--fs-base); margin-bottom: 4px;
   overflow-wrap: break-word;
 }
 /* FIX: antes el precio se cortaba contra el borde derecho de la
@@ -486,7 +500,7 @@ body::before {
 .promo-card-final {
   font-family: 'Orbitron', sans-serif;
   font-size: clamp(1rem, 0.9rem + 0.6vw, 1.3rem);
-  color: var(--neon-yellow); font-weight: 700;
+  color: var(--neon-yellow); font-weight: 500;
   white-space: nowrap;
   min-width: 0;
 }
@@ -494,7 +508,7 @@ body::before {
   background: var(--neon-pink); color: #fff;
   border: none; border-radius: 99px;
   padding: 0.5em 1.1em; font-family: 'Inter', sans-serif;
-  font-size: var(--fs-sm); font-weight: 800; cursor: pointer;
+  font-size: var(--fs-sm); font-weight: 600; cursor: pointer;
   min-height: 38px;
   transition: background .15s, box-shadow .15s;
   box-shadow: var(--shadow-pink);
@@ -525,7 +539,7 @@ body::before {
   border-radius: 99px;
   padding: 0.6em 1.3em;
   font-family: 'Orbitron', sans-serif;
-  font-size: var(--fs-sm); font-weight: 600;
+  font-size: var(--fs-sm); font-weight: 400;
   color: var(--gris-l);
   cursor: pointer;
   white-space: nowrap;
@@ -538,7 +552,7 @@ body::before {
   background: var(--neon-blue);
   color: var(--negro);
   border-color: var(--neon-blue);
-  font-weight: 700;
+  font-weight: 500;
   box-shadow: var(--shadow-blue);
 }
 /* ═══════════════════════════════════════
@@ -551,7 +565,7 @@ body::before {
 }
 .menu-section-title {
   font-family: 'Orbitron', sans-serif;
-  font-size: var(--fs-lg); font-weight: 700;
+  font-size: var(--fs-lg); font-weight: 500;
   color: var(--neon-blue);
   text-shadow: var(--shadow-blue);
 }
@@ -608,7 +622,7 @@ body::before {
   position: absolute; top: var(--sp-xs); left: var(--sp-xs);
   background: rgba(255, 0, 136, 0.2);
   border: 1px solid var(--neon-pink);
-  color: var(--neon-pink); font-size: var(--fs-xs); font-weight: 700;
+  color: var(--neon-pink); font-size: var(--fs-xs); font-weight: 500;
   letter-spacing: .05em; text-transform: uppercase;
   padding: 3px 9px; border-radius: 4px; z-index: 2;
   box-shadow: 0 0 10px rgba(255, 0, 136, 0.35);
@@ -618,12 +632,12 @@ body::before {
   display: flex; flex-direction: column; flex: 1; gap: var(--sp-xs);
 }
 .prod-cat-label {
-  font-size: var(--fs-xs); font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
+  font-size: var(--fs-xs); font-weight: 500; letter-spacing: .1em; text-transform: uppercase;
   color: var(--neon-blue);
 }
 .producto h2 {
   font-family: 'Orbitron', sans-serif;
-  font-size: var(--fs-md); font-weight: 700; color: var(--crema); line-height: 1.3;
+  font-size: var(--fs-md); font-weight: 500; color: var(--crema); line-height: 1.3;
   letter-spacing: .02em;
 }
 .prod-desc {
@@ -641,13 +655,13 @@ body::before {
 .prod-precio-wrap { display: flex; flex-direction: column; gap: 2px; }
 .prod-precio-original { font-size: var(--fs-sm); color: var(--gris); text-decoration: line-through; }
 .prod-precio-final {
-  font-family: 'Orbitron', sans-serif; font-size: var(--fs-xl); font-weight: 700;
+  font-family: 'Orbitron', sans-serif; font-size: var(--fs-xl); font-weight: 500;
   color: var(--neon-yellow); text-shadow: var(--shadow-yellow);
 }
 .prod-precio-docena, .prod-precio-tres { font-size: var(--fs-xs); color: var(--gris-l); margin-top: 2px; }
 .prod-precio-promo {
   font-size: var(--fs-xs); color: var(--neon-yellow);
-  text-shadow: 0 0 6px var(--neon-yellow); margin-top: 4px; font-weight: 700;
+  text-shadow: 0 0 6px var(--neon-yellow); margin-top: 4px; font-weight: 500;
 }
 
 .btn-agregar {
@@ -655,7 +669,7 @@ body::before {
   box-shadow: var(--shadow-pink);
   border: none; border-radius: 99px;
   padding: 0.65em 1.3em; font-family: 'Orbitron', sans-serif;
-  font-size: var(--fs-sm); font-weight: 700; cursor: pointer;
+  font-size: var(--fs-sm); font-weight: 500; cursor: pointer;
   display: flex; align-items: center; gap: 6px;
   white-space: nowrap; min-height: var(--tap-min);
   transition: background .15s, transform .1s;
@@ -739,7 +753,7 @@ body::before {
 }
 .drawer-items-count {
   background: rgba(255, 0, 136, 0.2); border-radius: 99px;
-  font-size: var(--fs-xs); font-weight: 700; padding: 3px 10px; color: var(--neon-pink);
+  font-size: var(--fs-xs); font-weight: 500; padding: 3px 10px; color: var(--neon-pink);
   flex-shrink: 0; white-space: nowrap;
 }
 .btn-cerrar-drawer {
@@ -762,7 +776,7 @@ body::before {
   color: var(--crema);
   font-family: 'Inter', sans-serif;
   font-size: var(--fs-base);
-  font-weight: 600;
+  font-weight: 400;
   cursor: pointer;
   padding: 0;
   min-height: var(--tap-min);
@@ -786,7 +800,7 @@ body::before {
 .drawer-cliente-bar:hover { background: rgba(255,255,255,.03); }
 .drawer-cliente-bar-texto { display: flex; flex-direction: column; gap: 2px; }
 .drawer-cliente-bar-titulo {
-  font-size: var(--fs-sm); font-weight: 700; color: var(--neon-blue);
+  font-size: var(--fs-sm); font-weight: 500; color: var(--neon-blue);
 }
 .drawer-cliente-bar-sub { font-size: var(--fs-xs); color: var(--gris); }
 .drawer-cliente-bar-chevron {
@@ -880,7 +894,7 @@ body::before {
 .item-thumb img { width: 100%; height: 100%; object-fit: cover; }
 .item-info { flex: 1; min-width: 0; }
 .item-nombre {
-  font-weight: 600; font-size: var(--fs-base); color: var(--crema);
+  font-weight: 400; font-size: var(--fs-base); color: var(--crema);
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 2px;
 }
 .item-precio-unit { font-size: var(--fs-sm); color: var(--gris); }
@@ -894,9 +908,9 @@ body::before {
   transition: background .15s;
 }
 .ctrl-btn:hover { background: var(--neon-pink); color: #fff; }
-.ctrl-cantidad { font-weight: 700; font-size: var(--fs-base); min-width: 22px; text-align: center; }
+.ctrl-cantidad { font-weight: 500; font-size: var(--fs-base); min-width: 22px; text-align: center; }
 .item-subtotal {
-  font-family: 'Orbitron', sans-serif; font-size: var(--fs-md); font-weight: 700;
+  font-family: 'Orbitron', sans-serif; font-size: var(--fs-md); font-weight: 500;
   color: var(--neon-yellow); flex-shrink: 0; min-width: 60px; text-align: right;
 }
 .btn-quitar-item {
@@ -923,13 +937,13 @@ body::before {
   border-top: 1px solid rgba(0, 229, 255, 0.3);
   padding-top: var(--sp-sm); margin-top: 2px;
 }
-.resumen-row.total span:first-child { font-weight: 700; color: var(--crema); font-size: var(--fs-md); }
+.resumen-row.total span:first-child { font-weight: 500; color: var(--crema); font-size: var(--fs-md); }
 .resumen-row.total span:last-child { font-family: 'Orbitron', sans-serif; font-size: var(--fs-xl); color: var(--neon-yellow); }
 
 .btn-pedir-wa {
   width: 100%; background: var(--verde-wa); color: #fff;
   border: none; border-radius: 99px; padding: 0.9em;
-  font-family: 'Orbitron', sans-serif; font-weight: 800;
+  font-family: 'Orbitron', sans-serif; font-weight: 600;
   font-size: var(--fs-md); cursor: pointer;
   display: flex; align-items: center; justify-content: center; gap: var(--sp-xs);
   min-height: 52px;
@@ -954,7 +968,7 @@ body::before {
   background: var(--grafito); color: var(--crema);
   border: 1px solid var(--neon-blue);
   padding: 0.7em 1.4em; border-radius: 99px;
-  font-size: var(--fs-base); font-weight: 600;
+  font-size: var(--fs-base); font-weight: 400;
   box-shadow: 0 4px 24px rgba(0,0,0,.7);
   z-index: 500; transition: transform .3s cubic-bezier(.4,0,.2,1), opacity .3s;
   opacity: 0; max-width: min(90vw, 420px);
@@ -980,13 +994,13 @@ body::before {
 .footer-brand { display: flex; flex-direction: column; gap: var(--sp-xs); }
 .footer-logo {
   font-family: 'Orbitron', sans-serif;
-  font-size: var(--fs-lg); font-weight: 700; color: var(--neon-yellow);
+  font-size: var(--fs-lg); font-weight: 500; color: var(--neon-yellow);
   text-shadow: var(--shadow-yellow);
 }
 .footer-desc { font-size: var(--fs-sm); color: var(--gris); line-height: 1.6; max-width: 260px; }
 .footer-col h4 {
   font-family: 'Orbitron', sans-serif;
-  font-size: var(--fs-xs); font-weight: 700; text-transform: uppercase;
+  font-size: var(--fs-xs); font-weight: 500; text-transform: uppercase;
   letter-spacing: .1em; color: var(--neon-pink); margin-bottom: var(--sp-sm);
 }
 .footer-col p, .footer-col a {
@@ -1023,14 +1037,14 @@ body::before {
   width: 100%; max-width: 420px;
 }
 .login-logo {
-  font-family: 'Orbitron', sans-serif; font-size: var(--fs-xl); font-weight: 800;
+  font-family: 'Orbitron', sans-serif; font-size: var(--fs-xl); font-weight: 600;
   color: var(--neon-yellow); margin-bottom: var(--sp-xs);
   text-shadow: var(--shadow-yellow);
 }
 .login-sub { color: var(--gris); font-size: var(--fs-sm); margin-bottom: var(--sp-xl); text-transform: uppercase; letter-spacing: .05em; }
 .login-campo { margin-bottom: var(--sp-sm); }
 .login-campo label {
-  display: block; font-size: var(--fs-xs); font-weight: 700; text-transform: uppercase;
+  display: block; font-size: var(--fs-xs); font-weight: 500; text-transform: uppercase;
   letter-spacing: .05em; color: var(--neon-pink); margin-bottom: var(--sp-xs);
 }
 .login-campo input {
@@ -1048,7 +1062,7 @@ body::before {
 .btn-login {
   width: 100%; background: var(--neon-pink); color: #fff;
   border: none; border-radius: var(--radio); padding: 0.9em;
-  font-family: 'Orbitron', sans-serif; font-size: var(--fs-base); font-weight: 700;
+  font-family: 'Orbitron', sans-serif; font-size: var(--fs-base); font-weight: 500;
   cursor: pointer; margin-top: var(--sp-xs);
   min-height: 52px;
   transition: background .15s, box-shadow .15s;
@@ -1076,7 +1090,7 @@ body::before {
   display: flex; align-items: center; justify-content: space-between; gap: var(--sp-sm);
 }
 .sidebar-brand-logo {
-  font-family: 'Orbitron', sans-serif; font-size: var(--fs-lg); font-weight: 800;
+  font-family: 'Orbitron', sans-serif; font-size: var(--fs-lg); font-weight: 600;
   color: var(--neon-yellow); text-shadow: var(--shadow-yellow);
 }
 .sidebar-brand small { display: block; color: var(--gris); font-size: var(--fs-xs); text-transform: uppercase; letter-spacing: .05em; margin-top: 4px; }
@@ -1097,12 +1111,12 @@ body::before {
 
 .admin-nav { padding: var(--sp-sm); flex: 1; display: flex; flex-direction: column; gap: 4px; }
 .nav-section-label {
-  font-size: var(--fs-xs); font-weight: 700; text-transform: uppercase; letter-spacing: .08em;
+  font-size: var(--fs-xs); font-weight: 500; text-transform: uppercase; letter-spacing: .08em;
   color: var(--neon-pink); padding: var(--sp-sm) var(--sp-xs) 4px;
 }
 .admin-nav a {
   display: flex; align-items: center; gap: var(--sp-xs); padding: 0.7em 0.8em; border-radius: 8px;
-  color: var(--gris-l); font-size: var(--fs-base); font-weight: 500; cursor: pointer; text-decoration: none;
+  color: var(--gris-l); font-size: var(--fs-base); font-weight: 400; cursor: pointer; text-decoration: none;
   min-height: var(--tap-min);
   transition: background .15s, color .15s;
 }
@@ -1113,7 +1127,7 @@ body::before {
 .btn-ver-sitio {
   display: flex; align-items: center; gap: var(--sp-xs); background: rgba(255, 0, 136, 0.1);
   color: var(--neon-pink); border: 1px solid rgba(255, 0, 136, 0.3); border-radius: 8px;
-  padding: 0.7em 0.8em; font-size: var(--fs-sm); font-weight: 600; cursor: pointer; text-decoration: none;
+  padding: 0.7em 0.8em; font-size: var(--fs-sm); font-weight: 400; cursor: pointer; text-decoration: none;
   min-height: var(--tap-min);
 }
 .btn-ver-sitio:hover { background: rgba(255, 0, 136, 0.18); }
@@ -1129,7 +1143,7 @@ body::before {
   padding: 0 var(--sp-md); min-height: 60px; display: flex; align-items: center; justify-content: space-between;
   position: sticky; top: 0; z-index: 50; gap: var(--sp-sm); flex-wrap: wrap;
 }
-.admin-topbar h1 { font-size: var(--fs-base); font-weight: 600; color: var(--crema); }
+.admin-topbar h1 { font-size: var(--fs-base); font-weight: 400; color: var(--crema); }
 .topbar-user { display: flex; align-items: center; gap: var(--sp-xs); font-size: var(--fs-sm); color: var(--gris); }
 .user-dot { width: 8px; height: 8px; background: #2ecc71; border-radius: 50%; flex-shrink: 0; }
 .admin-content { padding: var(--sp-lg) var(--sp-md) calc(var(--sp-xl) * 1.5); }
@@ -1147,7 +1161,7 @@ body::before {
   min-width: 0; /* permite que el contenido se achique en vez de desbordar */
   overflow: hidden;
 }
-.stat-label { font-size: var(--fs-xs); font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: var(--neon-blue); margin-bottom: var(--sp-xs); }
+.stat-label { font-size: var(--fs-xs); font-weight: 500; text-transform: uppercase; letter-spacing: .05em; color: var(--neon-blue); margin-bottom: var(--sp-xs); }
 /* FIX: el tamaño anterior (--fs-2xl, hasta 2.8rem) hacía que
    números largos como "$125.430" desbordaran el ancho de la
    card en pantallas chicas o con varias stat-cards por fila.
@@ -1169,7 +1183,7 @@ body::before {
 
 .admin-card { background: var(--carbon); border: 1px solid var(--grafito); border-radius: var(--radio-lg); padding: var(--sp-md) var(--sp-lg); margin-bottom: var(--sp-md); }
 .admin-card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--sp-md); gap: var(--sp-sm); flex-wrap: wrap; }
-.admin-card-title { font-size: var(--fs-md); font-weight: 600; color: var(--crema); }
+.admin-card-title { font-size: var(--fs-md); font-weight: 400; color: var(--crema); }
 
 .form-productos {
   display: grid;
@@ -1178,7 +1192,7 @@ body::before {
 }
 .form-full { grid-column: 1 / -1; }
 .form-campo { display: flex; flex-direction: column; gap: var(--sp-xs); }
-.form-campo label { font-size: var(--fs-xs); font-weight: 700; text-transform: uppercase; letter-spacing: .04em; color: var(--neon-pink); }
+.form-campo label { font-size: var(--fs-xs); font-weight: 500; text-transform: uppercase; letter-spacing: .04em; color: var(--neon-pink); }
 .form-campo input, .form-campo select, .form-campo textarea {
   background: var(--grafito); border: 1px solid var(--humo); border-radius: var(--radio-sm);
   padding: 0.7em 0.85em; color: var(--crema); font-family: 'Inter', sans-serif; font-size: var(--fs-base);
@@ -1189,7 +1203,7 @@ body::before {
 
 .btn {
   display: inline-flex; align-items: center; gap: 6px; padding: 0.65em 1.3em; border-radius: var(--radio);
-  font-family: 'Orbitron', sans-serif; font-size: var(--fs-sm); font-weight: 700; cursor: pointer; border: none;
+  font-family: 'Orbitron', sans-serif; font-size: var(--fs-sm); font-weight: 500; cursor: pointer; border: none;
   min-height: var(--tap-min);
   transition: all .15s;
 }
@@ -1209,14 +1223,14 @@ body::before {
 }
 .prod-admin-img { width: clamp(48px, 12vw, 60px); height: clamp(48px, 12vw, 60px); border-radius: 8px; object-fit: cover; background: var(--humo); flex-shrink: 0; }
 .prod-admin-info { flex: 1; min-width: 120px; }
-.prod-admin-nombre { font-weight: 600; font-size: var(--fs-base); }
+.prod-admin-nombre { font-weight: 400; font-size: var(--fs-base); }
 .prod-admin-meta { color: var(--gris); font-size: var(--fs-sm); margin-top: 2px; }
-.prod-admin-precio { color: var(--neon-yellow); font-family: 'Orbitron', sans-serif; font-size: var(--fs-lg); font-weight: 700; flex-shrink: 0; }
+.prod-admin-precio { color: var(--neon-yellow); font-family: 'Orbitron', sans-serif; font-size: var(--fs-lg); font-weight: 500; flex-shrink: 0; }
 .prod-admin-acciones { display: flex; gap: var(--sp-xs); flex-shrink: 0; }
 
 .badge {
   display: inline-flex; align-items: center; padding: 3px 11px; border-radius: 99px;
-  font-size: var(--fs-xs); font-weight: 700; letter-spacing: .04em; text-transform: uppercase;
+  font-size: var(--fs-xs); font-weight: 500; letter-spacing: .04em; text-transform: uppercase;
 }
 .badge-verde { background: rgba(39,174,96,.15); color: #2ecc71; }
 .badge-rojo { background: rgba(255,0,136,.15); color: var(--neon-pink); }
@@ -1232,7 +1246,7 @@ body::before {
 .pedido-productos li { font-size: var(--fs-base); color: var(--crema); padding: 4px 0; border-bottom: 1px solid var(--humo); }
 .pedido-productos li:last-child { border-bottom: none; }
 .pedido-footer { display: flex; align-items: center; justify-content: space-between; gap: var(--sp-sm); flex-wrap: wrap; }
-.pedido-total { color: var(--neon-yellow); font-family: 'Orbitron', sans-serif; font-size: var(--fs-lg); font-weight: 700; }
+.pedido-total { color: var(--neon-yellow); font-family: 'Orbitron', sans-serif; font-size: var(--fs-lg); font-weight: 500; }
 .select-estado {
   background: var(--humo); border: 1px solid var(--grafito); border-radius: var(--radio-sm);
   padding: 0.5em 0.8em; color: var(--crema); font-family: 'Inter', sans-serif; font-size: var(--fs-sm);
@@ -1258,7 +1272,7 @@ body::before {
   gap: var(--sp-sm);
 }
 .cliente-card { background: var(--grafito); border-radius: var(--radio); padding: var(--sp-sm) var(--sp-md); display: flex; flex-direction: column; gap: var(--sp-xs); }
-.cliente-nombre { font-weight: 600; font-size: var(--fs-base); }
+.cliente-nombre { font-weight: 400; font-size: var(--fs-base); }
 .cliente-tel { color: var(--gris-l); font-size: var(--fs-sm); }
 .cliente-acciones { display: flex; gap: var(--sp-xs); margin-top: 4px; flex-wrap: wrap; }
 
@@ -1268,7 +1282,7 @@ body::before {
   background: var(--grafito); border-radius: var(--radio); flex-wrap: wrap;
 }
 .ranking-pos { font-family: 'Orbitron', sans-serif; font-size: var(--fs-md); color: var(--neon-pink); width: 30px; flex-shrink: 0; }
-.ranking-nombre { flex: 1; font-weight: 600; font-size: var(--fs-base); min-width: 120px; }
+.ranking-nombre { flex: 1; font-weight: 400; font-size: var(--fs-base); min-width: 120px; }
 .ranking-cant { font-size: var(--fs-sm); color: var(--gris-l); background: var(--humo); padding: 3px 11px; border-radius: 99px; }
 
 .welcome-card {
@@ -1286,7 +1300,7 @@ body::before {
   background: var(--grafito); color: var(--neon-blue); border: 1px solid var(--neon-blue);
   width: var(--tap-min); height: var(--tap-min);
   border-radius: var(--radio-sm);
-  font-weight: 700; font-size: var(--fs-lg); cursor: pointer;
+  font-weight: 500; font-size: var(--fs-lg); cursor: pointer;
   flex-shrink: 0;
 }
 
@@ -1324,7 +1338,7 @@ body::before {
 .puntos-resumen-bar-texto { display: flex; flex-direction: column; min-width: 0; }
 .puntos-resumen-bar-titulo {
   font-family: 'Orbitron', sans-serif; font-size: var(--fs-sm);
-  color: var(--neon-yellow); font-weight: 700;
+  color: var(--neon-yellow); font-weight: 500;
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
 .puntos-resumen-bar-sub { font-size: var(--fs-xs); color: var(--gris); }
@@ -1369,10 +1383,10 @@ body::before {
 }
 .recompensa-card.bloqueada { opacity: 0.5; pointer-events: none; }
 .recompensa-umbral { font-size: var(--fs-xs); color: var(--gris); text-transform: uppercase; }
-.recompensa-desc { font-weight: 600; font-size: var(--fs-base); }
+.recompensa-desc { font-weight: 400; font-size: var(--fs-base); }
 .recompensa-btn {
   background: var(--neon-pink); color: #fff; border: none; border-radius: var(--radio-sm);
-  padding: 0.6em; font-weight: 700; font-size: var(--fs-sm); cursor: pointer;
+  padding: 0.6em; font-weight: 500; font-size: var(--fs-sm); cursor: pointer;
   min-height: var(--tap-min);
   transition: background .15s, box-shadow .15s; box-shadow: var(--shadow-pink);
 }
@@ -1380,10 +1394,10 @@ body::before {
 .puntos-info { font-size: var(--fs-sm); color: var(--gris); }
 
 .historial-pedidos { margin-top: var(--sp-md); border-top: 1px solid var(--grafito); padding-top: var(--sp-sm); }
-.btn-historial { background: none; border: 1px solid var(--humo); color: var(--gris-l); border-radius: var(--radio-sm); padding: var(--sp-sm); width: 100%; cursor: pointer; font-weight: 600; font-size: var(--fs-sm); min-height: var(--tap-min); }
+.btn-historial { background: none; border: 1px solid var(--humo); color: var(--gris-l); border-radius: var(--radio-sm); padding: var(--sp-sm); width: 100%; cursor: pointer; font-weight: 400; font-size: var(--fs-sm); min-height: var(--tap-min); }
 .historial-lista { max-height: 300px; overflow-y: auto; margin-top: var(--sp-xs); display: flex; flex-direction: column; gap: var(--sp-xs); }
 .pedido-historial { background: var(--grafito); border-radius: var(--radio); padding: var(--sp-sm); font-size: var(--fs-sm); }
-.pedido-historial button { background: var(--neon-pink); color: #fff; border: none; border-radius: var(--radio-sm); padding: 5px 12px; font-weight: 700; cursor: pointer; margin-top: var(--sp-xs); font-size: var(--fs-xs); }
+.pedido-historial button { background: var(--neon-pink); color: #fff; border: none; border-radius: var(--radio-sm); padding: 5px 12px; font-weight: 500; cursor: pointer; margin-top: var(--sp-xs); font-size: var(--fs-xs); }
 
 .timeline { position: relative; margin: var(--sp-lg) 0; padding-left: var(--sp-lg); }
 .timeline::before { content: ''; position: absolute; left: 10px; top: 0; bottom: 0; width: 2px; background: var(--neon-blue); }
@@ -1396,7 +1410,7 @@ body::before {
 .timeline-item.alcanzado::before { background: var(--verde); }
 .timeline-item h4 { font-size: var(--fs-base); margin: 0 0 4px; color: var(--crema); }
 .timeline-item p { font-size: var(--fs-sm); color: var(--gris-l); margin: 0; }
-.timeline-puntos { font-weight: 700; color: var(--neon-yellow); }
+.timeline-puntos { font-weight: 500; color: var(--neon-yellow); }
 
 /* ═══════════════════════════════════════
    MODAL AUTH + BOTÓN GOOGLE
@@ -1404,22 +1418,10 @@ body::before {
 .btn-google {
   display: flex; align-items: center; justify-content: center;
   background: #fff; color: #333; border: none; border-radius: var(--radio-sm);
-  padding: 0.8em; font-family: 'Inter', sans-serif; font-weight: 600; font-size: var(--fs-base);
+  padding: 0.8em; font-family: 'Inter', sans-serif; font-weight: 400; font-size: var(--fs-base);
   cursor: pointer; min-height: var(--tap-min); transition: background .15s;
 }
 .btn-google:hover { background: #f1f1f1; }
-
-.btn-user-header {
-  display: flex; align-items: center; gap: var(--sp-xs);
-  background: rgba(255,255,255,0.05);
-  border: 1px solid rgba(0, 212, 255, 0.3);
-  color: var(--crema); border-radius: 99px;
-  padding: 0.55em 1em; font-family: 'Inter', sans-serif;
-  font-size: var(--fs-sm); font-weight: 600; cursor: pointer;
-  transition: background .15s, border-color .15s, box-shadow .15s;
-}
-.btn-user-header:hover { background: rgba(0, 212, 255, 0.1); border-color: var(--neon-blue); box-shadow: var(--shadow-blue); }
-.btn-user-header svg { stroke: currentColor; }
 
 .modal-auth-overlay {
   position: fixed; inset: 0; background: rgba(0,0,0,0.8);
@@ -1440,9 +1442,20 @@ body::before {
   min-height: auto;
 }
 .auth-tabs { display: flex; gap: 0; margin-bottom: var(--sp-md); }
+/* Texto introductorio de cada form de auth (Google/Email) —
+   antes era un estilo inline en el HTML, lo que forzaba usar
+   !important en la regla mobile de abajo para poder ganarle en
+   especificidad. Ahora es una clase normal, sin necesidad de
+   !important en ningún lado. */
+.auth-form-intro {
+  text-align: center;
+  color: var(--gris);
+  font-size: var(--fs-sm);
+  margin-bottom: var(--sp-sm);
+}
 .auth-tab {
   flex: 1; background: none; border: none; color: var(--gris);
-  padding: var(--sp-sm); font-weight: 700; font-size: var(--fs-sm); cursor: pointer;
+  padding: var(--sp-sm); font-weight: 500; font-size: var(--fs-sm); cursor: pointer;
   border-bottom: 2px solid transparent; transition: .15s;
   min-height: var(--tap-min);
 }
@@ -1566,7 +1579,7 @@ body::before {
 .welcome-logo {
   font-family: 'Orbitron', sans-serif;
   font-size: var(--fs-2xl);
-  font-weight: 900;
+  font-weight: 700;
   letter-spacing: 0.1em;
   margin-bottom: var(--sp-xs);
   line-height: 1.2; word-break: break-word;
@@ -1590,7 +1603,7 @@ body::before {
 }
 
 .welcome-sub {
-  font-family: 'Inter', sans-serif; font-size: var(--fs-base); font-weight: 700;
+  font-family: 'Inter', sans-serif; font-size: var(--fs-base); font-weight: 500;
   letter-spacing: 0.15em; text-transform: uppercase;
   color: var(--neon-pink); margin-bottom: var(--sp-lg);
 }
@@ -1611,7 +1624,7 @@ body::before {
   position: relative;
   overflow: hidden;
   width: 100%; padding: var(--sp-md); font-size: var(--fs-md);
-  border-radius: 12px; font-weight: 700;
+  border-radius: 12px; font-weight: 500;
   background: #fff; color: #333;
   min-height: 52px;
   transition: all 0.3s ease;
@@ -1655,7 +1668,7 @@ body::before {
 #codigoDescuentoInput:focus { border-color: var(--neon-pink); }
 #aplicarCodigoBtn {
   background: var(--neon-pink); color: #fff; border: none; border-radius: var(--radio-sm);
-  padding: 0.6em 1em; font-weight: 700; font-size: var(--fs-sm); cursor: pointer;
+  padding: 0.6em 1em; font-weight: 500; font-size: var(--fs-sm); cursor: pointer;
   min-height: var(--tap-min);
   transition: background .15s; box-shadow: var(--shadow-pink);
 }
@@ -1978,42 +1991,47 @@ body:has(.carrito-drawer.abierto) .fab-whatsapp { opacity: 0; pointer-events: no
   .prod-footer .btn-agregar { width: 100%; justify-content: center; }
 
   /* ══════════════════════════════════════════
-     PROMO-CARDS — layout vertical en mobile
-     FIX: antes eran horizontales (imagen al
-     costado, texto al lado). Con 2 columnas por
-     fila, cada card mide ~170-190px de ancho
-     total, y la imagen horizontal se llevaba
-     80-110px de eso — dejando apenas 60-90px
-     reales para nombre + precio + botón. Ahí el
-     precio no podía entrar sin desbordar sin
-     importar cuán chica fuera la fuente. Ahora
-     la imagen va ARRIBA a todo el ancho de la
-     card y el texto/precio ABAJO, mismo criterio
-     que las cards normales del catálogo — el
-     precio tiene todo el ancho disponible.
+     PROMO-CARDS — layout horizontal (como estaba
+     originalmente). El desborde del precio se
+     resuelve achicando la miniatura y el tamaño
+     de fuente del precio, sin tocar la estructura
+     general del layout.
      ══════════════════════════════════════════ */
   .promo-card {
-    flex-direction: column;
+    flex-direction: row;
     align-items: stretch;
   }
   .promo-card-img {
-    width: 100%;
-    aspect-ratio: 4 / 3;
+    width: 72px;
+    aspect-ratio: auto;
+    flex-shrink: 0;
   }
   .promo-card-body {
-    padding: var(--sp-xs) var(--sp-sm) var(--sp-sm);
+    padding: var(--sp-xs) var(--sp-sm);
+    min-width: 0;
   }
-  .promo-card-nombre { font-size: var(--fs-xs); line-height: 1.25; }
-  .promo-card-precios { gap: 4px; }
-  .promo-card-final { font-size: var(--fs-sm); }
+  .promo-card-nombre {
+    font-size: var(--fs-xs);
+    line-height: 1.25;
+    overflow-wrap: break-word;
+  }
+  .promo-card-precios {
+    gap: 4px;
+    flex-wrap: wrap;
+  }
+  .promo-card-final {
+    font-size: 0.78rem;
+    white-space: nowrap;
+  }
   .promo-card-original { font-size: 0.6rem; }
   .promo-card-badge { font-size: 0.6rem; padding: 2px 6px; }
   .promo-card-btn {
-    width: 100%;
+    width: auto;
+    align-self: flex-start;
     justify-content: center;
-    font-size: 0.7rem;
-    padding: 0.5em 0.8em;
-    min-height: 34px;
+    font-size: 0.68rem;
+    padding: 0.4em 0.7em;
+    min-height: 30px;
   }
 
   /* ══════════════════════════════════════════
@@ -2083,7 +2101,7 @@ body:has(.carrito-drawer.abierto) .fab-whatsapp { opacity: 0; pointer-events: no
     border-radius: 24px;
   }
   .modal-auth-card h3 { font-size: var(--fs-lg); }
-  .modal-auth-card p  { font-size: var(--fs-base) !important; }
+  .modal-auth-card p  { font-size: var(--fs-base); }
   .modal-auth-close {
     width: 44px; height: 44px;
     font-size: var(--fs-md);
@@ -2329,7 +2347,7 @@ body:has(.carrito-drawer.abierto) .fab-whatsapp { opacity: 0; pointer-events: no
   box-shadow: 0 0 0 1px var(--neon-blue) inset;
 }
 .modal-presentacion-opcion-etiqueta {
-  font-weight: 600;
+  font-weight: 400;
   font-size: var(--fs-base);
   color: var(--crema);
 }
@@ -2337,7 +2355,7 @@ body:has(.carrito-drawer.abierto) .fab-whatsapp { opacity: 0; pointer-events: no
   font-family: 'Orbitron', sans-serif;
   font-size: var(--fs-base);
   color: var(--neon-yellow);
-  font-weight: 700;
+  font-weight: 500;
   display: flex;
   align-items: center;
   gap: 6px;
@@ -2362,7 +2380,7 @@ body:has(.carrito-drawer.abierto) .fab-whatsapp { opacity: 0; pointer-events: no
 .modal-presentacion-cantidad-label {
   font-size: var(--fs-base);
   color: var(--gris-l);
-  font-weight: 600;
+  font-weight: 400;
 }
 .modal-presentacion-cantidad-controles {
   display: flex;
@@ -2427,4 +2445,335 @@ body:has(.carrito-drawer.abierto) .fab-whatsapp { opacity: 0; pointer-events: no
     background: linear-gradient(135deg, rgba(0,0,0,.8) 0%, rgba(0,0,0,.9) 100%),
                 var(--hero-bg, none) center 35% / cover no-repeat;
   }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   BOTÓN INSTALAR APP — siempre visible + modal de instrucciones
+   ═══════════════════════════════════════════════════════════ */
+.btn-instalar-app {
+  position: fixed;
+  bottom: 90px; right: 20px;
+  z-index: 140;
+  display: flex; align-items: center; gap: 6px;
+  background: var(--neon-pink);
+  color: #fff;
+  border: none;
+  padding: 12px 18px;
+  border-radius: 99px;
+  font-family: 'Inter', sans-serif;
+  font-weight: 500;
+  font-size: var(--fs-sm);
+  cursor: pointer;
+  box-shadow: 0 0 20px var(--neon-pink);
+  transition: opacity .2s, visibility .2s, transform .15s;
+}
+.btn-instalar-app:hover { transform: scale(1.04); }
+.btn-instalar-app span { font-size: 1.1em; }
+
+@media (max-width: 480px) {
+  .btn-instalar-app {
+    bottom: max(80px, calc(80px + env(safe-area-inset-bottom)));
+    right: 14px;
+    padding: 10px 14px;
+    font-size: var(--fs-xs);
+  }
+}
+
+.modal-instalar-card {
+  background: var(--carbon);
+  border: 1px solid var(--neon-blue);
+  border-radius: var(--radio-lg);
+  padding: var(--sp-lg);
+  width: 100%;
+  max-width: 380px;
+  position: relative;
+  box-shadow: 0 0 30px rgba(0, 229, 255, 0.25);
+}
+/* ═══════════════════════════════════════
+   MEJORAS VISUALES — bloque aditivo
+   Buscador del menú, botón volver arriba
+   y pulido general. No modifica reglas
+   existentes: solo agrega o refina.
+   ═══════════════════════════════════════ */
+
+/* ── Alineado del header del menú con el buscador nuevo ── */
+.menu-section-header { align-items: center; }
+
+/* ── BUSCADOR DEL MENÚ ──
+   Activa la búsqueda que menu.js ya tenía programada.
+   Estética glass + borde neón al enfocar, consistente
+   con el resto del sitio. */
+.menu-buscador {
+  display: flex; align-items: center; gap: 8px;
+  flex: 1 1 220px;
+  max-width: 340px;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: 999px;
+  padding: 0 14px;
+  color: var(--gris);
+  transition: border-color .2s, box-shadow .2s, color .2s;
+}
+.menu-buscador:focus-within {
+  border-color: var(--neon-blue);
+  box-shadow: 0 0 0 1px var(--neon-blue), 0 0 16px rgba(0, 229, 255, .25);
+  color: var(--neon-blue);
+}
+.menu-buscador svg { flex: 0 0 auto; }
+.menu-buscador input {
+  flex: 1; min-width: 0;
+  background: none; border: none; outline: none;
+  color: var(--crema);
+  font-family: 'Inter', sans-serif;
+  font-size: var(--fs-sm);
+  padding: 10px 0;
+}
+.menu-buscador input::placeholder { color: var(--gris); }
+.menu-buscador input::-webkit-search-cancel-button {
+  -webkit-appearance: none;
+  height: 14px; width: 14px;
+  background: var(--gris);
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M18 6L6 18M6 6l12 12' stroke='black' stroke-width='3' stroke-linecap='round'/%3E%3C/svg%3E") center / contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M18 6L6 18M6 6l12 12' stroke='black' stroke-width='3' stroke-linecap='round'/%3E%3C/svg%3E") center / contain no-repeat;
+  cursor: pointer;
+}
+@media (max-width: 768px) {
+  .menu-section-header { flex-direction: column; align-items: stretch; }
+  .menu-buscador { max-width: none; order: 3; }
+  .menu-count { order: 2; }
+}
+
+/* ── BOTÓN VOLVER ARRIBA ──
+   Aparece tras 600px de scroll. Queda por encima del
+   botón "Instalar App" para no superponerse con él. */
+.btn-volver-arriba {
+  position: fixed;
+  right: 16px;
+  bottom: 84px; /* deja lugar al botón Instalar App de abajo */
+  width: 46px; height: 46px;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--glass-bg);
+  color: var(--neon-blue);
+  border: 1px solid var(--neon-blue);
+  border-radius: 50%;
+  box-shadow: 0 0 14px rgba(0, 229, 255, .35);
+  cursor: pointer;
+  z-index: 90;
+  opacity: 0;
+  transform: translateY(12px);
+  pointer-events: none;
+  transition: opacity .25s, transform .25s, box-shadow .2s;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+.btn-volver-arriba.visible {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+.btn-volver-arriba:hover {
+  box-shadow: 0 0 22px rgba(0, 229, 255, .6);
+  transform: translateY(-2px);
+}
+@media (prefers-reduced-motion: reduce) {
+  .btn-volver-arriba { transition: opacity .25s; transform: none; }
+  .btn-volver-arriba.visible { transform: none; }
+}
+
+/* ── Pulido: inputs del carrito con foco neón coherente ── */
+.drawer-cliente input:focus,
+.drawer-cliente textarea:focus,
+#codigoDescuentoInput:focus {
+  border-color: var(--neon-blue) !important;
+  box-shadow: 0 0 0 1px var(--neon-blue);
+}
+
+/* ── Pulido: estado vacío del menú más amable ── */
+.estado-menu .estado-icono {
+  font-size: 2.6rem;
+  margin-bottom: var(--sp-sm);
+  filter: drop-shadow(0 0 12px rgba(0, 229, 255, .3));
+}
+
+/* ═══════════════════════════════════════════════════
+   PACK VISUAL PREMIUM — bloque aditivo
+   1. Hero: la foto del producto pasa a ser protagonista
+   2. Paleta simplificada: rosa (identidad) + azul
+      (interactivo); el amarillo queda solo para precios,
+      con glow más sobrio
+   3. Cards de producto: borde degradado neón al hover,
+      precio con más jerarquía, chip de oferta con vida
+   4. Banner de ofertas con shimmer + footer elevado
+   Ninguna regla existente se edita: todo se sobrescribe
+   acá al final, con la misma especificidad o mayor.
+   ═══════════════════════════════════════════════════ */
+
+/* ── 2a. Glow amarillo más sobrio EN TODO el sitio ──
+   Redefinir el token acá abajo gana sobre el :root de
+   arriba: todos los precios siguen en amarillo, pero el
+   resplandor pasa de "cartel de casino" a acento premium. */
+:root {
+  --shadow-yellow: 0 0 12px rgba(255, 195, 0, 0.38);
+}
+
+/* ── 2b. Partículas de fondo en 2 colores, no 4 ── */
+.bg-particles span:nth-child(2) { background: var(--neon-pink); }
+.bg-particles span:nth-child(4) { background: var(--neon-blue); }
+
+/* ═══ 1. HERO REDISEÑADO ═══
+   Antes: velo negro al 80–90% que aplastaba cualquier foto
+   configurada desde el admin. Ahora: degradado vertical que
+   deja respirar la imagen arriba y oscurece hacia abajo,
+   donde el texto la necesita. Sin foto configurada, un fondo
+   ambiente cálido (luz de plancha + neones) mucho más rico
+   que el negro plano anterior. */
+.hero {
+  background:
+    linear-gradient(180deg,
+      rgba(6, 9, 18, 0.52) 0%,
+      rgba(6, 9, 18, 0.40) 40%,
+      rgba(8, 11, 20, 0.88) 100%),
+    var(--hero-bg,
+      radial-gradient(ellipse 90% 60% at 50% 110%, rgba(255, 140, 40, 0.16), transparent 60%),
+      radial-gradient(circle at 18% 25%, rgba(255, 0, 136, 0.10), transparent 45%),
+      radial-gradient(circle at 82% 30%, rgba(0, 229, 255, 0.10), transparent 45%),
+      linear-gradient(160deg, #0b0f1e 0%, #0d1225 55%, #0a0e1c 100%))
+      center / cover no-repeat;
+}
+
+/* Título: sombra de contraste real (legible sobre fotos) en
+   vez del doble glow rosa+azul que competía con todo. */
+.hero h1 {
+  text-shadow:
+    0 2px 6px rgba(0, 0, 0, 0.85),
+    0 4px 28px rgba(0, 0, 0, 0.7),
+    0 0 22px rgba(0, 229, 255, 0.30);
+}
+.hero-color-yellow {
+  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.85), 0 0 16px rgba(255, 195, 0, 0.45);
+}
+.hero-color-blue {
+  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.85), 0 0 16px rgba(0, 229, 255, 0.5);
+}
+
+/* Subtítulo: de amarillo brillante a crema legible — el
+   amarillo queda reservado para precios y el título. */
+.hero-sub {
+  color: var(--gris-xl);
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.8);
+}
+
+/* Línea de cierre del hero: rosa → azul, sin la parada
+   amarilla que sumaba un tercer color innecesario. */
+.hero-inner::after {
+  background: linear-gradient(90deg,
+    transparent, var(--neon-pink) 30%, var(--neon-blue) 70%, transparent);
+}
+
+/* ═══ 3. CARDS DE PRODUCTO ═══ */
+
+/* Borde degradado neón que se enciende al hover — técnica de
+   máscara: el degradado solo pinta el aro de 1px del borde,
+   nunca tapa el contenido. ::before estaba libre (el ::after
+   de .producto ya lo usa el brillo diagonal existente). */
+.producto::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(135deg,
+    rgba(255, 0, 136, 0.75), rgba(122, 92, 255, 0.5), rgba(0, 229, 255, 0.75));
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+  z-index: 3;
+}
+.producto:hover::before,
+.producto:focus-within::before { opacity: 1; }
+
+/* Precio: la decisión de compra merece la mayor jerarquía
+   visual de la card. */
+.prod-precio-final {
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+.prod-desc { opacity: 0.9; }
+
+/* Chip de oferta: degradado rosa→ámbar con pulso sutil de
+   glow — llama la atención sin gritar. */
+.prod-oferta-chip {
+  background: linear-gradient(120deg, var(--neon-pink), #ff7a3d);
+  border: none;
+  color: #fff;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 6px;
+  box-shadow: 0 0 12px rgba(255, 0, 136, 0.5);
+  animation: chipOfertaPulso 2.4s ease-in-out infinite;
+}
+@keyframes chipOfertaPulso {
+  0%, 100% { box-shadow: 0 0 10px rgba(255, 0, 136, 0.45); }
+  50%      { box-shadow: 0 0 18px rgba(255, 0, 136, 0.8), 0 0 30px rgba(255, 122, 61, 0.4); }
+}
+
+/* ═══ 4a. BANNER DE OFERTAS con shimmer ═══
+   Un haz de luz recorre el banner cada pocos segundos —
+   movimiento sutil que atrae la mirada sin marear. */
+.oferta-banner {
+  position: relative;
+  overflow: hidden;
+}
+.oferta-banner::after {
+  content: '';
+  position: absolute;
+  top: 0; bottom: 0;
+  left: -40%;
+  width: 40%;
+  background: linear-gradient(105deg,
+    transparent, rgba(255, 255, 255, 0.35), transparent);
+  animation: bannerShimmer 4s ease-in-out infinite;
+  pointer-events: none;
+}
+@keyframes bannerShimmer {
+  0%       { left: -40%; }
+  55%, 100% { left: 110%; }
+}
+
+/* ═══ 4b. FOOTER elevado ═══
+   Hairline degradado rosa→azul arriba (en vez del borde
+   azul plano), resplandor ambiental sutil y marca en crema
+   con acento rosa — coherente con el hero nuevo. */
+.site-footer {
+  position: relative;
+  border-top: none;
+  background:
+    radial-gradient(ellipse 70% 90px at 50% 0%, rgba(255, 0, 136, 0.07), transparent),
+    var(--carbon);
+}
+.site-footer::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg,
+    transparent, var(--neon-pink) 30%, var(--neon-blue) 70%, transparent);
+  box-shadow: 0 0 14px rgba(255, 0, 136, 0.35);
+}
+.footer-logo {
+  color: var(--crema);
+  text-shadow: 0 0 14px rgba(255, 0, 136, 0.45);
+}
+.footer-social-btn { transition: transform 0.2s, box-shadow 0.2s, background 0.2s; }
+.footer-social-btn:hover { transform: translateY(-3px); }
+
+/* ═══ Movimiento reducido: se apagan las animaciones nuevas ═══ */
+@media (prefers-reduced-motion: reduce) {
+  .prod-oferta-chip { animation: none; }
+  .oferta-banner::after { animation: none; display: none; }
+  .footer-social-btn:hover { transform: none; }
 }

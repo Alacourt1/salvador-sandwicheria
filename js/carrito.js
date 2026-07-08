@@ -191,6 +191,21 @@ window.pedirPorWhatsApp = async () => {
     return;
   }
 
+  // FIX: hook de puntos de fidelidad. Antes index.html intentaba
+  // envolver window.pedirPorWhatsApp para sumar puntos, pero ese
+  // wrapper se instalaba ANTES de que este módulo definiera la
+  // función real (los módulos corren en orden de documento), así
+  // que esta asignación lo pisaba y los puntos NUNCA se
+  // acreditaban. Además el wrapper releía el carrito de
+  // localStorage DESPUÉS de que acá se vaciara — total $0.
+  // Ahora se avisa explícitamente con el total real, ANTES de
+  // vaciar el carrito, y index.html solo define el hook.
+  try {
+    await window._onPedidoRegistrado?.({ total, subtotal });
+  } catch (err) {
+    console.error('Error acreditando puntos del pedido:', err);
+  }
+
   // FIX: cada línea del mensaje de WhatsApp ahora incluye la
   // presentación cuando corresponde, para que el local sepa
   // exactamente qué armar (ej: "2x Sánguche de jamón (Pack x3)"

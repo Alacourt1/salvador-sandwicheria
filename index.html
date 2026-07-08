@@ -15,7 +15,7 @@
 
   <!-- ═══ TIPOGRAFÍAS ═══ -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Inter:wght@400;500;600;700;800&family=Orbitron:wght@500;700;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Inter:wght@300;400;500;600;700&family=Orbitron:wght@400;500;600;700&display=swap" rel="stylesheet">
 
   <!-- ═══ ESTILOS ═══ -->
   <link rel="stylesheet" href="./css/styles.css">
@@ -89,7 +89,7 @@
   </div>
 
   <div class="welcome-card-overlay">
-    <div class="welcome-icono">🥖</div>
+    <div class="welcome-icono">🥪</div>
     <div class="welcome-logo">SALVADOR</div>
     <p class="welcome-sub">FOOD EXPERIENCE</p>
     <div class="welcome-divider"></div>
@@ -129,10 +129,19 @@
 <!-- ═══ HEADER ═══ -->
 <header class="pub-header" id="pubHeader">
   <div class="pub-header-inner">
-    <a href="index.html" class="pub-logo neon-logo">
-      SALVADOR
-      <small>FOOD EXPERIENCE</small>
-    </a>
+    <div class="pub-logo-wrap">
+      <!-- ═══ LOGO PERSONALIZADO ═══
+           Para poner tu propio logo: pegá la URL de la imagen
+           acá abajo en src="...". Si la dejás vacía o la URL
+           falla, automáticamente se muestra el ícono 🥖 de
+           respaldo, así nunca queda un hueco roto. -->
+      <img src="" alt="Logo Salvador" class="pub-logo-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+      <div class="pub-logo-img-fallback">🥖</div>
+      <a href="index.html" class="pub-logo neon-logo">
+        SALVADOR
+        <small>FOOD EXPERIENCE</small>
+      </a>
+    </div>
     <div class="header-right">
       <button class="btn-user-header" id="btnUserHeader">
         <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" fill="none" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
@@ -156,9 +165,8 @@
     <div class="hero-text">
       <div class="hero-chip" data-config="heroChipText">🥖 Pedidos online · Retiro y delivery</div>
       <h1 data-config="heroTitle">
-        <span class="hero-color-blue">SABOR</span><br>
-        <span class="hero-color-yellow">URBANO</span><br>
-        <span class="hero-color-pink">SIN LÍMITES</span>
+        <span class="hero-color-blue">Sánguches</span><br>
+        <span class="hero-color-yellow">de verdad</span>
       </h1>
       <p class="hero-sub" data-config="heroSubtitle">Elegí lo que querés, armá tu pedido y lo coordinamos por WhatsApp.</p>
       <div class="hero-pills">
@@ -247,6 +255,13 @@
 <div class="menu-section">
   <div class="menu-section-header">
     <span class="menu-section-title" id="menuTitulo">Todos los productos</span>
+    <!-- FIX: menu.js escuchaba un input #busqueda que nunca
+         existió en el HTML — la función de búsqueda estaba
+         programada pero muerta. Este buscador la activa. -->
+    <div class="menu-buscador">
+      <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" fill="none" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+      <input type="search" id="busqueda" placeholder="Buscar en el menú..." aria-label="Buscar productos" autocomplete="off">
+    </div>
     <span class="menu-count" id="menuCount"></span>
   </div>
   <div id="menu-container">
@@ -315,7 +330,7 @@
     </div>
   </div>
   <div class="footer-bottom">
-    <span>© 2025 Salvador Sanguchería — Todos los derechos reservados</span>
+    <span>© 2025 Salvador Sandwichería — Todos los derechos reservados</span>
   </div>
 </footer>
 
@@ -335,7 +350,7 @@
       <h2>Tu pedido</h2>
       <span class="drawer-items-count" id="drawer-count">0 items</span>
     </div>
-    <button class="btn-cerrar-drawer" id="btnCerrarCarrito">✕</button>
+    <button class="btn-cerrar-drawer" id="btnCerrarCarrito" aria-label="Cerrar carrito">✕</button>
   </div>
   <!-- ═══ DATOS DEL CLIENTE — colapsable ═══
        FIX: antes este formulario estaba siempre expandido,
@@ -398,6 +413,11 @@
   </div>
 </aside>
 
+<!-- ═══ VOLVER ARRIBA ═══ -->
+<button id="btnVolverArriba" class="btn-volver-arriba" aria-label="Volver arriba">
+  <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" fill="none" stroke-width="2.5"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+</button>
+
 <!-- ═══ TOAST ═══ -->
 <div class="toast" id="toast"></div>
 
@@ -413,7 +433,7 @@
      independiente en el carrito. -->
 <div class="modal-overlay" id="modalPresentacionOverlay">
   <div class="modal-presentacion-card">
-    <button class="modal-auth-close" id="modalPresentacionClose">✕</button>
+    <button class="modal-auth-close" id="modalPresentacionClose" aria-label="Cerrar selección de presentación">✕</button>
 
     <div class="modal-presentacion-header">
       <div class="modal-presentacion-thumb" id="modalPresentacionThumb">🥖</div>
@@ -442,15 +462,84 @@
 <!-- ═══ MODAL LOGIN / REGISTRO ═══ -->
 <div class="modal-auth-overlay" id="modalAuthOverlay">
   <div class="modal-auth-card">
-    <button class="modal-auth-close" id="modalAuthClose">✕</button>
-    <h3 style="text-align:center; margin-bottom:16px;">Ingresá con Google</h3>
-    <p style="text-align:center; color:var(--gris); font-size:.85rem; margin-bottom:20px;">Registrate o inicia sesión para acceder a puntos y beneficios.</p>
-    <button class="btn-google" onclick="loginWithGoogle()" style="width:100%;">
-      <svg viewBox="0 0 24 24" width="20" height="20" style="margin-right:8px;"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 01-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
-      Ingresar con Google
-    </button>
+    <button class="modal-auth-close" id="modalAuthClose" aria-label="Cerrar inicio de sesión">✕</button>
+
+    <!-- ═══ PESTAÑAS: Google / Email ═══ -->
+    <div class="auth-tabs">
+      <button class="auth-tab active" id="authTabGoogle" type="button">Google</button>
+      <button class="auth-tab" id="authTabEmail" type="button">Email</button>
+    </div>
+
+    <!-- ═══ FORM: Google (el que ya existía) ═══ -->
+    <div class="auth-form active" id="authFormGoogle">
+      <p class="auth-form-intro">Registrate o iniciá sesión con tu cuenta de Google.</p>
+      <button class="btn-google" onclick="loginWithGoogle()" style="width:100%;">
+        <svg viewBox="0 0 24 24" width="20" height="20" style="margin-right:8px;"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 01-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+        Ingresar con Google
+      </button>
+    </div>
+
+    <!-- ═══ FORM: Email — login / registro / recuperar, con sub-tabs internas ═══ -->
+    <div class="auth-form" id="authFormEmail">
+
+      <!-- Sub-navegación: Iniciar sesión ⇄ Crear cuenta -->
+      <div style="display:flex; gap:8px; margin-bottom:4px;">
+        <button type="button" id="authModoLogin" class="auth-tab active" style="flex:1; border-radius: var(--radio-sm); border:1px solid var(--humo);">Iniciar sesión</button>
+        <button type="button" id="authModoRegistro" class="auth-tab" style="flex:1; border-radius: var(--radio-sm); border:1px solid var(--humo);">Crear cuenta</button>
+      </div>
+
+      <div class="auth-error" id="authEmailError"></div>
+
+      <!-- ── Vista: Iniciar sesión ── -->
+      <div id="authVistaLogin">
+        <div class="login-campo">
+          <label>Email</label>
+          <input type="email" id="authLoginEmail" placeholder="tu@email.com" autocomplete="email">
+        </div>
+        <div class="login-campo">
+          <label>Contraseña</label>
+          <input type="password" id="authLoginPassword" placeholder="••••••••" autocomplete="current-password">
+        </div>
+        <button class="btn-login" id="btnAuthLogin" type="button">Ingresar</button>
+        <button type="button" id="btnAbrirRecuperar" style="background:none; border:none; color:var(--neon-blue); font-size:var(--fs-xs); margin-top:10px; cursor:pointer; width:100%; text-align:center; text-decoration:underline;">¿Olvidaste tu contraseña?</button>
+      </div>
+
+      <!-- ── Vista: Crear cuenta ── -->
+      <div id="authVistaRegistro" style="display:none;">
+        <div class="login-campo">
+          <label>Nombre de usuario</label>
+          <input type="text" id="authRegNombre" placeholder="Cómo querés que te llamemos" autocomplete="nickname">
+        </div>
+        <div class="login-campo">
+          <label>Email</label>
+          <input type="email" id="authRegEmail" placeholder="tu@email.com" autocomplete="email">
+        </div>
+        <div class="login-campo">
+          <label>Teléfono <small style="color:var(--gris); font-weight:400; text-transform:none;">(opcional)</small></label>
+          <input type="tel" id="authRegTelefono" placeholder="Ej: 5491112345678" autocomplete="tel">
+        </div>
+        <div class="login-campo">
+          <label>Contraseña</label>
+          <input type="password" id="authRegPassword" placeholder="Mínimo 6 caracteres" autocomplete="new-password">
+        </div>
+        <button class="btn-login" id="btnAuthRegistro" type="button">Crear cuenta</button>
+      </div>
+
+      <!-- ── Vista: Recuperar contraseña ── -->
+      <div id="authVistaRecuperar" style="display:none;">
+        <p style="text-align:center; color:var(--gris); font-size:.82rem; margin-bottom:14px;">Ingresá tu email y te mandamos un link para elegir una contraseña nueva.</p>
+        <div class="login-campo">
+          <label>Email</label>
+          <input type="email" id="authRecuperarEmail" placeholder="tu@email.com" autocomplete="email">
+        </div>
+        <button class="btn-login" id="btnAuthRecuperar" type="button">Enviar link de recuperación</button>
+        <button type="button" id="btnVolverALogin" style="background:none; border:none; color:var(--gris); font-size:var(--fs-xs); margin-top:10px; cursor:pointer; width:100%; text-align:center;">← Volver a iniciar sesión</button>
+      </div>
+
+    </div>
   </div>
 </div>
+
 
 
 <!-- ═══════════════════════════════════════
@@ -588,7 +677,9 @@
 <script type="module">
   import {
     db, collection, getDocs, getDoc, updateDoc, doc, setDoc,
-    auth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut
+    auth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut,
+    createUserWithEmailAndPassword, signInWithEmailAndPassword,
+    sendPasswordResetEmail, fetchSignInMethodsForEmail
   } from './js/firebase.js';
 
   const ADMIN_EMAIL = 'agustinsalvador@gmail.com';
@@ -652,6 +743,171 @@
     }
   };
 
+  // ═══════════════════════════════════════════════════════════
+  // LOGIN CON EMAIL/CONTRASEÑA — registro, inicio de sesión,
+  // recuperación de contraseña y pestañas del modal.
+  // ═══════════════════════════════════════════════════════════
+
+  // ── Pestañas principales: Google / Email ──
+  const authTabGoogle  = document.getElementById('authTabGoogle');
+  const authTabEmail   = document.getElementById('authTabEmail');
+  const authFormGoogle = document.getElementById('authFormGoogle');
+  const authFormEmail  = document.getElementById('authFormEmail');
+
+  authTabGoogle?.addEventListener('click', () => {
+    authTabGoogle.classList.add('active');
+    authTabEmail.classList.remove('active');
+    authFormGoogle.classList.add('active');
+    authFormEmail.classList.remove('active');
+  });
+  authTabEmail?.addEventListener('click', () => {
+    authTabEmail.classList.add('active');
+    authTabGoogle.classList.remove('active');
+    authFormEmail.classList.add('active');
+    authFormGoogle.classList.remove('active');
+  });
+
+  // ── Sub-vistas dentro de la pestaña Email: login / registro / recuperar ──
+  const authModoLogin      = document.getElementById('authModoLogin');
+  const authModoRegistro   = document.getElementById('authModoRegistro');
+  const authVistaLogin     = document.getElementById('authVistaLogin');
+  const authVistaRegistro  = document.getElementById('authVistaRegistro');
+  const authVistaRecuperar = document.getElementById('authVistaRecuperar');
+  const authEmailError     = document.getElementById('authEmailError');
+
+  function mostrarVistaEmail(vista) {
+    authVistaLogin.style.display     = vista === 'login'     ? 'block' : 'none';
+    authVistaRegistro.style.display  = vista === 'registro'  ? 'block' : 'none';
+    authVistaRecuperar.style.display = vista === 'recuperar' ? 'block' : 'none';
+    authModoLogin.classList.toggle('active', vista === 'login');
+    authModoRegistro.classList.toggle('active', vista === 'registro');
+    limpiarErrorEmail();
+  }
+  authModoLogin?.addEventListener('click', () => mostrarVistaEmail('login'));
+  authModoRegistro?.addEventListener('click', () => mostrarVistaEmail('registro'));
+  document.getElementById('btnAbrirRecuperar')?.addEventListener('click', () => mostrarVistaEmail('recuperar'));
+  document.getElementById('btnVolverALogin')?.addEventListener('click', () => mostrarVistaEmail('login'));
+
+  function mostrarErrorEmail(texto) {
+    authEmailError.textContent = texto;
+    authEmailError.style.display = 'block';
+  }
+  function limpiarErrorEmail() {
+    authEmailError.textContent = '';
+    authEmailError.style.display = 'none';
+  }
+
+  // Traduce los códigos de error más comunes de Firebase Auth a
+  // mensajes claros en español — por defecto Firebase los tira en
+  // inglés técnico ("Firebase: Error (auth/wrong-password).").
+  function traducirErrorAuth(error) {
+    const codigo = error?.code || '';
+    const mapa = {
+      'auth/invalid-email':        'El email no es válido.',
+      'auth/user-not-found':       'No encontramos una cuenta con ese email.',
+      'auth/wrong-password':       'La contraseña es incorrecta.',
+      'auth/invalid-credential':   'Email o contraseña incorrectos.',
+      'auth/email-already-in-use': 'Ya existe una cuenta con ese email.',
+      'auth/weak-password':        'La contraseña debe tener al menos 6 caracteres.',
+      'auth/missing-password':     'Ingresá una contraseña.',
+      'auth/too-many-requests':    'Demasiados intentos. Esperá un momento y volvé a intentar.',
+    };
+    return mapa[codigo] || 'Hubo un error. Revisá los datos e intentá de nuevo.';
+  }
+
+  // ── Iniciar sesión con email + contraseña ──
+  document.getElementById('btnAuthLogin')?.addEventListener('click', async () => {
+    limpiarErrorEmail();
+    const email    = document.getElementById('authLoginEmail')?.value.trim();
+    const password = document.getElementById('authLoginPassword')?.value || '';
+
+    if (!email || !password) {
+      mostrarErrorEmail('Completá email y contraseña.');
+      return;
+    }
+
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+      modalOverlay.classList.remove('show');
+    } catch (error) {
+      console.error('Error al iniciar sesión:', error);
+      mostrarErrorEmail(traducirErrorAuth(error));
+    }
+  });
+
+  // ── Crear cuenta con email + contraseña ──
+  document.getElementById('btnAuthRegistro')?.addEventListener('click', async () => {
+    limpiarErrorEmail();
+    const nombre   = document.getElementById('authRegNombre')?.value.trim();
+    const email    = document.getElementById('authRegEmail')?.value.trim();
+    const telefono = document.getElementById('authRegTelefono')?.value.trim();
+    const password = document.getElementById('authRegPassword')?.value || '';
+
+    if (!nombre || !email || !password) {
+      mostrarErrorEmail('Completá nombre de usuario, email y contraseña.');
+      return;
+    }
+    if (password.length < 6) {
+      mostrarErrorEmail('La contraseña debe tener al menos 6 caracteres.');
+      return;
+    }
+
+    try {
+      // FIX: si ya existe una cuenta de Google con este mismo
+      // email, createUserWithEmailAndPassword falla con
+      // 'auth/email-already-in-use'. En vez de solo mostrar el
+      // error genérico, avisamos específicamente que esa cuenta
+      // ya existe con Google, para que el cliente use ese botón
+      // en vez de quedar confundido pensando que su registro
+      // falló sin motivo — así ambos métodos terminan
+      // representando al mismo cliente (mismo email = mismos
+      // puntos), sin crear una cuenta duplicada.
+      const metodosExistentes = await fetchSignInMethodsForEmail(auth, email);
+      if (metodosExistentes.includes('google.com')) {
+        mostrarErrorEmail('Ese email ya tiene una cuenta con Google. Usá la pestaña "Google" para ingresar.');
+        return;
+      }
+
+      const cred = await createUserWithEmailAndPassword(auth, email, password);
+
+      // Se guarda el apodo y teléfono en Firestore — Firebase Auth
+      // en sí no tiene campo de "nombre de usuario" para email/
+      // contraseña, así que vive en /usuarios/{uid} junto con los
+      // datos de puntos que ya se manejan ahí.
+      await setDoc(doc(db, 'usuarios', cred.user.uid), {
+        nombreUsuario: nombre,
+        telefono: telefono || '',
+        dineroAcumulado: 0,
+        puntos: 0,
+      }, { merge: true });
+
+      modalOverlay.classList.remove('show');
+    } catch (error) {
+      console.error('Error al crear cuenta:', error);
+      mostrarErrorEmail(traducirErrorAuth(error));
+    }
+  });
+
+  // ── Recuperar contraseña ──
+  document.getElementById('btnAuthRecuperar')?.addEventListener('click', async () => {
+    limpiarErrorEmail();
+    const email = document.getElementById('authRecuperarEmail')?.value.trim();
+
+    if (!email) {
+      mostrarErrorEmail('Ingresá tu email.');
+      return;
+    }
+
+    try {
+      await sendPasswordResetEmail(auth, email);
+      mostrarVistaEmail('login');
+      window.mostrarToast?.('Te enviamos un email con el link para elegir una nueva contraseña 📧');
+    } catch (error) {
+      console.error('Error al enviar recuperación:', error);
+      mostrarErrorEmail(traducirErrorAuth(error));
+    }
+  });
+
   const isPWA = window.matchMedia('(display-mode: standalone)').matches;
   const welcomeOverlay = document.getElementById('welcomeOverlay');
   const panelPublico   = document.getElementById('panelPublico');
@@ -712,91 +968,125 @@
   });
 
   async function cargarDatosPuntos(uid) {
-    const userDocRef = doc(db, 'usuarios', uid);
-    let userData;
-    const userSnap = await getDoc(userDocRef);
-    if (userSnap.exists()) {
-      userData = userSnap.data();
-    } else {
-      userData = { dineroAcumulado: 0, puntos: 0 };
-      await setDoc(userDocRef, userData);
-    }
-
-    document.getElementById('puntosTotalGastado').textContent = '$' + (userData.dineroAcumulado || 0).toLocaleString('es-AR');
-    document.getElementById('puntosPuntos').textContent = userData.puntos || 0;
-
-    if (puntosBarTitulo) puntosBarTitulo.textContent = (userData.puntos || 0) + ' puntos acumulados';
-    if (puntosBarSub)    puntosBarSub.textContent    = 'Tocá para ver tus recompensas';
-
-    const recSnap = await getDocs(collection(db, 'recompensas'));
-    const recompensas = [];
-    recSnap.forEach(d => recompensas.push({ id: d.id, ...d.data() }));
-    recompensas.sort((a, b) => a.umbralPuntos - b.umbralPuntos);
-
-    const timeline = document.getElementById('timelineRecompensas');
-    if (!timeline) return;
-
-    const puntosUsuario = userData.puntos || 0;
-
-    // ── Barra de progreso visual hacia la próxima recompensa ──
-    // Puramente decorativa: lee los mismos `recompensas` y
-    // `puntosUsuario` ya calculados arriba, no cambia ninguna
-    // lógica de negocio existente.
-    const progresoFill = document.getElementById('puntosProgresoFill');
-    if (progresoFill) {
-      const siguienteRecompensa = recompensas.find(r => r.umbralPuntos > puntosUsuario);
-      if (siguienteRecompensa) {
-        const anteriorUmbral = recompensas
-          .filter(r => r.umbralPuntos <= puntosUsuario)
-          .reduce((max, r) => Math.max(max, r.umbralPuntos), 0);
-        const rango = siguienteRecompensa.umbralPuntos - anteriorUmbral;
-        const avance = puntosUsuario - anteriorUmbral;
-        const porcentaje = rango > 0 ? Math.min(100, Math.round((avance / rango) * 100)) : 0;
-        progresoFill.style.width = porcentaje + '%';
-      } else if (recompensas.length > 0) {
-        // Ya alcanzó la recompensa más alta disponible
-        progresoFill.style.width = '100%';
+    // FIX: antes esta función no tenía ningún try/catch — si
+    // Firestore fallaba (sin conexión, permisos, lo que sea), el
+    // cliente logueado se quedaba con la sección de puntos
+    // atascada en su estado inicial ("Cargando...") para siempre,
+    // sin ningún mensaje de error ni forma de saber qué pasó.
+    try {
+      const userDocRef = doc(db, 'usuarios', uid);
+      let userData;
+      const userSnap = await getDoc(userDocRef);
+      if (userSnap.exists()) {
+        userData = userSnap.data();
+      } else {
+        userData = { dineroAcumulado: 0, puntos: 0 };
+        await setDoc(userDocRef, userData);
       }
-    }
 
-    timeline.innerHTML = recompensas.map(r => {
-      const alcanzada = puntosUsuario >= r.umbralPuntos;
-      return `
-        <div class="timeline-item ${alcanzada ? 'alcanzado' : ''}">
-          <h4>${r.descripcion}</h4>
-          <p><span class="timeline-puntos">${r.umbralPuntos} pts</span> ${alcanzada ? '✅ Alcanzado' : '🔒 Te faltan ' + (r.umbralPuntos - puntosUsuario) + ' pts'}</p>
-          ${alcanzada ? `<button class="recompensa-btn">Canjear</button>` : ''}
-        </div>`;
-    }).join('');
+      document.getElementById('puntosTotalGastado').textContent = '$' + (userData.dineroAcumulado || 0).toLocaleString('es-AR');
+      document.getElementById('puntosPuntos').textContent = userData.puntos || 0;
 
-    timeline.querySelectorAll('.recompensa-btn').forEach((btn, i) => {
-      btn.addEventListener('click', async (e) => {
-        e.stopPropagation();
-        const r = recompensas[i];
-        if (!confirm(`¿Canjear "${r.descripcion}"?`)) return;
-        const nuevosPuntos = puntosUsuario - r.umbralPuntos;
-        await updateDoc(userDocRef, { puntos: nuevosPuntos >= 0 ? nuevosPuntos : 0 });
-        window.open(`https://wa.me/5492215376246?text=${encodeURIComponent(r.mensaje)}`, '_blank');
-        cargarDatosPuntos(uid);
+      if (puntosBarTitulo) puntosBarTitulo.textContent = (userData.puntos || 0) + ' puntos acumulados';
+      if (puntosBarSub)    puntosBarSub.textContent    = 'Tocá para ver tus recompensas';
+
+      const recSnap = await getDocs(collection(db, 'recompensas'));
+      const recompensas = [];
+      recSnap.forEach(d => recompensas.push({ id: d.id, ...d.data() }));
+      recompensas.sort((a, b) => a.umbralPuntos - b.umbralPuntos);
+
+      const timeline = document.getElementById('timelineRecompensas');
+      if (!timeline) return;
+
+      const puntosUsuario = userData.puntos || 0;
+
+      // ── Barra de progreso visual hacia la próxima recompensa ──
+      // Puramente decorativa: lee los mismos `recompensas` y
+      // `puntosUsuario` ya calculados arriba, no cambia ninguna
+      // lógica de negocio existente.
+      const progresoFill = document.getElementById('puntosProgresoFill');
+      if (progresoFill) {
+        const siguienteRecompensa = recompensas.find(r => r.umbralPuntos > puntosUsuario);
+        if (siguienteRecompensa) {
+          const anteriorUmbral = recompensas
+            .filter(r => r.umbralPuntos <= puntosUsuario)
+            .reduce((max, r) => Math.max(max, r.umbralPuntos), 0);
+          const rango = siguienteRecompensa.umbralPuntos - anteriorUmbral;
+          const avance = puntosUsuario - anteriorUmbral;
+          const porcentaje = rango > 0 ? Math.min(100, Math.round((avance / rango) * 100)) : 0;
+          progresoFill.style.width = porcentaje + '%';
+        } else if (recompensas.length > 0) {
+          // Ya alcanzó la recompensa más alta disponible
+          progresoFill.style.width = '100%';
+        }
+      }
+
+      // Escape básico para texto que viene de Firestore — evita
+      // HTML inyectado si alguna descripción contiene < > & etc.
+      const esc = (t) => String(t ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+      timeline.innerHTML = recompensas.map(r => {
+        const alcanzada = puntosUsuario >= r.umbralPuntos;
+        return `
+          <div class="timeline-item ${alcanzada ? 'alcanzado' : ''}">
+            <h4>${esc(r.descripcion)}</h4>
+            <p><span class="timeline-puntos">${r.umbralPuntos} pts</span> ${alcanzada ? '✅ Alcanzado' : '🔒 Te faltan ' + (r.umbralPuntos - puntosUsuario) + ' pts'}</p>
+            ${alcanzada ? `<button class="recompensa-btn">Canjear</button>` : ''}
+          </div>`;
+      }).join('');
+
+      timeline.querySelectorAll('.recompensa-btn').forEach((btn, i) => {
+        btn.addEventListener('click', async (e) => {
+          e.stopPropagation();
+          const r = recompensas[i];
+          if (!confirm(`¿Canjear "${r.descripcion}"?`)) return;
+          try {
+            const nuevosPuntos = puntosUsuario - r.umbralPuntos;
+            await updateDoc(userDocRef, { puntos: nuevosPuntos >= 0 ? nuevosPuntos : 0 });
+            window.open(`https://wa.me/5492215376246?text=${encodeURIComponent(r.mensaje)}`, '_blank');
+            cargarDatosPuntos(uid);
+          } catch (errorCanje) {
+            console.error('Error al canjear recompensa:', errorCanje);
+            window.mostrarToast?.('No se pudo canjear la recompensa. Intentá de nuevo.', 'error');
+          }
+        });
       });
-    });
+    } catch (error) {
+      console.error('Error cargando datos de puntos:', error);
+      const timeline = document.getElementById('timelineRecompensas');
+      if (timeline) {
+        timeline.innerHTML = `<p style="color:var(--gris); font-size:var(--fs-sm); text-align:center; padding:var(--sp-md) 0;">No se pudieron cargar tus puntos. Revisá tu conexión y volvé a intentar.</p>`;
+      }
+      if (puntosBarSub) puntosBarSub.textContent = 'Error al cargar — tocá para reintentar';
+    }
   }
 
-  const originalPedir = window.pedirPorWhatsApp;
-  window.pedirPorWhatsApp = async function() {
-    if (!usuarioActual) return originalPedir();
-    await originalPedir();
-    const carrito = JSON.parse(localStorage.getItem('carrito') || '[]');
-    const total = carrito.reduce((s, i) => s + i.precio * i.cantidad, 0);
-    const puntos = Math.floor(total / 10000) * 100;
-    const userDocRef = doc(db, 'usuarios', usuarioActual.uid);
-    const userSnap = await getDoc(userDocRef);
-    let userData = { dineroAcumulado: 0, puntos: 0 };
-    if (userSnap.exists()) userData = userSnap.data();
-    await setDoc(userDocRef, {
-      dineroAcumulado: (userData.dineroAcumulado || 0) + total,
-      puntos: (userData.puntos || 0) + puntos
-    }, { merge: true });
+  // FIX CRÍTICO — acreditación de puntos de fidelidad.
+  // Antes este bloque envolvía window.pedirPorWhatsApp, pero como
+  // este módulo corre ANTES que carrito.js (orden de documento),
+  // carrito.js pisaba el wrapper al definir la función real y los
+  // puntos nunca se sumaban. Peor: el wrapper releía el carrito de
+  // localStorage después de que ya estaba vacío, así que el total
+  // siempre daba $0. Ahora carrito.js llama a este hook con el
+  // total real ANTES de vaciar el carrito — orden de carga y datos
+  // correctos garantizados.
+  window._onPedidoRegistrado = async ({ total }) => {
+    if (!usuarioActual || !(total > 0)) return;
+    try {
+      const puntos = Math.floor(total / 10000) * 100;
+      const userDocRef = doc(db, 'usuarios', usuarioActual.uid);
+      const userSnap = await getDoc(userDocRef);
+      let userData = { dineroAcumulado: 0, puntos: 0 };
+      if (userSnap.exists()) userData = userSnap.data();
+      await setDoc(userDocRef, {
+        dineroAcumulado: (userData.dineroAcumulado || 0) + total,
+        puntos: (userData.puntos || 0) + puntos
+      }, { merge: true });
+      // Refresca la sección de puntos al instante para que el
+      // cliente vea sus puntos nuevos sin recargar la página.
+      cargarDatosPuntos(usuarioActual.uid);
+    } catch (err) {
+      console.error('Error al acreditar puntos:', err);
+    }
   };
 
   document.getElementById('btnVerHistorial').addEventListener('click', async () => {
@@ -809,8 +1099,8 @@
       pedidos.sort((a,b) => new Date(b.fecha) - new Date(a.fecha));
       lista.innerHTML = pedidos.map(p => `
         <div class="pedido-historial">
-          <div>${new Date(p.fecha).toLocaleDateString()} - Total: $${p.total.toLocaleString('es-AR')}</div>
-          <div>${p.productos.map(pr => pr.nombre).join(', ')}</div>
+          <div>${new Date(p.fecha).toLocaleDateString()} - Total: $${Number(p.total || 0).toLocaleString('es-AR')}</div>
+          <div>${p.productos.map(pr => String(pr.nombre || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')).join(', ')}</div>
           <button class="repetir-pedido">Repetir</button>
         </div>
       `).join('');
@@ -1108,45 +1398,141 @@
   }
 </script>
 
-<!-- ═══ BOTÓN INSTALAR PWA ═══ -->
+<!-- ═══ BOTÓN INSTALAR APP — siempre visible ═══
+     FIX: antes este botón solo existía si el navegador disparaba
+     el evento "beforeinstallprompt", que Chrome NO dispara si:
+     - la PWA ya se instaló antes en ese dispositivo (aunque se
+       haya desinstalado después, hay un cooldown largo)
+     - el usuario ya descartó el prompt recientemente
+     - es Safari/iPhone, que NUNCA implementó ese evento
+     El dueño reportó "no me aparece" — no era un bug de código,
+     era el comportamiento esperado del navegador en esos casos,
+     pero no había ninguna alternativa visual para esos casos. Ahora
+     el botón SIEMPRE está en el sitio: si el navegador permite el
+     instalado automático, lo dispara; si no, muestra instrucciones
+     manuales paso a paso según el dispositivo detectado. -->
+<button id="btnInstalarPWA" class="btn-instalar-app" aria-label="Instalar la app">
+  <span>📲</span> Instalar App
+</button>
+
+<!-- Modal de instrucciones manuales — solo se abre si el
+     navegador no permite el instalado automático -->
+<div class="modal-overlay" id="modalInstalarOverlay">
+  <div class="modal-instalar-card">
+    <button class="modal-auth-close" id="modalInstalarClose" aria-label="Cerrar instrucciones de instalación">✕</button>
+    <h3 style="text-align:center; margin-bottom:10px;">📲 Instalar la app</h3>
+    <div id="modalInstalarContenido"></div>
+  </div>
+</div>
+
 <script>
+(function() {
+  const btn = document.getElementById('btnInstalarPWA');
+  const modalOverlay   = document.getElementById('modalInstalarOverlay');
+  const modalClose     = document.getElementById('modalInstalarClose');
+  const modalContenido = document.getElementById('modalInstalarContenido');
+
+  let deferredPrompt = null;
+
+  // Si el navegador SÍ soporta el instalado automático, guardamos
+  // el evento para dispararlo cuando el cliente toque el botón.
   window.addEventListener('beforeinstallprompt', (e) => {
     e.preventDefault();
-    window.deferredPrompt = e;
-    const installBtn = document.createElement('button');
-    installBtn.id = 'btnInstalarPWA';
-    installBtn.textContent = '📲 Instalar App';
-    // FIX: antes este botón tenía z-index:9999, muy por encima
-    // del carrito (z-index:301), así que al abrir el carrito para
-    // pagar el botón "Instalar App" quedaba flotando encima de
-    // todo, tapando el botón de confirmar pedido. Se bajó el
-    // z-index a 140 (por debajo del carrito y de la admin-bar) y
-    // además se oculta explícitamente mientras el carrito está
-    // abierto, usando los mismos hooks que ya togglean la clase
-    // "abierto" del drawer.
-    installBtn.style.cssText = 'position:fixed; bottom:90px; right:20px; z-index:140; background:var(--neon-pink); color:#fff; border:none; padding:12px 18px; border-radius:99px; font-weight:700; box-shadow:0 0 20px var(--neon-pink); transition:opacity .2s, visibility .2s;';
-    document.body.appendChild(installBtn);
-    installBtn.addEventListener('click', () => {
-      window.deferredPrompt.prompt();
-      window.deferredPrompt.userChoice.then(() => installBtn.remove());
-    });
-
-    // Ocultar/mostrar según el estado del carrito
-    function sincronizarVisibilidadInstallBtn() {
-      const drawer = document.getElementById('carritoDrawer');
-      const abierto = drawer?.classList.contains('abierto');
-      installBtn.style.opacity    = abierto ? '0' : '1';
-      installBtn.style.visibility = abierto ? 'hidden' : 'visible';
-    }
-    // El drawer cambia de clase al abrir/cerrar — se observa con
-    // MutationObserver en vez de duplicar los listeners de
-    // apertura/cierre que ya existen en otro bloque de script.
-    const drawerEl = document.getElementById('carritoDrawer');
-    if (drawerEl) {
-      new MutationObserver(sincronizarVisibilidadInstallBtn).observe(drawerEl, { attributes: true, attributeFilter: ['class'] });
-    }
-    sincronizarVisibilidadInstallBtn();
+    deferredPrompt = e;
   });
+
+  // Si ya está instalada y corriendo en modo standalone, no tiene
+  // sentido ofrecer instalarla de nuevo.
+  const yaInstalada = window.matchMedia('(display-mode: standalone)').matches
+    || window.navigator.standalone === true;
+  if (yaInstalada && btn) {
+    btn.style.display = 'none';
+  }
+
+  function detectarPlataforma() {
+    const ua = navigator.userAgent || '';
+    const esIOS = /iPhone|iPad|iPod/i.test(ua);
+    const esAndroid = /Android/i.test(ua);
+    return { esIOS, esAndroid };
+  }
+
+  function mostrarInstruccionesManuales() {
+    const { esIOS, esAndroid } = detectarPlataforma();
+
+    if (esIOS) {
+      modalContenido.innerHTML = `
+        <p style="color:var(--gris-l); font-size:.88rem; line-height:1.7; text-align:center;">
+          En iPhone la instalación es manual, es rápido:
+        </p>
+        <ol style="color:var(--gris-l); font-size:.85rem; line-height:2; padding-left:20px; margin-top:10px;">
+          <li>Tocá el botón <strong>Compartir</strong> (el cuadrado con la flecha hacia arriba) en la barra de Safari</li>
+          <li>Deslizá y elegí <strong>"Agregar a inicio"</strong></li>
+          <li>Confirmá tocando <strong>"Agregar"</strong> arriba a la derecha</li>
+        </ol>`;
+    } else if (esAndroid) {
+      modalContenido.innerHTML = `
+        <p style="color:var(--gris-l); font-size:.88rem; line-height:1.7; text-align:center;">
+          Para instalarla en tu Android:
+        </p>
+        <ol style="color:var(--gris-l); font-size:.85rem; line-height:2; padding-left:20px; margin-top:10px;">
+          <li>Tocá el menú <strong>⋮</strong> (los 3 puntitos) arriba a la derecha de Chrome</li>
+          <li>Elegí <strong>"Instalar app"</strong> o <strong>"Agregar a pantalla de inicio"</strong></li>
+          <li>Confirmá tocando <strong>"Instalar"</strong></li>
+        </ol>`;
+    } else {
+      modalContenido.innerHTML = `
+        <p style="color:var(--gris-l); font-size:.88rem; line-height:1.7; text-align:center;">
+          Para instalarla desde tu computadora:
+        </p>
+        <ol style="color:var(--gris-l); font-size:.85rem; line-height:2; padding-left:20px; margin-top:10px;">
+          <li>Buscá el ícono de instalar <strong>⊕</strong> en la barra de direcciones del navegador</li>
+          <li>Hacé clic y confirmá <strong>"Instalar"</strong></li>
+        </ol>`;
+    }
+    modalOverlay.classList.add('abierto');
+  }
+
+  btn?.addEventListener('click', async () => {
+    if (deferredPrompt) {
+      // El navegador SÍ soporta el flujo automático
+      deferredPrompt.prompt();
+      const resultado = await deferredPrompt.userChoice;
+      if (resultado.outcome === 'accepted') {
+        btn.style.display = 'none';
+      }
+      deferredPrompt = null;
+    } else {
+      // No hay evento disponible (iPhone, o Chrome no lo ofreció
+      // esta vez) — mostramos instrucciones manuales en vez de
+      // que el botón no haga nada.
+      mostrarInstruccionesManuales();
+    }
+  });
+
+  modalClose?.addEventListener('click', () => modalOverlay.classList.remove('abierto'));
+  modalOverlay?.addEventListener('click', (e) => {
+    if (e.target === modalOverlay) modalOverlay.classList.remove('abierto');
+  });
+
+  // Una vez instalada, ocultamos el botón definitivamente
+  window.addEventListener('appinstalled', () => {
+    if (btn) btn.style.display = 'none';
+  });
+
+  // Ocultar/mostrar según el estado del carrito, igual que antes
+  function sincronizarVisibilidadInstallBtn() {
+    if (!btn || yaInstalada) return;
+    const drawer = document.getElementById('carritoDrawer');
+    const abierto = drawer?.classList.contains('abierto');
+    btn.style.opacity    = abierto ? '0' : '1';
+    btn.style.visibility = abierto ? 'hidden' : 'visible';
+  }
+  const drawerEl = document.getElementById('carritoDrawer');
+  if (drawerEl) {
+    new MutationObserver(sincronizarVisibilidadInstallBtn).observe(drawerEl, { attributes: true, attributeFilter: ['class'] });
+  }
+  sincronizarVisibilidadInstallBtn();
+})();
 </script>
 
 <!-- ═══════════════════════════════════════
@@ -1241,6 +1627,10 @@
     } else {
       header.classList.remove('compacto');
     }
+    // Botón "volver arriba": aparece recién cuando el usuario
+    // bajó lo suficiente como para que valga la pena.
+    const btnArriba = document.getElementById('btnVolverArriba');
+    if (btnArriba) btnArriba.classList.toggle('visible', scrollY > 600);
     lastScrollY = scrollY;
     ticking = false;
   }
@@ -1275,6 +1665,11 @@
       cartBtn.classList.add('destello');
       setTimeout(() => cartBtn.classList.remove('destello'), 550);
     }
+  });
+
+  // ── Click del botón "volver arriba" ──
+  document.getElementById('btnVolverArriba')?.addEventListener('click', () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   });
 })();
 </script>

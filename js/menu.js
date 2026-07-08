@@ -88,6 +88,21 @@ function aplicarFiltros() {
   if (texto) lista = lista.filter(p => p.nombre.toLowerCase().includes(texto) || p.descripcion.toLowerCase().includes(texto));
   renderProductos(lista);
   $id('menuCount').textContent = `${lista.length} producto${lista.length !== 1 ? 's' : ''}`;
+
+  // MEJORA: el título de la sección ahora refleja lo que se está
+  // viendo. Antes decía "Todos los productos" siempre, aunque se
+  // filtrara por categoría o se buscara algo — confundía porque el
+  // título no coincidía con la grilla. textContent = sin riesgo XSS.
+  const tituloEl = $id('menuTitulo');
+  if (tituloEl) {
+    if (texto) {
+      tituloEl.textContent = `Resultados para “${busquedaInput.value.trim()}”`;
+    } else if (categoriaActual !== 'TODOS') {
+      tituloEl.textContent = categoriaActual;
+    } else {
+      tituloEl.textContent = 'Todos los productos';
+    }
+  }
 }
 
 /**
@@ -205,7 +220,7 @@ function renderProductos(lista) {
     card.className = 'producto';
     card.innerHTML = `
       <div class="prod-thumb">
-        ${imagenSrc ? `<img src="${imagenSrc}" alt="${nombre}" loading="lazy">` : `<div class="prod-thumb-emoji">🥖</div>`}
+        ${imagenSrc ? `<img src="${imagenSrc}" alt="${nombre}" loading="lazy" onerror="this.outerHTML='<div class=&quot;prod-thumb-emoji&quot;>🥖</div>';">` : `<div class="prod-thumb-emoji">🥖</div>`}
         ${hayOferta ? `<div class="prod-oferta-chip">−${producto.descuento}%</div>` : ''}
       </div>
       <div class="producto-body">
@@ -298,7 +313,7 @@ function actualizarPromociones() {
       const card = document.createElement('div');
       card.className = 'promo-card';
       card.innerHTML = `
-        <div class="promo-card-img">${p.imagenURL ? `<img src="${p.imagenURL}" alt="${nombreSeguro}">` : '🥖'}</div>
+        <div class="promo-card-img">${p.imagenURL ? `<img src="${p.imagenURL}" alt="${nombreSeguro}" onerror="this.outerHTML='🥖';">` : '🥖'}</div>
         <div class="promo-card-body">
           <div class="promo-card-badge">-${p.descuento}%</div>
           <div class="promo-card-nombre">${nombreSeguro}</div>

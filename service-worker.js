@@ -1,6 +1,8 @@
-const CACHE_NAME = 'salvador-v8'; // versión nueva para forzar actualización
+const CACHE_NAME = 'salvador-v10'; // versión nueva para forzar actualización
 const urlsToCache = [
+  '/',
   '/index.html',
+  '/manifest.json',
   '/css/styles.css',
   '/js/menu.js',
   '/js/carrito.js',
