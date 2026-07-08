@@ -1948,9 +1948,29 @@ body:has(.carrito-drawer.abierto) .fab-whatsapp { opacity: 0; pointer-events: no
     min-height: min(52vh, 420px);
     padding-top: calc(var(--sp-lg) + env(safe-area-inset-top));
     padding-bottom: var(--sp-lg);
-    background-position: center center;
+    /* FIX — la imagen de fondo del hero se veía como una tira
+       angosta apenas reconocible en mobile. La causa no era la
+       imagen en sí: el hero mostraba título (3 líneas) + subtítulo
+       + 3 filas de chips, y todo ESE contenido apilado terminaba
+       siendo mucho más alto que el "min-height" de acá arriba —
+       el navegador estira el hero para que entre todo el texto, y
+       cuanto más angosto y alto queda el recuadro, más recorte
+       horizontal necesita "cover" para llenarlo con una foto que
+       es más ancha que alta. Abajo se achica esa pila de
+       contenido para que el hero se mantenga cerca de esta altura
+       pensada — así la foto se recorta mucho menos.
+       "center 38%" además apunta el foco un poco arriba del
+       centro exacto, que suele ser donde está lo interesante de
+       una foto de comida/local (encima del cubre-mesas oscuro). */
+    background-position: center 38%;
   }
   .hero-pills { display: flex; }
+  /* Fila decorativa ("46 productos · 28 categorías · 10 ofertas")
+     — ya se repite esa info en el contador de cada sección del
+     menú. En mobile no aporta y agrega una fila entera de alto
+     al hero, empeorando el recorte de la foto de fondo. */
+  .hero-stats { display: none; }
+  .hero-sub { margin-bottom: var(--sp-sm); line-height: 1.5; }
 
   /* ══════════════════════════════════════════
      MENÚ — 2 columnas compactas, como apps de
@@ -2019,9 +2039,19 @@ body:has(.carrito-drawer.abierto) .fab-whatsapp { opacity: 0; pointer-events: no
     gap: 4px;
     flex-wrap: wrap;
   }
+  /* FIX — precio cortado a la mitad ("Desde $11.40" con el
+     último dígito comido). "white-space: nowrap" obligaba al
+     precio a quedarse en una sola línea, pero la columna de
+     texto en mobile (2 columnas + miniatura) no tiene ancho
+     para "Desde $11.400" completo — y como el contenedor tiene
+     overflow:hidden, el sobrante se recortaba en seco a mitad
+     de número en vez de mostrarse entero. Ahora se permite que
+     pase a una segunda línea: se ve completo, sin cortes. */
   .promo-card-final {
     font-size: 0.78rem;
-    white-space: nowrap;
+    white-space: normal;
+    overflow-wrap: break-word;
+    line-height: 1.25;
   }
   .promo-card-original { font-size: 0.6rem; }
   .promo-card-badge { font-size: 0.6rem; padding: 2px 6px; }
@@ -2539,7 +2569,15 @@ body:has(.carrito-drawer.abierto) .fab-whatsapp { opacity: 0; pointer-events: no
 }
 @media (max-width: 768px) {
   .menu-section-header { flex-direction: column; align-items: stretch; }
-  .menu-buscador { max-width: none; order: 3; }
+  /* FIX CRÍTICO — buscador gigante en mobile.
+     En fila (desktop) "flex: 1 1 220px" define un ANCHO base de
+     220px. Pero al pasar a flex-direction:column en mobile, el
+     eje principal cambia a VERTICAL — ese mismo "220px" pasaba a
+     interpretarse como ALTO, y flex-grow:1 lo estiraba todavía
+     más. Resultado: un óvalo gigante de ~220px+ de alto en vez
+     de una barra de búsqueda normal. Acá se resetea a "auto" en
+     el eje principal y el ancho completo se logra por afuera. */
+  .menu-buscador { flex: 0 0 auto; width: 100%; max-width: none; order: 3; }
   .menu-count { order: 2; }
 }
 
