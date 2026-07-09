@@ -556,6 +556,106 @@ window.eliminarRecompensa = async (id) => {
 cargarRecompensas();
 
 // ══════════════════════════════════════
+//  MÉTRICAS DE PUNTOS — usuarios y canjes
+// ══════════════════════════════════════
+// MEJORA: antes no existía ninguna vista de quién tiene puntos
+// acumulados ni de qué canjes se hicieron. Todo lo que sigue lee
+// /usuarios (cuentas con puntos) y /movimientosPuntos (historial
+// de puntos ganados/canjeados, que ahora se registra desde
+// index.html en cada pedido y en cada canje).
+async function cargarMetricasPuntos() {
+  const elUsuarios     = $id('lista-usuarios-puntos');
+  const elCanjes       = $id('lista-canjes');
+  const statUsuarios   = $id('rec-stat-usuarios');
+  const statCirculacion = $id('rec-stat-circulacion');
+  const statCanjes     = $id('rec-stat-canjes');
+  const statPendientes = $id('rec-stat-pendientes');
+  if (!elUsuarios) return;
+
+  try {
+    const [usuariosSnap, movimientosSnap] = await Promise.all([
+      getDocs(collection(db, 'usuarios')),
+      getDocs(collection(db, 'movimientosPuntos')),
+    ]);
+
+    const usuarios = usuariosSnap.docs
+      .map(d => ({ id: d.id, ...d.data() }))
+      .filter(u => (u.puntos || 0) > 0 || (u.dineroAcumulado || 0) > 0)
+      .sort((a, b) => (b.puntos || 0) - (a.puntos || 0));
+
+    const movimientos = movimientosSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+    const canjes = movimientos
+      .filter(m => m.tipo === 'canjeado')
+      .sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
+
+    // ── Métricas reales ──
+    const puntosEnCirculacion = usuariosSnap.docs.reduce((suma, d) => suma + (d.data().puntos || 0), 0);
+    const canjesPendientes = canjes.filter(c => c.estado === 'pendiente').length;
+
+    if (statUsuarios)    statUsuarios.textContent    = usuarios.length;
+    if (statCirculacion) statCirculacion.textContent = puntosEnCirculacion.toLocaleString('es-AR');
+    if (statCanjes)      statCanjes.textContent      = canjes.length;
+    if (statPendientes)  statPendientes.textContent  = canjesPendientes;
+
+    // ── Lista de usuarios con puntos ──
+    if (!usuarios.length) {
+      elUsuarios.innerHTML = `<p style="color:var(--gris); font-size:.85rem; padding:20px 0;">Todavía no hay clientes con puntos acumulados.</p>`;
+    } else {
+      elUsuarios.innerHTML = usuarios.map(u => `
+        <div class="prod-admin-row" style="justify-content:space-between;">
+          <div>
+            <strong>${escapeHTML(u.nombreUsuario || u.email || 'Cliente sin nombre')}</strong>
+            ${u.email ? `<span style="margin-left:12px; color:var(--gris-l); font-size:.78rem;">${escapeHTML(u.email)}</span>` : ''}
+            <div style="color:var(--gris-l); font-size:.78rem; margin-top:2px;">Total gastado: $${formatPrice(u.dineroAcumulado || 0)}</div>
+          </div>
+          <div style="text-align:right;">
+            <strong style="color:var(--mostaza);">${(u.puntos || 0).toLocaleString('es-AR')} pts</strong>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // ── Lista de canjes (verificación anti-abuso) ──
+    if (!canjes.length) {
+      elCanjes.innerHTML = `<p style="color:var(--gris); font-size:.85rem; padding:20px 0;">Todavía no hay canjes registrados.</p>`;
+    } else {
+      elCanjes.innerHTML = canjes.slice(0, 50).map(c => `
+        <div class="prod-admin-row" style="justify-content:space-between;">
+          <div>
+            <strong style="letter-spacing:.08em;">${escapeHTML(c.codigo || '—')}</strong>
+            <span style="margin-left:12px;">${escapeHTML(c.motivo || '')}</span>
+            <div style="color:var(--gris-l); font-size:.78rem; margin-top:2px;">
+              ${escapeHTML(c.clienteNombre || 'Cliente')} · ${c.puntos || 0} pts · ${new Date(c.fecha).toLocaleDateString()}
+            </div>
+          </div>
+          <div style="text-align:right; display:flex; flex-direction:column; align-items:flex-end; gap:6px;">
+            <span class="badge ${c.estado === 'entregado' ? 'badge-verde' : 'badge-gris'}">${c.estado === 'entregado' ? 'Entregado' : 'Pendiente'}</span>
+            ${c.estado !== 'entregado' ? `<button class="btn btn-primary btn-sm" onclick="marcarCanjeEntregado('${c.id}')">Marcar entregado</button>` : ''}
+          </div>
+        </div>
+      `).join('');
+    }
+  } catch (err) {
+    console.error(err);
+    elUsuarios.innerHTML = `<p style="color:var(--rojo);">Error cargando usuarios con puntos</p>`;
+    if (elCanjes) elCanjes.innerHTML = `<p style="color:var(--rojo);">Error cargando canjes</p>`;
+  }
+}
+
+window.marcarCanjeEntregado = async (id) => {
+  try {
+    await updateDoc(doc(db, 'movimientosPuntos', id), { estado: 'entregado' });
+    toast('✓ Canje marcado como entregado');
+    cargarMetricasPuntos();
+  } catch (err) {
+    console.error(err);
+    toast('Error al actualizar el canje', 'error');
+  }
+};
+
+cargarMetricasPuntos();
+
+// ══════════════════════════════════════
 //  CÓDIGOS DE DESCUENTO
 // ══════════════════════════════════════
 

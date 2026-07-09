@@ -133,10 +133,10 @@
       <!-- ═══ LOGO PERSONALIZADO ═══
            Para poner tu propio logo: pegá la URL de la imagen
            acá abajo en src="...". Si la dejás vacía o la URL
-           falla, automáticamente se muestra el ícono  🥪  de
+           falla, automáticamente se muestra el ícono 🥖 de
            respaldo, así nunca queda un hueco roto. -->
       <img src="" alt="Logo Salvador" class="pub-logo-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-      <div class="pub-logo-img-fallback"> 🥪 </div>
+      <div class="pub-logo-img-fallback">🥖</div>
       <a href="index.html" class="pub-logo neon-logo">
         SALVADOR
         <small>FOOD EXPERIENCE</small>
@@ -236,9 +236,23 @@
             <span class="puntos-stat-label">Puntos</span>
           </div>
         </div>
+        <!-- MEJORA: antes en ningún lado se explicaba cómo se
+             ganan los puntos. Un pedido de menos de $10.000 no
+             suma ningún punto y el cliente no tenía forma de
+             saberlo de antemano. -->
+        <p class="puntos-como-ganar">🎁 Ganás <strong>100 puntos</strong> por cada <strong>$10.000</strong> en tus pedidos.</p>
         <h3>Línea de recompensas</h3>
         <div class="timeline" id="timelineRecompensas"></div>
         <p class="puntos-info">Al alcanzar un premio, podés canjear tu recompensa. Se abrirá WhatsApp con el mensaje listo.</p>
+
+        <!-- MEJORA: antes no existía ningún registro de puntos —
+             solo se veía el número total actual, sin poder ver de
+             dónde salió cada punto ganado o en qué se canjeó cada
+             punto gastado. -->
+        <div class="historial-pedidos">
+          <button class="btn-historial" id="btnVerHistorialPuntos">📜 Ver historial de puntos</button>
+          <div class="historial-lista" id="historialPuntosLista" style="display:none;"></div>
+        </div>
       </div>
     </div>
   </div>
@@ -419,6 +433,22 @@
 </button>
 
 <!-- ═══ TOAST ═══ -->
+<!-- ═══ MODAL DE CONFIRMACIÓN ═══
+     MEJORA: reemplaza al confirm() nativo del navegador (una
+     ventanita gris del sistema) por un modal con la misma estética
+     neon del resto del sitio. Se usa vía window.mostrarConfirmModal()
+     — devuelve una Promise<boolean>, igual de simple de usar que
+     confirm() pero sin romper la inmersión visual. -->
+<div class="modal-confirm-overlay" id="modalConfirmOverlay">
+  <div class="modal-confirm-card">
+    <p id="modalConfirmMensaje"></p>
+    <div class="modal-confirm-botones">
+      <button class="btn btn-secundario" id="modalConfirmCancelar">Cancelar</button>
+      <button class="btn btn-primary" id="modalConfirmAceptar">Confirmar</button>
+    </div>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <!-- ═══ ANIMACIÓN DE VUELO ═══ -->
@@ -676,7 +706,8 @@
 <!-- ═══ FIREBASE: AUTH ADMIN + LOGIN/PUNTOS + CMS — un solo módulo ═══ -->
 <script type="module">
   import {
-    db, collection, getDocs, getDoc, updateDoc, doc, setDoc,
+    db, collection, getDocs, getDoc, updateDoc, doc, setDoc, addDoc,
+    query, where, runTransaction,
     auth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut,
     createUserWithEmailAndPassword, signInWithEmailAndPassword,
     sendPasswordResetEmail, fetchSignInMethodsForEmail
@@ -713,6 +744,31 @@
   const puntosBarTitulo = document.getElementById('puntosResumenBarTitulo');
   const puntosBarSub    = document.getElementById('puntosResumenBarSub');
   let usuarioActual = null;
+
+  // ── Modal de confirmación reutilizable ──
+  // Reemplaza al confirm() nativo del navegador. Uso:
+  //   const ok = await window.mostrarConfirmModal('¿Seguro?');
+  const modalConfirmOverlay   = document.getElementById('modalConfirmOverlay');
+  const modalConfirmMensaje   = document.getElementById('modalConfirmMensaje');
+  const modalConfirmCancelar  = document.getElementById('modalConfirmCancelar');
+  const modalConfirmAceptar   = document.getElementById('modalConfirmAceptar');
+  window.mostrarConfirmModal = (mensaje) => {
+    return new Promise((resolve) => {
+      if (!modalConfirmOverlay) { resolve(confirm(mensaje)); return; }
+      modalConfirmMensaje.textContent = mensaje;
+      modalConfirmOverlay.classList.add('show');
+      const limpiar = (resultado) => {
+        modalConfirmOverlay.classList.remove('show');
+        modalConfirmCancelar.removeEventListener('click', onCancelar);
+        modalConfirmAceptar.removeEventListener('click', onAceptar);
+        resolve(resultado);
+      };
+      const onCancelar = () => limpiar(false);
+      const onAceptar  = () => limpiar(true);
+      modalConfirmCancelar.addEventListener('click', onCancelar);
+      modalConfirmAceptar.addEventListener('click', onAceptar);
+    });
+  };
 
   btnUser.addEventListener('click', () => modalOverlay.classList.add('show'));
   modalClose.addEventListener('click', () => modalOverlay.classList.remove('show'));
@@ -967,6 +1023,16 @@
     }
   });
 
+  // Código corto para que el mostrador pueda verificar un canje a
+  // simple vista. Sin 0/O/1/I para que no se confundan al leerlo
+  // en voz alta o escribirlo.
+  function generarCodigoCanje() {
+    const chars = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
+    let codigo = '';
+    for (let i = 0; i < 6; i++) codigo += chars[Math.floor(Math.random() * chars.length)];
+    return codigo;
+  }
+
   async function cargarDatosPuntos(uid) {
     // FIX: antes esta función no tenía ningún try/catch — si
     // Firestore fallaba (sin conexión, permisos, lo que sea), el
@@ -979,8 +1045,25 @@
       const userSnap = await getDoc(userDocRef);
       if (userSnap.exists()) {
         userData = userSnap.data();
+        // MEJORA: las cuentas creadas con Google nunca guardaban
+        // nombre ni email en /usuarios/{uid} — solo las de
+        // email/contraseña lo hacían al registrarse. Sin esto, el
+        // admin no tenía forma de saber de quién era cada cuenta
+        // en la lista de "Usuarios con puntos". Se completa una
+        // sola vez, la próxima vez que ese cliente entre.
+        if (!userData.email && usuarioActual?.email) {
+          const parche = { email: usuarioActual.email };
+          if (!userData.nombreUsuario && usuarioActual.displayName) parche.nombreUsuario = usuarioActual.displayName;
+          await setDoc(userDocRef, parche, { merge: true });
+          userData = { ...userData, ...parche };
+        }
       } else {
-        userData = { dineroAcumulado: 0, puntos: 0 };
+        userData = {
+          dineroAcumulado: 0,
+          puntos: 0,
+          nombreUsuario: usuarioActual?.displayName || '',
+          email: usuarioActual?.email || '',
+        };
         await setDoc(userDocRef, userData);
       }
 
@@ -1037,16 +1120,71 @@
       timeline.querySelectorAll('.recompensa-btn').forEach((btn, i) => {
         btn.addEventListener('click', async (e) => {
           e.stopPropagation();
+          // FIX — bloqueo de doble clic. Sin esto, tocar el botón
+          // dos veces rápido antes de que se deshabilite podía
+          // descontar la misma recompensa dos veces y abrir
+          // WhatsApp dos veces.
+          if (btn.disabled) return;
           const r = recompensas[i];
-          if (!confirm(`¿Canjear "${r.descripcion}"?`)) return;
+          const confirmado = await window.mostrarConfirmModal(`¿Canjear "${r.descripcion}" por ${r.umbralPuntos} puntos?`);
+          if (!confirmado) return;
+
+          btn.disabled = true;
+          const textoOriginal = btn.textContent;
+          btn.textContent = 'Canjeando...';
+
           try {
-            const nuevosPuntos = puntosUsuario - r.umbralPuntos;
-            await updateDoc(userDocRef, { puntos: nuevosPuntos >= 0 ? nuevosPuntos : 0 });
-            window.open(`https://wa.me/5492215376246?text=${encodeURIComponent(r.mensaje)}`, '_blank');
+            // FIX CRÍTICO — condición de carrera. Antes se restaba
+            // en el cliente usando el valor de puntos que ya
+            // estaba en pantalla ("puntosUsuario - umbral"). Si
+            // pasó un rato desde que se abrió la sección, o hay dos
+            // pestañas abiertas, ese valor puede estar desactualizado
+            // y se pisa el saldo real. Una transacción de Firestore
+            // lee el saldo ACTUAL en el mismo instante en que
+            // descuenta, de forma indivisible — nadie más puede
+            // meterse en el medio.
+            await runTransaction(db, async (transaction) => {
+              const snap = await transaction.get(userDocRef);
+              const puntosActuales = snap.exists() ? (snap.data().puntos || 0) : 0;
+              if (puntosActuales < r.umbralPuntos) {
+                throw new Error('PUNTOS_INSUFICIENTES');
+              }
+              transaction.update(userDocRef, { puntos: puntosActuales - r.umbralPuntos });
+            });
+
+            // MEJORA — registro del canje para el negocio. Antes un
+            // canje no dejaba ningún rastro más que el mensaje de
+            // WhatsApp (que se puede reenviar o volver a mostrar
+            // desde una captura vieja). Ahora cada canje genera un
+            // código único y queda guardado con estado "pendiente"
+            // — el mostrador puede pedir ese código, verificarlo en
+            // el panel admin y marcarlo como entregado, evitando que
+            // se reutilice.
+            const codigo = generarCodigoCanje();
+            await addDoc(collection(db, 'movimientosPuntos'), {
+              uid,
+              clienteNombre: userData.nombreUsuario || usuarioActual?.email || 'Cliente',
+              tipo: 'canjeado',
+              puntos: r.umbralPuntos,
+              motivo: r.descripcion,
+              recompensaId: r.id || null,
+              codigo,
+              estado: 'pendiente',
+              fecha: new Date().toISOString(),
+            });
+
+            window.open(`https://wa.me/5492215376246?text=${encodeURIComponent(r.mensaje + `\n\nCódigo de canje: ${codigo}`)}`, '_blank');
             cargarDatosPuntos(uid);
           } catch (errorCanje) {
-            console.error('Error al canjear recompensa:', errorCanje);
-            window.mostrarToast?.('No se pudo canjear la recompensa. Intentá de nuevo.', 'error');
+            if (errorCanje.message === 'PUNTOS_INSUFICIENTES') {
+              window.mostrarToast?.('Tus puntos cambiaron — recargá la página e intentá de nuevo.', 'error');
+              cargarDatosPuntos(uid);
+            } else {
+              console.error('Error al canjear recompensa:', errorCanje);
+              window.mostrarToast?.('No se pudo canjear la recompensa. Intentá de nuevo.', 'error');
+            }
+            btn.disabled = false;
+            btn.textContent = textoOriginal;
           }
         });
       });
@@ -1081,6 +1219,21 @@
         dineroAcumulado: (userData.dineroAcumulado || 0) + total,
         puntos: (userData.puntos || 0) + puntos
       }, { merge: true });
+      // MEJORA — deja registro del movimiento en el historial de
+      // puntos. Antes solo se actualizaba el total acumulado, sin
+      // ningún rastro de POR QUÉ subió. Solo se registra si el
+      // pedido realmente sumó puntos (pedidos por debajo del
+      // umbral de $10.000 no generan un movimiento vacío de "+0").
+      if (puntos > 0) {
+        await addDoc(collection(db, 'movimientosPuntos'), {
+          uid: usuarioActual.uid,
+          clienteNombre: userData.nombreUsuario || usuarioActual.email || 'Cliente',
+          tipo: 'ganado',
+          puntos,
+          motivo: `Pedido por $${total.toLocaleString('es-AR')}`,
+          fecha: new Date().toISOString(),
+        });
+      }
       // Refresca la sección de puntos al instante para que el
       // cliente vea sus puntos nuevos sin recargar la página.
       cargarDatosPuntos(usuarioActual.uid);
@@ -1089,29 +1242,123 @@
     }
   };
 
+  document.getElementById('btnVerHistorialPuntos')?.addEventListener('click', async () => {
+    const lista = document.getElementById('historialPuntosLista');
+    lista.style.display = lista.style.display === 'none' ? 'block' : 'none';
+    if (lista.style.display === 'block' && usuarioActual) {
+      lista.innerHTML = `<p style="color:var(--gris); font-size:var(--fs-sm); text-align:center; padding:var(--sp-sm) 0;">Cargando...</p>`;
+      try {
+        // Nota: se ordena y recorta del lado del cliente en vez de
+        // usar orderBy() en la consulta — combinar where()+orderBy()
+        // sobre campos distintos exige crear un índice compuesto en
+        // la consola de Firebase antes de que la consulta funcione.
+        // Para un volumen chico por usuario, ordenar acá evita esa
+        // dependencia operativa.
+        const q = query(collection(db, 'movimientosPuntos'), where('uid', '==', usuarioActual.uid));
+        const snap = await getDocs(q);
+        const movimientos = [];
+        snap.forEach(d => movimientos.push(d.data()));
+        movimientos.sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
+        movimientos.length = Math.min(movimientos.length, 20);
+
+        if (!movimientos.length) {
+          lista.innerHTML = `<p style="color:var(--gris); font-size:var(--fs-sm); text-align:center; padding:var(--sp-sm) 0;">Todavía no tenés movimientos de puntos.</p>`;
+          return;
+        }
+
+        const esc = (t) => String(t ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+        lista.innerHTML = movimientos.map(m => {
+          const esGanado = m.tipo === 'ganado';
+          return `
+            <div class="pedido-historial movimiento-puntos ${esGanado ? 'ganado' : 'canjeado'}">
+              <div>${new Date(m.fecha).toLocaleDateString()} — ${esc(m.motivo)}</div>
+              <div class="movimiento-puntos-valor">${esGanado ? '+' : '−'}${m.puntos} pts</div>
+            </div>
+          `;
+        }).join('');
+      } catch (err) {
+        console.error('Error al cargar historial de puntos:', err);
+        lista.innerHTML = `<p style="color:var(--gris); font-size:var(--fs-sm); text-align:center; padding:var(--sp-sm) 0;">No se pudo cargar tu historial. Revisá tu conexión.</p>`;
+      }
+    }
+  });
+
   document.getElementById('btnVerHistorial').addEventListener('click', async () => {
     const lista = document.getElementById('historialLista');
     lista.style.display = lista.style.display === 'none' ? 'block' : 'none';
+
     if (lista.style.display === 'block' && usuarioActual) {
-      const snap = await getDocs(collection(db, 'pedidos'));
-      const pedidos = [];
-      snap.forEach(d => { if (d.data().uid === usuarioActual.uid) pedidos.push({ id: d.id, ...d.data() }); });
-      pedidos.sort((a,b) => new Date(b.fecha) - new Date(a.fecha));
-      lista.innerHTML = pedidos.map(p => `
-        <div class="pedido-historial">
-          <div>${new Date(p.fecha).toLocaleDateString()} - Total: $${Number(p.total || 0).toLocaleString('es-AR')}</div>
-          <div>${p.productos.map(pr => String(pr.nombre || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')).join(', ')}</div>
-          <button class="repetir-pedido">Repetir</button>
-        </div>
-      `).join('');
-      lista.querySelectorAll('.repetir-pedido').forEach((btn, i) => {
-        btn.addEventListener('click', () => {
-          const pedido = pedidos[i];
-          localStorage.setItem('carrito', JSON.stringify(pedido.productos.map(p => ({...p, cantidad: p.cantidad || 1}))));
-          window._renderCarritoExterno();
-          document.getElementById('btnAbrirCarrito').click();
+      lista.innerHTML = `<p style="color:var(--gris); font-size:var(--fs-sm); text-align:center; padding:var(--sp-sm) 0;">Cargando tus pedidos...</p>`;
+      try {
+        // FIX CRÍTICO — antes esto traía TODA la colección
+        // "pedidos" (nombre, teléfono y dirección de CADA pedido
+        // de CADA cliente del local) al navegador y recién ahí
+        // filtraba en el cliente. Además, como el pedido nunca
+        // guardaba el campo "uid" (ver carrito.js), ese filtro
+        // nunca encontraba nada — el historial quedaba vacío
+        // siempre. Ahora se pide a Firestore directamente "solo
+        // los pedidos de este uid": arregla el historial vacío Y
+        // la fuga de datos de otros clientes en el mismo golpe.
+        const q = query(collection(db, 'pedidos'), where('uid', '==', usuarioActual.uid));
+        const snap = await getDocs(q);
+        const pedidos = [];
+        snap.forEach(d => pedidos.push({ id: d.id, ...d.data() }));
+        pedidos.sort((a,b) => new Date(b.fecha) - new Date(a.fecha));
+
+        if (!pedidos.length) {
+          lista.innerHTML = `<p style="color:var(--gris); font-size:var(--fs-sm); text-align:center; padding:var(--sp-sm) 0;">Todavía no tenés pedidos registrados.</p>`;
+          return;
+        }
+
+        lista.innerHTML = pedidos.map(p => `
+          <div class="pedido-historial">
+            <div>${new Date(p.fecha).toLocaleDateString()} - Total: $${Number(p.total || 0).toLocaleString('es-AR')}</div>
+            <div>${p.productos.map(pr => String(pr.nombre || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')).join(', ')}</div>
+            <button class="repetir-pedido">Repetir</button>
+          </div>
+        `).join('');
+        lista.querySelectorAll('.repetir-pedido').forEach((btn, i) => {
+          btn.addEventListener('click', () => {
+            const pedido = pedidos[i];
+            // FIX — antes se repetía el pedido con los precios
+            // CONGELADOS de ese momento histórico. Si un precio
+            // cambió desde entonces, el cliente agregaba el
+            // producto al carrito con un precio viejo sin
+            // enterarse. Ahora, si el producto sigue existiendo en
+            // el catálogo actual, se usa su precio VIGENTE para la
+            // misma presentación (unidad / x3 / x6 / docena); si ya
+            // no existe, se avisa y se usa el último precio
+            // conocido como respaldo.
+            const catalogo = window._catalogoActual || [];
+            let huboProductosDiscontinuados = false;
+            const productosActualizados = pedido.productos.map(p => {
+              const actual = catalogo.find(c => c.id && c.id === p.id);
+              if (!actual) { huboProductosDiscontinuados = true; return { ...p, cantidad: p.cantidad || 1 }; }
+              const unidades = Number(p.presentacionUnidades) || 1;
+              let precioVigente = actual.precio;
+              if (unidades === 3 && actual.precio3unidades > 0) precioVigente = actual.precio3unidades;
+              else if (unidades === 6 && actual.precio6unidades > 0) precioVigente = actual.precio6unidades;
+              else if (unidades === 12 && actual.precioDocena > 0) precioVigente = actual.precioDocena;
+              return { ...p, cantidad: p.cantidad || 1, precio: precioVigente };
+            });
+            localStorage.setItem('carrito', JSON.stringify(productosActualizados));
+            window._renderCarritoExterno();
+            document.getElementById('btnAbrirCarrito').click();
+            if (huboProductosDiscontinuados) {
+              window.mostrarToast?.('Algunos productos de ese pedido ya no están disponibles y no se agregaron.', 'error');
+              // Los productos discontinuados no tienen precio vigente confiable — se sacan del carrito.
+              const carritoFiltrado = productosActualizados.filter(p => catalogo.some(c => c.id && c.id === p.id));
+              localStorage.setItem('carrito', JSON.stringify(carritoFiltrado));
+              window._renderCarritoExterno();
+            } else {
+              window.mostrarToast?.('Pedido agregado al carrito con los precios actuales');
+            }
+          });
         });
-      });
+      } catch (err) {
+        console.error('Error al cargar historial de pedidos:', err);
+        lista.innerHTML = `<p style="color:var(--gris); font-size:var(--fs-sm); text-align:center; padding:var(--sp-sm) 0;">No se pudo cargar tu historial. Revisá tu conexión.</p>`;
+      }
     }
   });
 

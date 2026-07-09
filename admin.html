@@ -267,6 +267,36 @@
               <button class="btn btn-primary" onclick="agregarRecompensa()">+ Agregar premio</button>
               <div id="lista-recompensas" style="margin-top:20px;"></div>
             </div>
+
+            <!-- MEJORA: métricas reales del programa de puntos —
+                 antes no había ninguna forma de ver esta
+                 información desde el admin. -->
+            <div class="stats-grid" style="margin-top:20px;">
+              <div class="stat-card"><div class="stat-label">Usuarios con puntos</div><div class="stat-val" id="rec-stat-usuarios">0</div></div>
+              <div class="stat-card"><div class="stat-label">Puntos en circulación</div><div class="stat-val" id="rec-stat-circulacion">0</div></div>
+              <div class="stat-card"><div class="stat-label">Canjes totales</div><div class="stat-val" id="rec-stat-canjes">0</div></div>
+              <div class="stat-card"><div class="stat-label">Canjes sin entregar</div><div class="stat-val" id="rec-stat-pendientes">0</div></div>
+            </div>
+
+            <!-- MEJORA: antes no había ninguna forma de ver qué
+                 clientes tienen puntos acumulados. -->
+            <div class="admin-card" style="margin-top:20px;">
+              <div class="admin-card-header"><span class="admin-card-title">👥 Usuarios con puntos</span></div>
+              <div id="lista-usuarios-puntos"><p style="color:var(--gris); font-size:.85rem;">Cargando...</p></div>
+            </div>
+
+            <!-- MEJORA: registro de canjes verificable — antes un
+                 canje no dejaba ningún rastro para el negocio más
+                 que el mensaje de WhatsApp (reenviable, no
+                 verificable). Cada canje ahora tiene un código
+                 único; acá se marca como "entregado" una vez que
+                 se hizo efectivo, para que un mismo código no se
+                 pueda reclamar dos veces. -->
+            <div class="admin-card" style="margin-top:20px;">
+              <div class="admin-card-header"><span class="admin-card-title">🎟️ Canjes — verificación</span></div>
+              <p style="color:var(--gris); font-size:.8rem; margin-bottom:12px;">Pedile el código al cliente antes de entregar el premio. Si ya figura "Entregado", no lo repitas.</p>
+              <div id="lista-canjes"><p style="color:var(--gris); font-size:.85rem;">Cargando...</p></div>
+            </div>
           </div>
 
         </div><!-- /admin-content -->

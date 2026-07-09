@@ -54,6 +54,13 @@ async function cargarProductos() {
     aplicarFiltros();
     actualizarPromociones();
     actualizarHeroStats();
+
+    // Se expone el catálogo recién cargado para que otras partes
+    // del sitio (como "Repetir pedido" en el historial) puedan
+    // consultar el precio VIGENTE de un producto por su id, en vez
+    // de usar el precio congelado que quedó guardado en un pedido
+    // viejo.
+    window._catalogoActual = productos;
   } catch (err) {
     console.error('Error cargando productos:', err);
     mostrarEstado('⚠️', 'Error cargando el menú. Revisá tu conexión.');

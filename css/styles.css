@@ -2815,3 +2815,83 @@ body:has(.carrito-drawer.abierto) .fab-whatsapp { opacity: 0; pointer-events: no
   .oferta-banner::after { animation: none; display: none; }
   .footer-social-btn:hover { transform: none; }
 }
+
+/* ═══════════════════════════════════════════════════
+   SISTEMA DE PUNTOS — arreglos y mejoras
+   Modal de confirmación reutilizable, texto de cómo se
+   ganan los puntos, e historial de movimientos (ganado/
+   canjeado). Bloque aditivo, no toca reglas existentes.
+   ═══════════════════════════════════════════════════ */
+
+.puntos-como-ganar {
+  font-size: var(--fs-sm);
+  color: var(--gris-l);
+  background: rgba(255, 195, 0, 0.08);
+  border: 1px solid rgba(255, 195, 0, 0.25);
+  border-radius: var(--radio-sm);
+  padding: var(--sp-sm);
+  margin-bottom: var(--sp-md);
+}
+.puntos-como-ganar strong { color: var(--neon-yellow); }
+
+/* ── Historial de puntos: reutiliza .pedido-historial pero en
+   layout de fila (motivo a la izquierda, +/- puntos a la
+   derecha) en vez de columna. ── */
+.movimiento-puntos {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: var(--sp-sm);
+}
+.movimiento-puntos-valor {
+  font-family: 'Orbitron', sans-serif;
+  font-weight: 600;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.movimiento-puntos.ganado .movimiento-puntos-valor { color: #2ecc71; }
+.movimiento-puntos.canjeado .movimiento-puntos-valor { color: var(--neon-pink); }
+
+/* ── Botón secundario — usado en el modal de confirmación ── */
+.btn-secundario {
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--gris-l);
+  border: 1px solid var(--glass-border);
+}
+.btn-secundario:hover { background: rgba(255, 255, 255, 0.1); color: var(--crema); }
+
+/* ── Modal de confirmación — reemplaza al confirm() nativo ── */
+.modal-confirm-overlay {
+  position: fixed; inset: 0; z-index: 300;
+  background: rgba(6, 9, 18, 0.75);
+  backdrop-filter: blur(6px);
+  display: flex; align-items: center; justify-content: center;
+  padding: var(--sp-md);
+  opacity: 0; visibility: hidden;
+  transition: opacity 0.2s ease, visibility 0.2s ease;
+}
+.modal-confirm-overlay.show { opacity: 1; visibility: visible; }
+.modal-confirm-card {
+  background: var(--carbon);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radio-lg);
+  padding: var(--sp-lg);
+  max-width: 360px; width: 100%;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.5), 0 0 30px rgba(255, 0, 136, 0.1);
+  transform: translateY(12px) scale(0.98);
+  transition: transform 0.2s ease;
+}
+.modal-confirm-overlay.show .modal-confirm-card { transform: translateY(0) scale(1); }
+.modal-confirm-card p {
+  color: var(--crema);
+  font-size: var(--fs-base);
+  line-height: 1.5;
+  margin-bottom: var(--sp-md);
+  text-align: center;
+}
+.modal-confirm-botones {
+  display: flex; gap: var(--sp-sm);
+}
+.modal-confirm-botones .btn { flex: 1; justify-content: center; }
+
+@media (prefers-reduced-motion: reduce) {
+  .modal-confirm-overlay, .modal-confirm-card { transition: opacity 0.1s; transform: none; }
+}

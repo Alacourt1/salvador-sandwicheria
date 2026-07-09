@@ -8,7 +8,12 @@ import {
   updateDoc,
   deleteDoc,
   setDoc,
-  doc
+  doc,
+  query,
+  where,
+  orderBy,
+  limit,
+  runTransaction
 } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-storage.js";
 import {
@@ -64,6 +69,11 @@ export {
   deleteDoc,
   setDoc,
   doc,
+  query,
+  where,
+  orderBy,
+  limit,
+  runTransaction,
   ref,
   uploadBytes,
   getDownloadURL,

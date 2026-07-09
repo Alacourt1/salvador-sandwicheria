@@ -1,4 +1,4 @@
-import { db, collection, addDoc, getDocs } from './firebase.js';
+import { db, auth, collection, addDoc, getDocs } from './firebase.js';
 import { saveStorage, loadStorage } from './utils/storage.js';
 import { showToast } from './utils/toast.js';
 import { $id } from './utils/dom.js';
@@ -173,6 +173,13 @@ window.pedirPorWhatsApp = async () => {
 
   try {
     await addDoc(collection(db, 'pedidos'), {
+      // FIX CRÍTICO: acá faltaba guardar el uid del cliente. El
+      // historial "Ver mis pedidos" filtra pedidos comparando
+      // contra el uid del usuario logueado — sin este campo, esa
+      // comparación nunca daba verdadero y el historial quedaba
+      // vacío para siempre, sin importar cuántos pedidos reales
+      // tuviera el cliente.
+      uid: auth.currentUser?.uid || null,
       clienteNombre: nombre,
       clienteTelefono: telefono,
       clienteDireccion: direccion,
