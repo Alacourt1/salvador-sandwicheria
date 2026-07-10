@@ -1,4 +1,4 @@
-const CACHE_NAME = 'salvador-v15'; // versión nueva para forzar actualización
+const CACHE_NAME = 'salvador-v16'; // versión nueva para forzar actualización
 const urlsToCache = [
   '/',
   '/index.html',

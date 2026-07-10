@@ -14,6 +14,13 @@ function formatPrice(value) {
 const WHATSAPP_NUMBER = '5492215376246';
 let carrito = loadStorage('carrito', []);
 window.codigoDescuento = null;
+// MEJORA: evita que dos toques rápidos en "Confirmar pedido" disparen
+// dos flujos de pedirPorWhatsApp() en paralelo — cada uno esperando su
+// propio modal de upsell de bebida, pero compitiendo por los MISMOS
+// botones del DOM. Un click solo puede resolver UNA de las dos
+// promesas en danza, dejando a la otra esperando para siempre — eso
+// se sentía como que "se trababa" el pedido.
+let procesandoPedido = false;
 
 function guardar() {
   saveStorage('carrito', carrito);
@@ -184,6 +191,7 @@ function mostrarUpsellBebida() {
 }
 
 window.pedirPorWhatsApp = async () => {
+  if (procesandoPedido) return; // ya hay un pedido en curso — se ignora el toque extra
   if (carrito.length === 0) {
     showToast('El carrito está vacío', 'error');
     return;
@@ -218,6 +226,19 @@ window.pedirPorWhatsApp = async () => {
     showToast('Completá tu nombre antes de confirmar el pedido', 'error');
     return;
   }
+
+  // MEJORA: bloqueo real contra doble envío — desde acá hasta el
+  // "finally" de abajo, un segundo toque al botón no hace nada.
+  procesandoPedido = true;
+  const btnConfirmar = document.querySelector('.btn-pedir-wa');
+  const htmlOriginalBtn = btnConfirmar?.innerHTML;
+  if (btnConfirmar) {
+    btnConfirmar.disabled = true;
+    btnConfirmar.style.opacity = '.6';
+    btnConfirmar.style.pointerEvents = 'none';
+  }
+
+  try {
 
   // Se ofrece una bebida ACÁ — antes de calcular subtotal/total,
   // para que si el cliente suma una, quede reflejada en el pedido
@@ -309,6 +330,19 @@ window.pedirPorWhatsApp = async () => {
   window.codigoDescuento = null;
   guardar();
   showToast('¡Pedido enviado! 🚀');
+
+  } finally {
+    // Se ejecuta SIEMPRE — pedido exitoso, error al guardar, o
+    // cualquier "return" temprano de acá para abajo — así el botón
+    // nunca queda pegado en estado "procesando" para siempre.
+    procesandoPedido = false;
+    if (btnConfirmar) {
+      btnConfirmar.disabled = false;
+      btnConfirmar.style.opacity = '';
+      btnConfirmar.style.pointerEvents = '';
+      if (htmlOriginalBtn) btnConfirmar.innerHTML = htmlOriginalBtn;
+    }
+  }
 };
 
 function render() {

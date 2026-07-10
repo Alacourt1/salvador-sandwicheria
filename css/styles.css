@@ -2858,9 +2858,21 @@ body:has(.carrito-drawer.abierto) .fab-whatsapp { opacity: 0; pointer-events: no
 }
 .btn-secundario:hover { background: rgba(255, 255, 255, 0.1); color: var(--crema); }
 
-/* ── Modal de confirmación — reemplaza al confirm() nativo ── */
+/* ── Modal de confirmación — reemplaza al confirm() nativo ──
+   FIX CRÍTICO: z-index estaba en 300, pero .carrito-drawer usa
+   301 — un valor MÁS ALTO. Como este modal se abre justo cuando
+   el carrito está abierto (el upsell de bebida se dispara desde
+   "Confirmar pedido por WhatsApp", que vive DENTRO del drawer),
+   el propio drawer quedaba tapando el modal por completo. En
+   mobile/PWA el drawer ocupa el 100% de la pantalla, así que el
+   modal quedaba 100% invisible y sus botones 100% imposibles de
+   tocar — de ahí que el pedido se trabara sin poder continuar. En
+   desktop el drawer es más angosto, por eso ahí se llegaba a ver
+   "raro" (una parte tapada, otra asomando). Con 320 el modal
+   siempre queda por ENCIMA del drawer (301), pero por debajo del
+   login (400) y de la pantalla de bienvenida PWA (9999). */
 .modal-confirm-overlay {
-  position: fixed; inset: 0; z-index: 300;
+  position: fixed; inset: 0; z-index: 320;
   background: rgba(6, 9, 18, 0.75);
   backdrop-filter: blur(6px);
   display: flex; align-items: center; justify-content: center;
