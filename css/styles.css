@@ -2916,24 +2916,12 @@ body:has(.carrito-drawer.abierto) .fab-whatsapp { opacity: 0; pointer-events: no
   animation: countdownPulso 1.6s ease-in-out infinite;
 }
 .oferta-countdown-banner.visible { display: block; }
-.ofertas-countdown-chip {
-  font-family: 'Inter', sans-serif;
-  font-size: var(--fs-xs);
-  font-weight: 600;
-  color: var(--neon-yellow);
-  background: rgba(255, 195, 0, 0.1);
-  border: 1px solid rgba(255, 195, 0, 0.3);
-  border-radius: 99px;
-  padding: 3px 10px;
-  text-shadow: none;
-  animation: countdownPulso 1.6s ease-in-out infinite;
-}
 @keyframes countdownPulso {
   0%, 100% { opacity: 1; }
   50%      { opacity: .62; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .oferta-countdown-banner, .ofertas-countdown-chip { animation: none; }
+  .oferta-countdown-banner { animation: none; }
 }
 
 /* ── 4. Header: pills sin texto en pantallas muy angostas ──
@@ -3027,4 +3015,78 @@ body:has(.carrito-drawer.abierto) .fab-whatsapp { opacity: 0; pointer-events: no
   background: linear-gradient(160deg, rgba(255, 0, 136, 0.06), transparent 55%);
   z-index: 1; pointer-events: none;
   mix-blend-mode: overlay;
+}
+
+/* ═══════════════════════════════════════════════════
+   VISTA "MI CUENTA" + CIERRE DE SESIÓN + UPSELL BEBIDA
+   Bloque aditivo.
+   ═══════════════════════════════════════════════════ */
+
+.cuenta-info {
+  display: flex; flex-direction: column; align-items: center;
+  gap: 6px;
+  padding: var(--sp-md) 0 var(--sp-lg);
+  text-align: center;
+}
+.cuenta-avatar {
+  width: 56px; height: 56px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.8rem;
+  background: rgba(0, 229, 255, 0.1);
+  border: 1px solid rgba(0, 229, 255, 0.3);
+  border-radius: 50%;
+  margin-bottom: 4px;
+}
+.cuenta-nombre {
+  font-family: 'Orbitron', sans-serif;
+  font-size: var(--fs-lg);
+  color: var(--crema);
+}
+.cuenta-email {
+  font-size: var(--fs-sm);
+  color: var(--gris-l);
+}
+.btn-cerrar-sesion {
+  background: rgba(255, 0, 136, 0.12);
+  color: var(--neon-pink);
+  border: 1px solid rgba(255, 0, 136, 0.3);
+}
+.btn-cerrar-sesion:hover { background: rgba(255, 0, 136, 0.22); }
+
+/* ── Upsell de bebida al confirmar el pedido ── */
+.modal-upsell-card p {
+  font-family: 'Orbitron', sans-serif;
+  font-size: var(--fs-lg);
+  color: var(--neon-yellow);
+  text-shadow: var(--shadow-yellow);
+}
+.upsell-opciones {
+  display: flex; flex-direction: column; gap: 8px;
+  margin-bottom: var(--sp-sm);
+}
+.upsell-opcion-btn {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 10px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radio-sm);
+  padding: var(--sp-sm) var(--sp-md);
+  color: var(--crema);
+  font-family: 'Inter', sans-serif;
+  font-size: var(--fs-sm);
+  cursor: pointer;
+  min-height: var(--tap-min);
+  transition: border-color .15s, background .15s;
+}
+.upsell-opcion-btn:hover {
+  border-color: var(--neon-blue);
+  background: rgba(0, 229, 255, 0.08);
+}
+.upsell-opcion-nombre { text-align: left; }
+.upsell-opcion-precio {
+  font-family: 'Orbitron', sans-serif;
+  font-weight: 600;
+  color: var(--neon-yellow);
+  flex-shrink: 0;
+  white-space: nowrap;
 }

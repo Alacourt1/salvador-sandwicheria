@@ -80,6 +80,7 @@ window.agregarProducto = async () => {
   const precio      = numVal('precio');
   const descuento   = numVal('descuento');
   const oferta      = checked('oferta');
+  const esBebida    = checked('esBebida');
   const precioDocena = numVal('precioDocena');
   const precio3unidades = numVal('precio3unidades');
   const precio6unidades = numVal('precio6unidades');
@@ -110,14 +111,14 @@ window.agregarProducto = async () => {
   try {
     await addDoc(collection(db, 'productos'), {
       nombre, categoria, descripcion,
-      precio, descuento, oferta,
+      precio, descuento, oferta, esBebida,
       disponible: true,
       imagenURL: imagenURL || '',
       precioDocena: precioDocena > 0 ? precioDocena : null,
       precio3unidades: precio3unidades > 0 ? precio3unidades : null,
       precio6unidades: precio6unidades > 0 ? precio6unidades : null
     });
-    limpiarForm('nombre','categoria','descripcion','precio','precioDocena','precio3unidades','precio6unidades','descuento','oferta','imagenURL');
+    limpiarForm('nombre','categoria','descripcion','precio','precioDocena','precio3unidades','precio6unidades','descuento','oferta','esBebida','imagenURL');
     if (fileInput) fileInput.value = '';
     const preview = document.getElementById('previewImagen');
     if (preview) preview.style.display = 'none';
@@ -196,6 +197,7 @@ function editarProducto(id, datos) {
       <div style="display:flex;flex-direction:column;gap:8px;padding:6px 0;">
         <label style="display:flex;align-items:center;gap:8px;font-size:.84rem;color:var(--gris-l);cursor:pointer;"><input type="checkbox" id="_e_oferta" ${datos.oferta ? 'checked' : ''}> En oferta</label>
         <label style="display:flex;align-items:center;gap:8px;font-size:.84rem;color:var(--gris-l);cursor:pointer;"><input type="checkbox" id="_e_disponible" ${datos.disponible !== false ? 'checked' : ''}> Disponible</label>
+        <label style="display:flex;align-items:center;gap:8px;font-size:.84rem;color:var(--gris-l);cursor:pointer;"><input type="checkbox" id="_e_esBebida" ${datos.esBebida ? 'checked' : ''}> 🥤 Es una bebida</label>
       </div>
     </div>`;
   abrirModal(html, () => {
@@ -205,13 +207,14 @@ function editarProducto(id, datos) {
     const imagenURL = $id('_e_imagen')?.value.trim() || '';
     const oferta = $id('_e_oferta')?.checked ?? false;
     const disponible = $id('_e_disponible')?.checked ?? true;
+    const esBebida = $id('_e_esBebida')?.checked ?? false;
     const precioDocena = Number($id('_e_precioDocena')?.value) || 0;
     const precio3unidades = Number($id('_e_precio3unidades')?.value) || 0;
     const precio6unidades = Number($id('_e_precio6unidades')?.value) || 0;
     if (!nombre || !categoria) { toast('Completá nombre y categoría', 'error'); return false; }
     if (!precio && !precioDocena && !precio3unidades && !precio6unidades) { toast('Completá al menos un precio', 'error'); return false; }
     updateDoc(doc(db, 'productos', id), {
-      nombre, categoria, descripcion, precio, descuento, oferta, disponible, imagenURL,
+      nombre, categoria, descripcion, precio, descuento, oferta, disponible, esBebida, imagenURL,
       precioDocena: precioDocena > 0 ? precioDocena : null,
       precio3unidades: precio3unidades > 0 ? precio3unidades : null,
       precio6unidades: precio6unidades > 0 ? precio6unidades : null

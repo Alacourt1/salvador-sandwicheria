@@ -192,10 +192,7 @@
 <!-- ═══ PROMOCIONES ═══ -->
 <section class="promociones-section" id="promociones">
   <div class="promociones-inner">
-    <h2 class="promociones-title">
-      🔥 Ofertas del día
-      <span class="ofertas-countdown-chip" id="ofertasCountdownChip"></span>
-    </h2>
+    <h2 class="promociones-title">🔥 Ofertas del día</h2>
     <div class="promociones-grid" id="promociones-container"></div>
   </div>
 </section>
@@ -450,6 +447,19 @@
      neon del resto del sitio. Se usa vía window.mostrarConfirmModal()
      — devuelve una Promise<boolean>, igual de simple de usar que
      confirm() pero sin romper la inmersión visual. -->
+<!-- ═══ MODAL UPSELL: ofrecer una bebida antes de confirmar el pedido ═══
+     MEJORA: al confirmar por WhatsApp, si el pedido no tiene
+     ninguna bebida y hay bebidas cargadas en el catálogo (marcadas
+     como tal desde el admin), se ofrece sumar una antes de enviar
+     el pedido — mismo patrón visual que el modal de confirmación. -->
+<div class="modal-confirm-overlay" id="modalUpsellOverlay">
+  <div class="modal-confirm-card modal-upsell-card">
+    <p>🥤 ¿Sumás algo para tomar?</p>
+    <div class="upsell-opciones" id="upsellOpciones"></div>
+    <button class="btn btn-secundario" id="upsellOmitir" style="width:100%; margin-top:4px;">No, gracias — continuar</button>
+  </div>
+</div>
+
 <div class="modal-confirm-overlay" id="modalConfirmOverlay">
   <div class="modal-confirm-card">
     <p id="modalConfirmMensaje"></p>
@@ -577,6 +587,22 @@
         <button type="button" id="btnVolverALogin" style="background:none; border:none; color:var(--gris); font-size:var(--fs-xs); margin-top:10px; cursor:pointer; width:100%; text-align:center;">← Volver a iniciar sesión</button>
       </div>
 
+    </div>
+
+    <!-- ═══ VISTA: Mi cuenta (usuario ya logueado) ═══
+         FIX CRÍTICO: antes tocar el botón de usuario SIEMPRE
+         abría este modal mostrando el login desde cero — incluso
+         estando ya logueado (muy notorio en PWA, donde parecía
+         que la sesión se había cerrado sola). Ahora, si ya hay
+         sesión, se muestra esta vista en su lugar: quién sos y
+         un botón para cerrar sesión de verdad. -->
+    <div class="auth-form" id="authFormCuenta" style="display:none;">
+      <div class="cuenta-info">
+        <div class="cuenta-avatar">👤</div>
+        <p class="cuenta-nombre" id="cuentaNombreTexto"></p>
+        <p class="cuenta-email" id="cuentaEmailTexto"></p>
+      </div>
+      <button class="btn-login btn-cerrar-sesion" id="btnCerrarSesionCliente" type="button">Cerrar sesión</button>
     </div>
   </div>
 </div>
@@ -781,7 +807,50 @@
     });
   };
 
-  btnUser.addEventListener('click', () => modalOverlay.classList.add('show'));
+  const authTabs         = document.querySelector('.auth-tabs');
+  const authFormCuenta   = document.getElementById('authFormCuenta');
+  const cuentaNombreEl   = document.getElementById('cuentaNombreTexto');
+  const cuentaEmailEl    = document.getElementById('cuentaEmailTexto');
+  const btnCerrarSesionCliente = document.getElementById('btnCerrarSesionCliente');
+
+  // FIX CRÍTICO: antes este click SIEMPRE abría el modal de login,
+  // sin importar si ya había una sesión activa — por eso en PWA,
+  // tocar el ícono de usuario estando logueado parecía "cerrar la
+  // sesión sola" cuando en realidad solo volvía a mostrar el
+  // formulario de ingreso encima de la sesión que seguía activa.
+  // Ahora, si ya estás logueado, se muestra tu cuenta (con botón
+  // real de cerrar sesión) en vez del formulario de login.
+  btnUser.addEventListener('click', () => {
+    if (usuarioActual) {
+      authTabs.style.display = 'none';
+      authFormGoogle.classList.remove('active');
+      authFormEmail.classList.remove('active');
+      authFormCuenta.style.display = 'flex';
+      cuentaNombreEl.textContent = usuarioActual.displayName || usuarioActual.email?.split('@')[0] || 'Cliente';
+      cuentaEmailEl.textContent = usuarioActual.email || '';
+    } else {
+      authTabs.style.display = 'flex';
+      authFormCuenta.style.display = 'none';
+    }
+    modalOverlay.classList.add('show');
+  });
+
+  // Cierre de sesión real para el cliente — vuelve al login del
+  // inicio: en PWA, onAuthStateChanged ya detecta "sin sesión" y
+  // vuelve a mostrar la pantalla de bienvenida/login automáticamente;
+  // en navegador normal, simplemente actualiza el header.
+  btnCerrarSesionCliente?.addEventListener('click', async () => {
+    const ok = await window.mostrarConfirmModal('¿Cerrar sesión?');
+    if (!ok) return;
+    try {
+      await signOut(auth);
+      modalOverlay.classList.remove('show');
+    } catch (err) {
+      console.error('Error al cerrar sesión:', err);
+      window.mostrarToast?.('No se pudo cerrar sesión. Intentá de nuevo.', 'error');
+    }
+  });
+
   modalClose.addEventListener('click', () => modalOverlay.classList.remove('show'));
 
   btnPuntos.addEventListener('click', () => {

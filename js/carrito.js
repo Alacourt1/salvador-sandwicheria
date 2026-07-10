@@ -127,6 +127,62 @@ window.eliminarDelCarrito = (clave) => {
   guardar();
 };
 
+// ═══ UPSELL: ofrecer una bebida antes de confirmar ═══
+// MEJORA: si el catálogo tiene productos marcados como bebida
+// (desde el admin) y el carrito todavía no tiene ninguna, se
+// ofrece sumar una antes de mandar el pedido por WhatsApp. Se
+// compara por "id" contra el catálogo en vez de guardar un flag
+// en el item del carrito, así no se toca la forma de los items
+// que ya arma agregarAlCarrito.
+function obtenerBebidasDisponibles() {
+  const catalogo = window._catalogoActual || [];
+  return catalogo.filter(p => p.esBebida && p.disponible !== false && p.precio > 0);
+}
+
+function carritoYaTieneBebida(bebidas) {
+  return carrito.some(item => bebidas.some(b => b.id && b.id === item.id));
+}
+
+function mostrarUpsellBebida() {
+  return new Promise((resolve) => {
+    const bebidas = obtenerBebidasDisponibles();
+    const overlay  = document.getElementById('modalUpsellOverlay');
+    const opciones = document.getElementById('upsellOpciones');
+    const btnOmitir = document.getElementById('upsellOmitir');
+
+    if (!bebidas.length || carritoYaTieneBebida(bebidas) || !overlay || !opciones || !btnOmitir) {
+      resolve(false);
+      return;
+    }
+
+    opciones.innerHTML = bebidas.slice(0, 4).map((b, i) => `
+      <button type="button" class="upsell-opcion-btn" data-i="${i}">
+        <span class="upsell-opcion-nombre">${String(b.nombre || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</span>
+        <span class="upsell-opcion-precio">+$${formatPrice(b.precio)}</span>
+      </button>
+    `).join('');
+
+    overlay.classList.add('show');
+
+    const botones = Array.from(opciones.querySelectorAll('.upsell-opcion-btn'));
+    const limpiar = () => {
+      overlay.classList.remove('show');
+      botones.forEach(b => b.removeEventListener('click', onElegir));
+      btnOmitir.removeEventListener('click', onOmitir);
+    };
+    const onOmitir = () => { limpiar(); resolve(false); };
+    const onElegir = (e) => {
+      const i = Number(e.currentTarget.dataset.i);
+      const b = bebidas[i];
+      window.agregarAlCarrito({ id: b.id, nombre: b.nombre, precio: b.precio, imagen: b.imagenURL || '' }, 1);
+      limpiar();
+      resolve(true);
+    };
+    botones.forEach(b => b.addEventListener('click', onElegir));
+    btnOmitir.addEventListener('click', onOmitir);
+  });
+}
+
 window.pedirPorWhatsApp = async () => {
   if (carrito.length === 0) {
     showToast('El carrito está vacío', 'error');
@@ -162,6 +218,11 @@ window.pedirPorWhatsApp = async () => {
     showToast('Completá tu nombre antes de confirmar el pedido', 'error');
     return;
   }
+
+  // Se ofrece una bebida ACÁ — antes de calcular subtotal/total,
+  // para que si el cliente suma una, quede reflejada en el pedido
+  // que se guarda y en el mensaje de WhatsApp.
+  await mostrarUpsellBebida();
 
   const subtotal = carrito.reduce((suma, item) => suma + item.precio * item.cantidad, 0);
   let total = subtotal;

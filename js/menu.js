@@ -39,6 +39,7 @@ async function cargarProductos() {
           precioDocena:    Number(data.precioDocena)    || 0,
           descuento:       Number(data.descuento) || 0,
           oferta:          Boolean(data.oferta),
+          esBebida:        Boolean(data.esBebida),
           disponible:      data.disponible !== false,
           imagenURL:       data.imagenURL || '',
         };
@@ -366,9 +367,8 @@ function actualizarPromociones() {
 let _ofertasCountdownInterval = null;
 
 function iniciarCuentaRegresivaOfertas() {
-  const chip = $id('ofertasCountdownChip');
   const bannerCountdown = $id('ofertaCountdownBanner');
-  if (!chip && !bannerCountdown) return;
+  if (!bannerCountdown) return;
   if (_ofertasCountdownInterval) clearInterval(_ofertasCountdownInterval);
 
   function actualizar() {
@@ -379,13 +379,11 @@ function iniciarCuentaRegresivaOfertas() {
     const h = Math.floor(restante / 3600000);
     const m = Math.floor((restante % 3600000) / 60000);
     const s = Math.floor((restante % 60000) / 1000);
-    const texto = `⏰ Termina en ${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
-    if (chip) chip.textContent = texto;
-    if (bannerCountdown) bannerCountdown.textContent = texto;
+    bannerCountdown.textContent = `⏰ Termina en ${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
   }
   actualizar();
   _ofertasCountdownInterval = setInterval(actualizar, 1000);
-  if (bannerCountdown) bannerCountdown.classList.add('visible');
+  bannerCountdown.classList.add('visible');
 }
 
 function detenerCuentaRegresivaOfertas() {
