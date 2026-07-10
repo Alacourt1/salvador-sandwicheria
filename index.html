@@ -133,10 +133,10 @@
       <!-- ═══ LOGO PERSONALIZADO ═══
            Para poner tu propio logo: pegá la URL de la imagen
            acá abajo en src="...". Si la dejás vacía o la URL
-           falla, automáticamente se muestra el ícono 🥪 de
+           falla, automáticamente se muestra el ícono 🥖 de
            respaldo, así nunca queda un hueco roto. -->
       <img src="" alt="Logo Salvador" class="pub-logo-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-      <div class="pub-logo-img-fallback">🥪</div>
+      <div class="pub-logo-img-fallback">🥖</div>
       <a href="index.html" class="pub-logo neon-logo">
         SALVADOR
         <small>FOOD EXPERIENCE</small>
@@ -251,7 +251,7 @@
         <p class="puntos-como-ganar">🎁 Ganás <strong>100 puntos</strong> por cada <strong>$10.000</strong> en tus pedidos.</p>
         <h3>Línea de recompensas</h3>
         <div class="timeline" id="timelineRecompensas"></div>
-        <p class="puntos-info">Al alcanzar un premio, podés canjear tu recompensa. Se abrirá WhatsApp con el mensaje listo.</p>
+        <p class="puntos-info">Al alcanzar un premio, podés canjear tu recompensa. Se abrirá WhatsApp con el mensaje listo. <strong>Al canjear, tus puntos vuelven a 0</strong> — si preferís, podés no canjear todavía y seguir sumando para tu próxima recompensa.</p>
 
         <!-- MEJORA: antes no existía ningún registro de puntos —
              solo se veía el número total actual, sin poder ver de
@@ -1215,7 +1215,12 @@
           // WhatsApp dos veces.
           if (btn.disabled) return;
           const r = recompensas[i];
-          const confirmado = await window.mostrarConfirmModal(`¿Canjear "${r.descripcion}" por ${r.umbralPuntos} puntos?`);
+          // MEJORA: se avisa DE ENTRADA, antes de canjear, que
+          // canjear reinicia los puntos a 0 — así el cliente decide
+          // con la info completa (por ejemplo, si tiene de sobra y
+          // prefiere esperar a la próxima recompensa en vez de
+          // canjear ahora y perder el excedente).
+          const confirmado = await window.mostrarConfirmModal(`¿Canjear "${r.descripcion}" por ${r.umbralPuntos} puntos? Al canjear, tus puntos vuelven a 0.`);
           if (!confirmado) return;
 
           btn.disabled = true;
@@ -1232,13 +1237,22 @@
             // lee el saldo ACTUAL en el mismo instante en que
             // descuenta, de forma indivisible — nadie más puede
             // meterse en el medio.
+            // MEJORA: al canjear, los puntos se reinician a 0 (no
+            // se resta solamente el umbral) — el programa funciona
+            // como una "tarjetita" que se llena y se canjea entera:
+            // sumás hasta el premio, lo canjeás, y arrancás de cero
+            // para el siguiente. Si el cliente prefiere no perder
+            // puntos de sobra, la aclaración de arriba le da
+            // la chance de cancelar y esperar en vez de canjear ya.
+            let puntosAntesDelCanje = 0;
             await runTransaction(db, async (transaction) => {
               const snap = await transaction.get(userDocRef);
               const puntosActuales = snap.exists() ? (snap.data().puntos || 0) : 0;
               if (puntosActuales < r.umbralPuntos) {
                 throw new Error('PUNTOS_INSUFICIENTES');
               }
-              transaction.update(userDocRef, { puntos: puntosActuales - r.umbralPuntos });
+              puntosAntesDelCanje = puntosActuales;
+              transaction.update(userDocRef, { puntos: 0 });
             });
 
             // MEJORA — registro del canje para el negocio. Antes un
@@ -1254,8 +1268,8 @@
               uid,
               clienteNombre: userData.nombreUsuario || usuarioActual?.email || 'Cliente',
               tipo: 'canjeado',
-              puntos: r.umbralPuntos,
-              motivo: r.descripcion,
+              puntos: puntosAntesDelCanje,
+              motivo: `${r.descripcion} (puntos reiniciados a 0)`,
               recompensaId: r.id || null,
               codigo,
               estado: 'pendiente',
@@ -1287,49 +1301,14 @@
     }
   }
 
-  // FIX CRÍTICO — acreditación de puntos de fidelidad.
-  // Antes este bloque envolvía window.pedirPorWhatsApp, pero como
-  // este módulo corre ANTES que carrito.js (orden de documento),
-  // carrito.js pisaba el wrapper al definir la función real y los
-  // puntos nunca se sumaban. Peor: el wrapper releía el carrito de
-  // localStorage después de que ya estaba vacío, así que el total
-  // siempre daba $0. Ahora carrito.js llama a este hook con el
-  // total real ANTES de vaciar el carrito — orden de carga y datos
-  // correctos garantizados.
-  window._onPedidoRegistrado = async ({ total }) => {
-    if (!usuarioActual || !(total > 0)) return;
-    try {
-      const puntos = Math.floor(total / 10000) * 100;
-      const userDocRef = doc(db, 'usuarios', usuarioActual.uid);
-      const userSnap = await getDoc(userDocRef);
-      let userData = { dineroAcumulado: 0, puntos: 0 };
-      if (userSnap.exists()) userData = userSnap.data();
-      await setDoc(userDocRef, {
-        dineroAcumulado: (userData.dineroAcumulado || 0) + total,
-        puntos: (userData.puntos || 0) + puntos
-      }, { merge: true });
-      // MEJORA — deja registro del movimiento en el historial de
-      // puntos. Antes solo se actualizaba el total acumulado, sin
-      // ningún rastro de POR QUÉ subió. Solo se registra si el
-      // pedido realmente sumó puntos (pedidos por debajo del
-      // umbral de $10.000 no generan un movimiento vacío de "+0").
-      if (puntos > 0) {
-        await addDoc(collection(db, 'movimientosPuntos'), {
-          uid: usuarioActual.uid,
-          clienteNombre: userData.nombreUsuario || usuarioActual.email || 'Cliente',
-          tipo: 'ganado',
-          puntos,
-          motivo: `Pedido por $${total.toLocaleString('es-AR')}`,
-          fecha: new Date().toISOString(),
-        });
-      }
-      // Refresca la sección de puntos al instante para que el
-      // cliente vea sus puntos nuevos sin recargar la página.
-      cargarDatosPuntos(usuarioActual.uid);
-    } catch (err) {
-      console.error('Error al acreditar puntos:', err);
-    }
-  };
+  // FIX CRÍTICO DE SEGURIDAD — antes los puntos se acreditaban ACÁ,
+  // apenas el cliente mandaba el pedido por WhatsApp, sin que el
+  // negocio confirmara ni entregara nada todavía. Eso permitía
+  // "pedir" en bucle sin pagar ni retirar nunca nada y juntar
+  // puntos infinitos. Ahora los puntos se acreditan del lado del
+  // ADMIN (js/admin.js, función acreditarPuntosPorPedido), y solo
+  // cuando el pedido pasa a estado "entregado" en el panel — nunca
+  // desde acá. Este hook ya no existe a propósito.
 
   document.getElementById('btnVerHistorialPuntos')?.addEventListener('click', async () => {
     const lista = document.getElementById('historialPuntosLista');
@@ -1451,6 +1430,18 @@
     }
   });
 
+  // FIX DE SEGURIDAD: heroTitle se pintaba con innerHTML crudo, sin
+  // sanitizar. Es un campo que solo el admin puede editar (pensado
+  // para poder resaltar una palabra con <em>), pero si esa cuenta
+  // se compromete alguna vez, un innerHTML sin filtrar ahí permite
+  // inyectar cualquier HTML/JS visible para TODOS los visitantes
+  // del sitio. Esta función solo deja pasar <em>/</em> — cualquier
+  // otra etiqueta queda neutralizada como texto plano.
+  function sanitizarHeroTitle(html) {
+    const escapado = String(html ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    return escapado.replace(/&lt;em&gt;/g, '<em>').replace(/&lt;\/em&gt;/g, '</em>');
+  }
+
   async function aplicarConfiguracion() {
     try {
       const snap = await getDocs(collection(db, 'config'));
@@ -1470,7 +1461,7 @@
       elementos.forEach(el => {
         const key = el.dataset.config;
         if (config[key]) {
-          if (key === 'heroTitle') el.innerHTML = config[key];
+          if (key === 'heroTitle') el.innerHTML = sanitizarHeroTitle(config[key]);
           else el.textContent = config[key];
         }
       });
@@ -1558,6 +1549,12 @@
   const totalEl        = document.getElementById('modalPresentacionTotal');
   const btnConfirmar   = document.getElementById('modalPresentacionConfirmar');
 
+  // Escape para valores insertados en atributos HTML (src) — evita
+  // que una URL de imagen con comillas rompa el atributo.
+  function escAttr(str) {
+    return String(str ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;');
+  }
+
   let productoActual    = null;
   let presentacionActual = null;
   let cantidadActual     = 1;
@@ -1589,7 +1586,7 @@
 
     nombreEl.textContent = producto.nombre;
     thumbEl.innerHTML = producto.imagen
-      ? `<img src="${producto.imagen}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:inherit;">`
+      ? `<img src="${escAttr(producto.imagen)}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:inherit;">`
       : '🥖';
 
     opcionesEl.innerHTML = '';
@@ -1646,6 +1643,7 @@
       imagen:                productoActual.imagen,
       presentacionEtiqueta: presentacionActual.etiqueta,
       presentacionUnidades: presentacionActual.unidades,
+      enOferta:              presentacionActual.tieneOferta || false,
     }, cantidadActual);
     cerrarModal();
   });

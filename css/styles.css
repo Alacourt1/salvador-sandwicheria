@@ -1392,6 +1392,7 @@ body::before {
 }
 .recompensa-btn:hover { background: var(--neon-pink-dark); }
 .puntos-info { font-size: var(--fs-sm); color: var(--gris); }
+.puntos-info strong { color: var(--neon-yellow); }
 
 .historial-pedidos { margin-top: var(--sp-md); border-top: 1px solid var(--grafito); padding-top: var(--sp-sm); }
 .btn-historial { background: none; border: 1px solid var(--humo); color: var(--gris-l); border-radius: var(--radio-sm); padding: var(--sp-sm); width: 100%; cursor: pointer; font-weight: 400; font-size: var(--fs-sm); min-height: var(--tap-min); }

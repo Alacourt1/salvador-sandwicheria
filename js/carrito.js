@@ -1,4 +1,4 @@
-import { db, auth, collection, addDoc, getDocs } from './firebase.js';
+import { db, auth, collection, addDoc, getDocs, getDoc, doc } from './firebase.js';
 import { saveStorage, loadStorage } from './utils/storage.js';
 import { showToast } from './utils/toast.js';
 import { $id } from './utils/dom.js';
@@ -97,10 +97,16 @@ window.agregarAlCarrito = (producto, cantidadInicial = 1) => {
 
   const clave = claveItem(nombre, etiqueta);
   const itemExistente = carrito.find(i => i.clave === clave);
+  // MEJORA: se guarda si este ítem viene con precio de "Ofertas
+  // del día" — lo necesita el cálculo del código de descuento más
+  // abajo, para no aplicar el % del código sobre algo que ya tiene
+  // un descuento de oferta encima.
+  const enOferta = Boolean(producto.enOferta);
 
   if (itemExistente) {
     itemExistente.cantidad += cantidad;
     itemExistente.precio = precio;
+    itemExistente.enOferta = enOferta;
   } else {
     carrito.push({
       clave,
@@ -111,6 +117,7 @@ window.agregarAlCarrito = (producto, cantidadInicial = 1) => {
       imagen,
       presentacionEtiqueta: etiqueta,
       presentacionUnidades: unidadesPorPresentacion,
+      enOferta,
     });
   }
   guardar();
@@ -249,7 +256,13 @@ window.pedirPorWhatsApp = async () => {
   let total = subtotal;
   let descuentoAplicado = 0;
   if (window.codigoDescuento && window.codigoDescuento.porcentaje) {
-    descuentoAplicado = Math.round(subtotal * window.codigoDescuento.porcentaje / 100);
+    // MEJORA: el código de descuento ya NO se aplica sobre
+    // productos que vienen de "Ofertas del día" — solo sobre el
+    // resto del carrito (catálogo a precio normal). Antes se
+    // calculaba sobre el subtotal completo, así que un producto ya
+    // rebajado terminaba con DOS descuentos apilados.
+    const subtotalSinOferta = carrito.reduce((suma, item) => item.enOferta ? suma : suma + item.precio * item.cantidad, 0);
+    descuentoAplicado = Math.round(subtotalSinOferta * window.codigoDescuento.porcentaje / 100);
     total -= descuentoAplicado;
   }
 
@@ -280,20 +293,12 @@ window.pedirPorWhatsApp = async () => {
     return;
   }
 
-  // FIX: hook de puntos de fidelidad. Antes index.html intentaba
-  // envolver window.pedirPorWhatsApp para sumar puntos, pero ese
-  // wrapper se instalaba ANTES de que este módulo definiera la
-  // función real (los módulos corren en orden de documento), así
-  // que esta asignación lo pisaba y los puntos NUNCA se
-  // acreditaban. Además el wrapper releía el carrito de
-  // localStorage DESPUÉS de que acá se vaciara — total $0.
-  // Ahora se avisa explícitamente con el total real, ANTES de
-  // vaciar el carrito, y index.html solo define el hook.
-  try {
-    await window._onPedidoRegistrado?.({ total, subtotal });
-  } catch (err) {
-    console.error('Error acreditando puntos del pedido:', err);
-  }
+  // FIX CRÍTICO DE SEGURIDAD: acá antes se llamaba a un hook que
+  // acreditaba puntos de fidelidad EN EL MOMENTO DE PEDIR, sin que
+  // el negocio confirmara ni entregara nada. Eso se podía explotar
+  // pidiendo en bucle sin pagar ni retirar nunca nada. Los puntos
+  // ahora se acreditan del lado del admin, solo cuando marca el
+  // pedido como "entregado" — ver js/admin.js.
 
   // FIX: cada línea del mensaje de WhatsApp ahora incluye la
   // presentación cuando corresponde, para que el local sepa
@@ -356,7 +361,7 @@ function render() {
     const precio   = Number(item.precio)   || 0;
     const cantidad = Number(item.cantidad) || 1;
     const subtotal = precio * cantidad;
-    const thumbHTML = item.imagen ? `<img src="${item.imagen}" alt="${esc(item.nombre)}" style="width:100%;height:100%;object-fit:cover;">` : '🥖';
+    const thumbHTML = item.imagen ? `<img src="${esc(item.imagen)}" alt="${esc(item.nombre)}" style="width:100%;height:100%;object-fit:cover;">` : '🥖';
 
     // Muestra la presentación debajo del nombre cuando existe,
     // para que el cliente vea con claridad qué eligió.
@@ -401,19 +406,30 @@ async function aplicarCodigoDescuento() {
     mensajeEl.textContent = 'Agregá productos antes de aplicar un código';
     return;
   }
+  // MEJORA: si todo el carrito son productos de "Ofertas del día",
+  // el código no tiene nada sobre qué aplicarse — se avisa de
+  // entrada en vez de dejar que parezca que el código no funcionó.
+  if (carrito.every(item => item.enOferta)) {
+    mensajeEl.textContent = 'Este código no aplica: todo tu carrito ya está en Ofertas del día';
+    return;
+  }
 
   try {
-    const snap = await getDocs(collection(db, 'descuentos'));
-    let encontrado = false;
-    snap.forEach(doc => {
-      const data = doc.data();
-      if (data.codigo === codigo && data.activo) {
-        window.codigoDescuento = { codigo: data.codigo, porcentaje: data.porcentaje };
-        encontrado = true;
-      }
-    });
+    // FIX DE SEGURIDAD: antes esto traía TODA la colección de
+    // códigos de descuento al navegador y buscaba la coincidencia
+    // en el cliente — cualquiera podía abrir las herramientas de
+    // desarrollador y listar TODOS los códigos existentes (activos,
+    // inactivos, pensados para un cliente puntual, etc.), sin
+    // necesidad de conocer ninguno de antemano. Ahora se pide
+    // directamente el documento cuyo ID ES el código — Firestore
+    // solo entrega ese código puntual si ya lo escribiste, sin
+    // exponer el resto de la colección.
+    const codigoSnap = await getDoc(doc(db, 'descuentos', codigo));
+    const encontrado = codigoSnap.exists() && codigoSnap.data().activo;
 
     if (encontrado) {
+      const data = codigoSnap.data();
+      window.codigoDescuento = { codigo: data.codigo, porcentaje: data.porcentaje };
       mensajeEl.textContent = `✓ Código aplicado: ${window.codigoDescuento.porcentaje}% de descuento`;
       document.getElementById('codigoPorcentaje').textContent = window.codigoDescuento.porcentaje;
       document.getElementById('codigoDescuentoInfo').style.display = 'block';
