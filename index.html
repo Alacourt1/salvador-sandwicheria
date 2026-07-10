@@ -183,11 +183,19 @@
 <div class="oferta-banner" id="ofertaBanner" data-config="promoBannerText">
   🔥 Hay productos en oferta hoy — ¡aprovechalos antes de que se acaben!
 </div>
+<!-- MEJORA: contador regresivo hasta medianoche — le da urgencia real
+     a "ofertas del día" en vez de ser un cartel estático. Va como
+     elemento separado (no adentro de #ofertaBanner) para no chocar
+     con el reemplazo de texto de data-config="promoBannerText". -->
+<div class="oferta-countdown-banner" id="ofertaCountdownBanner"></div>
 
 <!-- ═══ PROMOCIONES ═══ -->
 <section class="promociones-section" id="promociones">
   <div class="promociones-inner">
-    <h2 class="promociones-title">🔥 Ofertas del día</h2>
+    <h2 class="promociones-title">
+      🔥 Ofertas del día
+      <span class="ofertas-countdown-chip" id="ofertasCountdownChip"></span>
+    </h2>
     <div class="promociones-grid" id="promociones-container"></div>
   </div>
 </section>
@@ -210,8 +218,11 @@
              Puramente decorativa — se actualiza vía JS leyendo los
              mismos datos que ya carga cargarDatosPuntos(), sin
              modificar esa función. -->
-        <div class="puntos-progreso-track">
-          <div class="puntos-progreso-fill" id="puntosProgresoFill" style="width: 0%;"></div>
+        <div class="puntos-progreso-row">
+          <div class="puntos-progreso-track">
+            <div class="puntos-progreso-fill" id="puntosProgresoFill" style="width: 0%;"></div>
+          </div>
+          <span class="puntos-progreso-pct" id="puntosProgresoPct"></span>
         </div>
       </div>
     </div>
@@ -1000,7 +1011,13 @@
 
     if (user) {
       welcomeOverlay?.classList.remove('mostrar');
-      btnUserLabel.textContent = user.email;
+      // FIX: acá se ponía el EMAIL COMPLETO en una pill pensada
+      // para un texto corto — con nombres de usuario largos o
+      // emails largos, se veía cortado ("agustinm..."). Ahora se
+      // prioriza el nombre (de Google, el primer nombre) y si no
+      // hay, se usa solo la parte antes del "@" del email.
+      const nombreCorto = user.displayName?.split(' ')[0] || user.email?.split('@')[0] || 'Mi cuenta';
+      btnUserLabel.textContent = nombreCorto;
       puntosBloqueado.style.display = 'none';
       puntosLogeado.style.display = 'block';
       puntosSection.style.display = 'block';
@@ -1088,6 +1105,7 @@
       // `puntosUsuario` ya calculados arriba, no cambia ninguna
       // lógica de negocio existente.
       const progresoFill = document.getElementById('puntosProgresoFill');
+      const progresoPct  = document.getElementById('puntosProgresoPct');
       if (progresoFill) {
         const siguienteRecompensa = recompensas.find(r => r.umbralPuntos > puntosUsuario);
         if (siguienteRecompensa) {
@@ -1098,9 +1116,11 @@
           const avance = puntosUsuario - anteriorUmbral;
           const porcentaje = rango > 0 ? Math.min(100, Math.round((avance / rango) * 100)) : 0;
           progresoFill.style.width = porcentaje + '%';
+          if (progresoPct) progresoPct.textContent = porcentaje + '%';
         } else if (recompensas.length > 0) {
           // Ya alcanzó la recompensa más alta disponible
           progresoFill.style.width = '100%';
+          if (progresoPct) progresoPct.textContent = '¡Al tope! 🎉';
         }
       }
 

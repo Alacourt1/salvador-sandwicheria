@@ -2895,3 +2895,136 @@ body:has(.carrito-drawer.abierto) .fab-whatsapp { opacity: 0; pointer-events: no
 @media (prefers-reduced-motion: reduce) {
   .modal-confirm-overlay, .modal-confirm-card { transition: opacity 0.1s; transform: none; }
 }
+
+/* ═══════════════════════════════════════════════════
+   RONDA DE MEJORAS — urgencia, truncamiento, gamificación
+   y consistencia visual de fotos. Bloque aditivo.
+   ═══════════════════════════════════════════════════ */
+
+/* ── 1. Cuenta regresiva de ofertas ── */
+.oferta-countdown-banner {
+  display: none;
+  text-align: center;
+  background: var(--negro);
+  color: var(--neon-yellow);
+  font-family: 'Orbitron', sans-serif;
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  letter-spacing: .04em;
+  padding: 6px var(--sp-md);
+  text-shadow: var(--shadow-yellow);
+  animation: countdownPulso 1.6s ease-in-out infinite;
+}
+.oferta-countdown-banner.visible { display: block; }
+.ofertas-countdown-chip {
+  font-family: 'Inter', sans-serif;
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  color: var(--neon-yellow);
+  background: rgba(255, 195, 0, 0.1);
+  border: 1px solid rgba(255, 195, 0, 0.3);
+  border-radius: 99px;
+  padding: 3px 10px;
+  text-shadow: none;
+  animation: countdownPulso 1.6s ease-in-out infinite;
+}
+@keyframes countdownPulso {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: .62; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .oferta-countdown-banner, .ofertas-countdown-chip { animation: none; }
+}
+
+/* ── 4. Header: pills sin texto en pantallas muy angostas ──
+   FIX: en vez de dejar que el texto se corte con "...", en
+   pantallas chicas se muestra solo ícono (+ el número del
+   carrito, que sí es indispensable) — así no hay nada para
+   truncar. La corrección real (mostrar el nombre corto en vez
+   del email completo) está en el JS; esto es la red de
+   seguridad para cualquier texto igual de largo. */
+@media (max-width: 400px) {
+  .btn-user-header span,
+  .btn-carrito-header span:not(.carrito-badge) {
+    display: none;
+  }
+  .btn-user-header, .btn-carrito-header {
+    gap: 0;
+  }
+}
+
+/* ── 5. Categorías: fade en los bordes en vez de corte abrupto ──
+   La fila ya scrollea horizontalmente (no se trunca el texto en
+   sí) — lo que se veía "cortado feo" es el borde duro del
+   contenedor. Un degradé de opacidad en los extremos hace que la
+   siguiente categoría se insinúe suavemente en vez de cortarse
+   en seco, dejando claro que hay más para scrollear. */
+#categorias {
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 20px, #000 calc(100% - 20px), transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 20px, #000 calc(100% - 20px), transparent);
+}
+
+/* ── 6. Barra de progreso de puntos — más gruesa, con brillo
+   y porcentaje visible. Antes era una línea de 6px casi
+   invisible; ahora se siente a "premio" en vez de spinner de
+   carga genérico. ── */
+.puntos-progreso-row {
+  display: flex; align-items: center; gap: 8px;
+  margin-top: 6px;
+}
+.puntos-progreso-track {
+  flex: 1;
+  height: 10px;
+  margin-top: 0;
+}
+.puntos-progreso-fill {
+  position: relative;
+  box-shadow: 0 0 10px rgba(0, 229, 255, 0.6), 0 0 20px rgba(255, 0, 136, 0.3);
+}
+/* Brillo que recorre la barra rellenada — mismo recurso que el
+   shimmer del banner de ofertas, para reforzar la sensación de
+   "esto está vivo y acumulando". */
+.puntos-progreso-fill::after {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(105deg, transparent, rgba(255,255,255,.5), transparent);
+  background-size: 60% 100%;
+  animation: progresoShimmer 2.6s ease-in-out infinite;
+}
+@keyframes progresoShimmer {
+  0%   { background-position: -60% 0; }
+  100% { background-position: 160% 0; }
+}
+.puntos-progreso-pct {
+  font-family: 'Orbitron', sans-serif;
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  color: var(--neon-blue);
+  white-space: nowrap;
+  flex-shrink: 0;
+  min-width: 34px;
+  text-align: right;
+}
+@media (prefers-reduced-motion: reduce) {
+  .puntos-progreso-fill::after { animation: none; }
+}
+
+/* ── 7. Fotos de producto — tratamiento consistente ──
+   Las fotos vienen de calidad/luz muy distinta (algunas
+   profesionales, otras sacadas en la mesada). Un filtro parejo
+   + viñeta suave + un lavado de color de marca muy sutil hacen
+   que todas se sientan parte del mismo catálogo, sin que se note
+   como "filtro de Instagram". */
+.prod-thumb img {
+  filter: saturate(1.08) contrast(1.05) brightness(1.02);
+}
+.prod-thumb {
+  box-shadow: inset 0 0 34px rgba(0, 0, 0, 0.35);
+}
+.prod-thumb::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(160deg, rgba(255, 0, 136, 0.06), transparent 55%);
+  z-index: 1; pointer-events: none;
+  mix-blend-mode: overlay;
+}

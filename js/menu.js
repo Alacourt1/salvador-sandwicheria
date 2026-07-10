@@ -350,10 +350,47 @@ function actualizarPromociones() {
     });
 
     contenedor.appendChild(fragment);
+    iniciarCuentaRegresivaOfertas();
   } else {
     seccion.classList.remove('visible');
     banner.classList.remove('visible');
+    detenerCuentaRegresivaOfertas();
   }
+}
+
+// MEJORA: cuenta regresiva hasta medianoche para las ofertas del día
+// — le da urgencia real al banner en vez de ser un cartel estático
+// que dice "hoy" para siempre. Se reinicia solo cada día porque
+// siempre calcula contra la medianoche MÁS CERCANA desde el momento
+// actual, sin necesidad de guardar ninguna fecha en Firestore.
+let _ofertasCountdownInterval = null;
+
+function iniciarCuentaRegresivaOfertas() {
+  const chip = $id('ofertasCountdownChip');
+  const bannerCountdown = $id('ofertaCountdownBanner');
+  if (!chip && !bannerCountdown) return;
+  if (_ofertasCountdownInterval) clearInterval(_ofertasCountdownInterval);
+
+  function actualizar() {
+    const ahora = new Date();
+    const medianoche = new Date(ahora);
+    medianoche.setHours(23, 59, 59, 999);
+    const restante = Math.max(0, medianoche - ahora);
+    const h = Math.floor(restante / 3600000);
+    const m = Math.floor((restante % 3600000) / 60000);
+    const s = Math.floor((restante % 60000) / 1000);
+    const texto = `⏰ Termina en ${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+    if (chip) chip.textContent = texto;
+    if (bannerCountdown) bannerCountdown.textContent = texto;
+  }
+  actualizar();
+  _ofertasCountdownInterval = setInterval(actualizar, 1000);
+  if (bannerCountdown) bannerCountdown.classList.add('visible');
+}
+
+function detenerCuentaRegresivaOfertas() {
+  if (_ofertasCountdownInterval) { clearInterval(_ofertasCountdownInterval); _ofertasCountdownInterval = null; }
+  $id('ofertaCountdownBanner')?.classList.remove('visible');
 }
 
 function actualizarHeroStats() {
