@@ -1,4 +1,4 @@
-import { db, storage, ref, uploadBytes, getDownloadURL, collection, addDoc, getDocs, deleteDoc, updateDoc, setDoc, doc } from './firebase.js';
+import { db, storage, ref, uploadBytes, getDownloadURL, collection, addDoc, getDocs, getDoc, deleteDoc, updateDoc, setDoc, doc } from './firebase.js';
 import { $id } from './utils/dom.js';
 
 // ── Utilidades locales (evita errores de import en PWA) ──
@@ -147,7 +147,7 @@ async function cargarProductos() {
       const p = documento.data(), id = documento.id;
       const row = document.createElement('div'); row.className = 'prod-admin-row';
       row.innerHTML = `
-        ${p.imagenURL ? `<img class="prod-admin-img" src="${p.imagenURL}" alt="${escapeHTML(p.nombre)}">` : `<div class="prod-admin-img" style="display:flex;align-items:center;justify-content:center;font-size:1.4rem;background:var(--humo);">🥖</div>`}
+        ${p.imagenURL ? `<img class="prod-admin-img" src="${escapeHTML(p.imagenURL)}" alt="${escapeHTML(p.nombre)}">` : `<div class="prod-admin-img" style="display:flex;align-items:center;justify-content:center;font-size:1.4rem;background:var(--humo);">🥖</div>`}
         <div class="prod-admin-info">
           <div class="prod-admin-nombre">${escapeHTML(p.nombre)}</div>
           <div class="prod-admin-meta">${escapeHTML(p.categoria||'—')} ${p.oferta ? ` · <span style="color:var(--mostaza);">🔥 ${p.descuento}% OFF</span>` : ''}</div>
@@ -238,6 +238,107 @@ window.eliminarProducto = async (id, nombre) => {
 };
 
 // ═══ PEDIDOS + STATS + RANKING ═══
+// ══════════════════════════════════════
+//  PUNTOS DE FIDELIDAD — solo al entregar
+// ══════════════════════════════════════
+// FIX CRÍTICO DE SEGURIDAD: esta es la ÚNICA función que acredita
+// puntos por un pedido, y solo se llama cuando el estado pasa a
+// "entregado" desde este panel. Antes se acreditaban del lado del
+// cliente, en el instante de mandar el pedido por WhatsApp — sin
+// ninguna confirmación real de compra. Este cambio cierra ese
+// agujero: ahora hace falta tu confirmación explícita.
+// Recalcula el total REAL de un pedido a partir del catálogo
+// actual (por id de producto), ignorando el campo "total" que
+// mandó el cliente. FIX DE SEGURIDAD: el pedido se guarda desde
+// el navegador del cliente sin ningún backend que valide los
+// números — cualquiera podía abrir las herramientas de
+// desarrollador y mandar un pedido con productos baratos pero un
+// campo "total" inflado a mano, para juntar muchos más puntos de
+// los que le corresponderían. Como acá se vuelve a calcular el
+// total a partir de los precios VIGENTES del catálogo (no de lo
+// que declaró el pedido), ese truco deja de funcionar.
+async function calcularTotalRealDesdeCatalogo(productosPedido) {
+  const catalogoSnap = await getDocs(collection(db, 'productos'));
+  const catalogo = {};
+  catalogoSnap.forEach(d => { catalogo[d.id] = d.data(); });
+
+  let total = 0;
+  for (const item of (productosPedido || [])) {
+    const cantidad = Number(item.cantidad) || 1;
+    const prod = catalogo[item.id];
+    if (!prod) {
+      // Producto ya no existe en el catálogo (se borró después del
+      // pedido) — no hay con qué verificarlo, se usa lo declarado
+      // como respaldo razonable en vez de descartarlo.
+      total += (Number(item.precio) || 0) * cantidad;
+      continue;
+    }
+    const unidades = Number(item.presentacionUnidades) || 1;
+    let precioVigente = prod.precio || 0;
+    if (unidades === 3 && prod.precio3unidades > 0) precioVigente = prod.precio3unidades;
+    else if (unidades === 6 && prod.precio6unidades > 0) precioVigente = prod.precio6unidades;
+    else if (unidades === 12 && prod.precioDocena > 0) precioVigente = prod.precioDocena;
+    total += precioVigente * cantidad;
+  }
+  return total;
+}
+
+async function acreditarPuntosPorPedido(pedidoId) {
+  try {
+    // Se relee el pedido FRESCO desde Firestore (no el que ya
+    // teníamos en memoria de cargarPedidos) para chequear
+    // "puntosAcreditados" con el dato más actual — así, si el
+    // estado se cambia de un lado a otro varias veces, nunca se
+    // duplica el crédito de puntos para el mismo pedido.
+    const pedidoRef = doc(db, 'pedidos', pedidoId);
+    const pedidoSnap = await getDoc(pedidoRef);
+    if (!pedidoSnap.exists()) return;
+    const pedido = pedidoSnap.data();
+
+    if (pedido.puntosAcreditados) return; // ya se acreditó antes — no duplicar
+    if (!pedido.uid) return; // pedido de invitado sin cuenta — no hay a quién acreditarle
+
+    // FIX DE SEGURIDAD: se ignora pedido.total (lo declaró el
+    // cliente al hacer el pedido) y se recalcula desde el catálogo
+    // real — ver calcularTotalRealDesdeCatalogo() más arriba.
+    const totalVerificado = await calcularTotalRealDesdeCatalogo(pedido.productos);
+    // Equivalencia: 10 puntos cada $10.000, calculado de forma
+    // PROPORCIONAL a lo gastado (no por escalones de $10.000) —
+    // $5.000 = 5 puntos, $23.000 = 23 puntos, etc. Es lo mismo que
+    // "1 punto por cada $1.000".
+    const puntos = Math.floor(totalVerificado / 1000);
+    if (puntos <= 0) return;
+
+    const userDocRef = doc(db, 'usuarios', pedido.uid);
+    const userSnap = await getDoc(userDocRef);
+    const userData = userSnap.exists() ? userSnap.data() : { dineroAcumulado: 0, puntos: 0 };
+
+    await setDoc(userDocRef, {
+      dineroAcumulado: (userData.dineroAcumulado || 0) + totalVerificado,
+      puntos: (userData.puntos || 0) + puntos,
+    }, { merge: true });
+
+    await addDoc(collection(db, 'movimientosPuntos'), {
+      uid: pedido.uid,
+      clienteNombre: userData.nombreUsuario || pedido.clienteNombre || 'Cliente',
+      tipo: 'ganado',
+      puntos,
+      motivo: `Pedido entregado por $${totalVerificado.toLocaleString('es-AR')}`,
+      pedidoId,
+      fecha: new Date().toISOString(),
+    });
+
+    // Marca el pedido para que un futuro cambio de estado (ida y
+    // vuelta) nunca vuelva a acreditar puntos por el mismo pedido.
+    await updateDoc(pedidoRef, { puntosAcreditados: true });
+
+    toast(`🎁 +${puntos} puntos acreditados a ${pedido.clienteNombre || 'el cliente'}`);
+  } catch (err) {
+    console.error('Error acreditando puntos:', err);
+    toast('El estado se guardó, pero hubo un error acreditando los puntos', 'error');
+  }
+}
+
 async function cargarPedidos() {
   const lista = $id('lista-pedidos');
   if (!lista) return;
@@ -262,18 +363,28 @@ async function cargarPedidos() {
       const fecha = pedido.fecha ? new Date(pedido.fecha) : null;
 
       totalPedidos++;
-      ventasTotales += pedido.total || 0;
+      ventasTotales += pedido.estado === 'entregado' ? (pedido.total || 0) : 0;
       if (pedido.estado === 'pendiente') pedidosPendientes++;
       if (pedido.estado === 'entregado') pedidosEntregados++;
       if (fecha) {
-        if (fecha.toDateString() === dHoy) { pedidosHoy++; ventasHoy += pedido.total || 0; }
-        if (fecha.getMonth() === mes && fecha.getFullYear() === anio) ventasMes += pedido.total || 0;
+        // FIX DE SEGURIDAD/INTEGRIDAD: "Ventas" y "Más vendidos"
+        // ahora solo suman pedidos EN ESTADO ENTREGADO. Antes se
+        // sumaba pedido.total de CUALQUIER pedido apenas se creaba
+        // — como cualquiera puede mandar un pedido sin cuenta
+        // (checkout de invitado), alcanzaba con mandar un pedido
+        // con un total inventado (o muchos pedidos falsos) para
+        // ensuciar las estadísticas del dashboard sin haber
+        // comprado ni entregado nada nunca.
+        if (fecha.toDateString() === dHoy) { pedidosHoy++; if (pedido.estado === 'entregado') ventasHoy += pedido.total || 0; }
+        if (fecha.getMonth() === mes && fecha.getFullYear() === anio && pedido.estado === 'entregado') ventasMes += pedido.total || 0;
       }
 
-      (pedido.productos||[]).forEach(p => {
-        const key = p.nombre || 'Sin nombre';
-        contadorProductos[key] = (contadorProductos[key] || 0) + (p.cantidad || 1);
-      });
+      if (pedido.estado === 'entregado') {
+        (pedido.productos||[]).forEach(p => {
+          const key = p.nombre || 'Sin nombre';
+          contadorProductos[key] = (contadorProductos[key] || 0) + (p.cantidad || 1);
+        });
+      }
 
       const card = document.createElement('div'); card.className = 'pedido-card';
       const estadoBadge = { pendiente:'badge-mostaza', preparando:'badge-mostaza', enviado:'badge-gris', entregado:'badge-verde', cancelado:'badge-rojo' }[pedido.estado] || 'badge-gris';
@@ -300,21 +411,38 @@ async function cargarPedidos() {
             ${['pendiente','preparando','enviado','entregado','cancelado'].map(e => `<option value="${e}" ${pedido.estado===e?'selected':''}>${ {pendiente:'Pendiente',preparando:'Preparando',enviado:'Enviado',entregado:'Entregado',cancelado:'Cancelado'}[e] }</option>`).join('')}
           </select>
           <button class="btn btn-danger btn-sm" style="margin-left:8px;" onclick="window.eliminarPedido('${id}')">🗑️</button>
-        </div>`;
+        </div>
+        ${pedido.puntosAcreditados ? `<div style="font-size:.72rem; color:var(--mostaza); margin-top:6px;">🎁 Puntos ya acreditados a este cliente</div>` : ''}`;
 
       card.querySelector('.select-estado').addEventListener('change', async (e) => {
+        const nuevoEstado = e.target.value;
         try {
-          await updateDoc(doc(db, 'pedidos', id), { estado: e.target.value });
-          card.querySelector('.badge').className = `badge ${ {pendiente:'badge-mostaza',preparando:'badge-mostaza',enviado:'badge-gris',entregado:'badge-verde',cancelado:'badge-rojo'}[e.target.value] }`;
-          card.querySelector('.badge').textContent = e.target.value;
-          toast(`✓ Estado actualizado a "${e.target.value}"`);
+          await updateDoc(doc(db, 'pedidos', id), { estado: nuevoEstado });
+          card.querySelector('.badge').className = `badge ${ {pendiente:'badge-mostaza',preparando:'badge-mostaza',enviado:'badge-gris',entregado:'badge-verde',cancelado:'badge-rojo'}[nuevoEstado] }`;
+          card.querySelector('.badge').textContent = nuevoEstado;
+          toast(`✓ Estado actualizado a "${nuevoEstado}"`);
+
+          // FIX CRÍTICO DE SEGURIDAD: los puntos de fidelidad se
+          // acreditan ACÁ — recién cuando vos marcás el pedido como
+          // entregado — nunca en el momento en que el cliente lo
+          // manda por WhatsApp. Antes se sumaban de forma automática
+          // apenas se hacía el pedido, sin ninguna confirmación de
+          // que se haya pagado o retirado: cualquiera podía "pedir"
+          // en bucle sin comprar nada y juntar puntos infinitos.
+          if (nuevoEstado === 'entregado') {
+            await acreditarPuntosPorPedido(id);
+          }
         } catch (err) { console.error(err); toast('Error al cambiar estado', 'error'); }
       });
 
       lista.appendChild(card);
     });
 
-    const ticketPromedio = totalPedidos > 0 ? Math.round(ventasTotales / totalPedidos) : 0;
+    // Divide por pedidosEntregados, no por totalPedidos: ventasTotales
+    // ya solo suma pedidos entregados, así que dividir por TODOS los
+    // pedidos (incluyendo pendientes/cancelados/falsos) daría un
+    // promedio artificialmente bajo.
+    const ticketPromedio = pedidosEntregados > 0 ? Math.round(ventasTotales / pedidosEntregados) : 0;
     actualizarStats({ totalPedidos, ventasTotales, pedidosPendientes, pedidosEntregados, pedidosHoy, ventasHoy, ventasMes, ticketPromedio });
     renderRanking(contadorProductos);
   } catch (err) {
@@ -673,7 +801,20 @@ window.agregarCodigoDescuento = async () => {
   }
 
   try {
-    await addDoc(collection(db, 'descuentos'), {
+    // FIX DE SEGURIDAD: antes cada código se guardaba con un ID
+    // autogenerado y el campo "codigo" aparte — eso obligaba a la
+    // app a traer TODA la colección para buscar una coincidencia,
+    // lo que dejaba los códigos listables por cualquiera. Ahora el
+    // código ES el ID del documento, así el cliente puede pedir un
+    // código puntual sin poder listar el resto (ver reglas de
+    // Firestore). Como consecuencia, dos códigos no pueden repetirse
+    // — si ya existe, se avisa antes de pisarlo.
+    const yaExiste = (await getDoc(doc(db, 'descuentos', codigo))).exists();
+    if (yaExiste) {
+      toast(`Ya existe un código "${codigo}" — elegí otro o eliminá el anterior`, 'error');
+      return;
+    }
+    await setDoc(doc(db, 'descuentos', codigo), {
       codigo,
       porcentaje,
       activo
